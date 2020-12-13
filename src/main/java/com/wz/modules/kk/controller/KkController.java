@@ -3,6 +3,7 @@ package com.wz.modules.kk.controller;
 import java.util.List;
 import java.util.Map;
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ import com.wz.modules.kk.service.KkService;
 @CrossOrigin
 @RestController
 @RequestMapping("KK")
+@Api(tags = "终端操作相关接口")
 public class KkController extends BaseController {
 
 	@Autowired

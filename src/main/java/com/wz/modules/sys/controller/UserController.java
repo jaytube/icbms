@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ import com.wz.modules.sys.service.UserService;
  */
 @CrossOrigin
 @RestController
+@Api(tags = "用户管理接口")
 @RequestMapping("sys/user")
 public class UserController extends BaseController {
 	@Autowired

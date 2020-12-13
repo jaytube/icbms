@@ -1,5 +1,6 @@
 package com.wz.modules.sys.controller;
 
+import io.swagger.annotations.Api;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import java.util.Map;
  */
 @CrossOrigin
 @RestController
+@Api(tags = "组织结构相关操作接口")
 @RequestMapping("sys/organ")
 public class OrganController extends BaseController {
 	@Autowired

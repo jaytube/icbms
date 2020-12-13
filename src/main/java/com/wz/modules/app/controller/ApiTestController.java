@@ -1,6 +1,7 @@
 package com.wz.modules.app.controller;
 
 
+import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
 
 import com.wz.modules.app.annotation.CurrentUser;
@@ -17,6 +18,7 @@ import com.wz.modules.sys.entity.UserEntity;
 @CrossOrigin
 @RestController
 @RequestMapping("/app")
+@Api(tags = "APP测试接口")
 public class ApiTestController {
 
     /**

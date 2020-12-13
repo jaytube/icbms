@@ -1,5 +1,6 @@
 package com.wz.modules.activiti.controller;
 
+import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import java.util.List;
 @CrossOrigin
 @RequestMapping("act/bus")
 @Controller
+@Api(tags = "流程业务操作相关接口")
 public class ExtendActBusinessController {
 
     @Autowired

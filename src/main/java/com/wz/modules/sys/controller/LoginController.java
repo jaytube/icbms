@@ -8,6 +8,7 @@ import com.wz.modules.common.utils.Result;
 import com.wz.modules.common.utils.ShiroUtils;
 import com.wz.modules.common.utils.UserUtils;
 
+import io.swagger.annotations.Api;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import java.io.IOException;
  */
 @CrossOrigin
 @Controller
+@Api(tags = "登录控制接口")
 public class LoginController extends BaseController {
 
     @Autowired

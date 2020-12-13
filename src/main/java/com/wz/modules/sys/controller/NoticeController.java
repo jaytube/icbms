@@ -1,5 +1,6 @@
 package com.wz.modules.sys.controller;
 
+import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @CrossOrigin
 @Controller
+@Api(tags = "通知相关操作接口")
 @RequestMapping("sys/notice")
 public class NoticeController extends BaseController {
 	@Autowired

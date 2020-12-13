@@ -2,6 +2,7 @@ package com.wz.modules.app.controller;
 
 import java.util.List;
 
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ import com.wz.modules.projectinfo.service.LocationInfoService;
 @CrossOrigin
 @Controller
 @RequestMapping("/app/home")
+@Api(tags = "APP登录授权")
 public class ApiHomeController extends BaseController {
 	private final static Logger logger = LoggerFactory.getLogger(ApiHomeController.class);
 	@Autowired

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import com.wz.modules.sys.service.CodeService;
 @CrossOrigin
 @RestController
 @RequestMapping("/report/alarm")
+@Api(tags = "AlarmReportController: 告警报表")
 public class AlarmReportController extends BaseController {
 
 	@Autowired

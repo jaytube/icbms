@@ -1,5 +1,6 @@
 package com.wz.modules.quartz.controller;
 
+import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ import java.util.Map;
  */
 @CrossOrigin
 @RestController
+@Api(tags = "定时任务日志相关接口")
 @RequestMapping("/sys/scheduleLog")
 public class ScheduleJobLogController {
 	@Autowired

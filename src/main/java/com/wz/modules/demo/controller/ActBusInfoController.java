@@ -1,4 +1,6 @@
 package com.wz.modules.demo.controller;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +21,7 @@ import com.wz.modules.demo.service.LeaveService;
 @CrossOrigin
 @RequestMapping("act/busInfo")
 @Controller
+@Api(tags = "ActBusInfoController: 流程相关的业务根据业务id查询公共类")
 public class ActBusInfoController {
 
     @Autowired

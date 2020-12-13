@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,7 @@ import com.wz.modules.report.service.ElectricReportService;
  */
 @CrossOrigin
 @RestController
+@Api(tags = "当日电量统计接口")
 @RequestMapping("/report/electricdaily")
 public class ElectricDailyController extends BaseController {
 
