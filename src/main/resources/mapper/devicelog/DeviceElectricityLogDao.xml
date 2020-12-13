@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wz.modules.devicelog.dao.DeviceElectricityLogDao">
+
+
+	<resultMap type="com.wz.modules.devicelog.entity.DeviceElectricityLogEntity"
+		id="deviceElectricityLogMap">
+		<result property="id" column="id" />
+		<result property="projectId" column="project_id" />
+		<result property="deviceBoxId" column="device_box_id" />
+		<result property="addr" column="addr" />
+		<result property="electricity" column="electricity" />
+		<result property="createTime" column="create_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="createId" column="create_id" />
+		<result property="updateId" column="update_id" />
+		<result property="remark" column="remark" />
+		<result property="statDate" column="stat_date" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id,
+		project_id,
+		device_box_id,
+		addr,
+		electricity,
+		create_time,
+		update_time,
+		create_id,
+		update_id,
+		remark,
+		stat_date
+	</sql>
+
+	<select id="queryObject"
+		resultType="com.wz.modules.devicelog.entity.DeviceElectricityLogEntity"
+		resultMap="deviceElectricityLogMap">
+		select
+		<include refid="Base_Column_List" />
+		from device_electricity_log
+		where id = #{value}
+	</select>
+
+	<select id="queryList"
+		resultType="com.wz.modules.devicelog.entity.DeviceElectricityLogEntity"
+		resultMap="deviceElectricityLogMap">
+		select
+		<include refid="Base_Column_List" />
+		from device_electricity_log
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryListByBean"
+		resultType="com.wz.modules.devicelog.entity.DeviceElectricityLogEntity"
+		resultMap="deviceElectricityLogMap">
+		select
+		<include refid="Base_Column_List" />
+		from device_electricity_log
+		WHERE 1=1
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(*) from
+		device_electricity_log
+	</select>
+
+	<insert id="save"
+		parameterType="com.wz.modules.devicelog.entity.DeviceElectricityLogEntity">
+		insert into device_electricity_log
+		(
+		`id`,
+		`project_id`,
+		`device_box_id`,
+		`addr`,
+		`electricity`,
+		`create_time`,
+		`update_time`,
+		`create_id`,
+		`update_id`,
+		`remark`,
+		`stat_date`
+		)
+		values
+		(
+		#{id},
+		#{projectId},
+		#{deviceBoxId},
+		#{addr},
+		#{electricity},
+		#{createTime},
+		#{updateTime},
+		#{createId},
+		#{updateId},
+		#{remark},
+		#{statDate}
+		)
+	</insert>
+
+	<update id="update"
+		parameterType="com.wz.modules.devicelog.entity.DeviceElectricityLogEntity">
+		update device_electricity_log
+		<set>
+			<if test="projectId != null">`project_id` = #{projectId}, </if>
+			<if test="deviceBoxId != null">`device_box_id` = #{deviceBoxId}, </if>
+			<if test="addr != null">`addr` = #{addr}, </if>
+			<if test="electricity != null">`electricity` = #{electricity}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="createId != null">`create_id` = #{createId}, </if>
+			<if test="updateId != null">`update_id` = #{updateId}, </if>
+			<if test="remark != null">`remark` = #{remark}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<delete id="delete">
+		delete from device_electricity_log where id =
+		#{value}
+	</delete>
+
+	<delete id="deleteBatch">
+		delete from device_electricity_log where id in
+		<foreach item="id" collection="array" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<select id="doStatDeviceElec"
+		resultType="com.wz.modules.devicelog.entity.DeviceElecStatEntity">
+		select stat_date as date,sum(electricity) as elec from
+		device_electricity_log 
+		where 1=1 
+		<if test="startDate != null and startDate.trim() != ''">
+		    and stat_date &gt;= #{startDate}
+		</if>
+		
+		<if test="projectId != null and projectId.trim() != ''">
+		    and project_id = #{projectId}
+		</if>
+		group by stat_date
+		order by stat_date
+	</select>
+	
+	<select id="doStatElectricCnt"
+		resultType="com.wz.modules.devicelog.entity.DeviceElectricityLogEntity">
+		SELECT 
+		    a.project_id AS projectId,
+		    a.device_box_id AS deviceBoxId,
+		    a.address AS addr,
+		    ROUND(SUM(a.switch_electric_cnt + 0), 2) AS electricity
+		FROM
+    		device_switch_info_log a
+    	WHERE 1 = 1
+        	AND a.switch_electric_cnt IS NOT NULL
+        	AND a.switch_electric_cnt > 0
+		<if test="projectId != null and projectId.trim() != ''">
+		    AND a.project_id = #{projectId}
+		</if>
+		<if test="statDate != null and statDate.trim() != ''">
+		    AND DATE_FORMAT(a.create_time, '%Y-%m-%d') = #{statDate}
+		</if>
+		GROUP BY a.project_id, a.device_box_id, a.address
+		
+	</select>
+	
+	<delete id="doDeleteElectricCnt">
+		DELETE a FROM device_electricity_log a
+		WHERE 1=1
+		<if test="projectId != null and projectId.trim() != ''">
+		    AND a.project_id = #{projectId}
+		</if>
+		<if test="statDate != null and statDate.trim() != ''">
+		    AND a.stat_date = #{statDate}
+		</if>
+		
+	</delete>
+</mapper>

@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+
+
+
+<html lang="en">
+
+<head>
+
+
+
+	<meta charset="UTF-8">
+
+
+
+	<title>实时数据</title>
+
+
+
+	<link rel="stylesheet" href="css/app/swiper-3.4.2.min.css">
+
+
+
+	<link rel="stylesheet" href="css/app/dashboard.css">
+
+
+
+	<script src="js/app/jquery-3.3.1.min.js"></script>
+
+
+
+	<script src="js/app/echarts.min.js"></script>
+
+
+
+	<script src="js/app/swiper-3.4.2.min.js"></script>
+
+
+
+	<script src="js/app/vue.min.js"></script>
+
+
+	<!-- 引入样式 -->
+	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+	<!-- 引入组件库 -->
+	<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+	<script src="js/main.js"></script>
+
+
+
+	<script src="font/iconfont.js"></script>
+	<style>
+		.el-table th,
+		.el-table tr {
+			background-color: #FFF;
+			background: none !important;
+
+		}
+
+		.el-table::before {
+			height: 0 !important;
+		}
+
+		.el-table td,
+		.el-table th.is-leaf {
+			border: none;
+		}
+
+		.el-table--enable-row-hover .el-table__body tr:hover>td {
+			background: none;
+		}
+	</style>
+
+
+
+</head>
+
+
+
+
+
+
+
+<body>
+
+
+
+	<div style="height: 100%;" id="data-wrap" v-cloak>
+
+
+
+
+		<div class="data-banner">
+
+
+
+			<div class="banner-left">
+
+
+
+				<ul class="clearfix">
+
+
+
+					<li>
+
+
+
+						<div class="li-left">
+
+
+
+							<svg class="icon011" aria-hidden="true">
+
+
+
+								<use xlink:href="#icon-zongshu"></use>
+
+
+
+							</svg>
+
+
+
+						</div>
+
+
+
+						<div class="li-right">
+
+
+
+							<p>电箱总数</p>
+
+
+
+							<p class="count" id="boxTotal"></p>
+
+
+
+						</div>
+
+
+
+					</li>
+
+
+
+					<li>
+
+
+
+						<div class="li-left">
+
+
+
+							<svg class="icon011" aria-hidden="true">
+
+
+
+								<use xlink:href="#icon-zaixian"></use>
+
+
+
+							</svg>
+
+
+
+						</div>
+
+
+
+						<div class="li-right">
+
+
+
+							<p>在线空开</p>
+
+
+
+							<p class="count" id="switchOnlineTotal"></p>
+
+
+
+						</div>
+
+
+
+					</li>
+
+
+
+					<li>
+
+
+
+						<div class="li-left">
+
+
+
+							<svg class="icon011" aria-hidden="true">
+
+
+
+								<use xlink:href="#icon-lixian"></use>
+
+
+
+							</svg>
+
+
+
+						</div>
+
+
+
+						<div class="li-right">
+
+
+
+							<p>离线空开</p>
+
+
+
+							<p class="count" id="switchLeaveTotal"></p>
+
+
+
+						</div>
+
+
+
+					</li>
+
+
+
+					<li>
+
+
+
+						<div class="li-left">
+
+
+
+							<svg class="icon011" aria-hidden="true">
+
+
+
+								<use xlink:href="#icon-gaojing"></use>
+
+
+
+							</svg>
+
+
+
+						</div>
+
+
+
+						<div class="li-right">
+
+
+
+							<p>告警总数</p>
+
+
+
+							<p class="count" id="alarmCnt"></p>
+
+
+
+						</div>
+
+
+
+					</li>
+
+
+
+				</ul>
+
+
+
+			</div>
+
+
+
+			<div class="banner-right">
+
+
+
+				<span id="nowDate">2018年5月15日</span>
+
+
+
+				<span id="nowXq">星期一</span>
+
+
+
+				<span id="nowTime">13:22:20</span>
+
+
+
+			</div>
+
+
+
+
+
+
+
+		</div>
+
+
+
+		<div class="data-home">
+
+
+
+			<svg class="icon013" aria-hidden="true">
+
+
+
+				<use xlink:href="#icon-dianxiangjiao"></use>
+
+
+
+			</svg>
+
+
+
+		</div>
+
+
+
+		<div class="line"></div>
+
+
+
+		<div class="data-form">
+
+
+
+			<div class="min_left">
+
+
+
+				<div class="alarms">
+
+
+
+					<div class="data-map-title">
+
+
+
+						<svg class="icon012" aria-hidden="true">
+
+
+
+							<use xlink:href="#icon-gongyinglian"></use>
+
+
+
+						</svg>
+
+
+
+						<h4 style="text-align: center;width: 100%;">实时告警数据</h4>
+
+
+
+					</div>
+
+					<div>
+						<el-table :data="slidecont" height="311" style="width: 100%; float:left; background:none;">
+							<el-table-column prop="node" label="电箱-线路" width="90" :show-overflow-tooltip="true"
+								align='center'>
+								<template scope='scope'>
+									<span>
+										{{scope.row.deviceBoxName}}-{{scope.row.node}}
+									</span>
+								</template>
+							</el-table-column>
+							<el-table-column prop="type" label="告警" :show-overflow-tooltip="true" align='center'>
+							</el-table-column>
+							<el-table-column prop="recordTime" label="时间" :show-overflow-tooltip="true" align='center'
+								width="90">
+							</el-table-column>
+						</el-table>
+					</div>
+
+				</div>
+
+
+
+				<div class="chart-data">
+
+
+
+					<div class="data-map-title">
+
+
+
+						<svg class="icon012" aria-hidden="true">
+
+
+
+							<use xlink:href="#icon-gongyinglian"></use>
+
+
+
+						</svg>
+
+
+
+						<h4 style="text-align: center;width: 100%;">日统计用电量 (单位:KWH)</h4>
+
+
+
+					</div>
+
+
+
+					<div id="chart-data-main" style="height: 80%">
+
+
+
+						<div id="chart-data-container" style="height: 100%"></div>
+
+
+
+					</div>
+
+
+
+				</div>
+
+
+
+			</div>
+
+
+
+			<div class="map" id="map">
+
+
+
+				<div class="data-map-title">
+
+
+
+					<svg class="icon012" aria-hidden="true">
+
+
+
+						<use xlink:href="#icon-gongyinglian"></use>
+
+
+
+					</svg>
+
+
+
+					<h4 style="text-align: center;width: 100%;">实时数据平面图</h4>
+
+
+
+				</div>
+
+
+
+				<div class="map-main" id="map-main">
+
+
+
+					<iframe id="mapframe" src="./app/dashboard_map.html" scrolling="no"></iframe>
+
+
+
+				</div>
+
+
+
+			</div>
+
+
+
+			<div class="chart-form">
+
+
+
+				<div class="chart-alarm">
+
+
+
+					<div class="data-map-title">
+
+
+
+						<svg class="icon012" aria-hidden="true">
+
+
+
+							<use xlink:href="#icon-gongyinglian"></use>
+
+
+
+						</svg>
+
+
+
+						<h4 style="text-align: center;width: 100%;">按告警类别统计 (单位:个)</h4>
+
+
+
+					</div>
+
+
+
+					<div id="chart-alarm-main" style="height: 80%">
+
+
+
+						<div id="chart-alarm-container" style="height: 100%"></div>
+
+
+
+					</div>
+
+
+
+				</div>
+
+
+
+				<div class="newdata">
+
+
+
+					<div class="data-map-title">
+
+
+
+						<svg class="icon012" aria-hidden="true">
+
+
+
+							<use xlink:href="#icon-gongyinglian"></use>
+
+
+
+						</svg>
+
+
+
+						<h4 style="text-align: center;width: 100%;">实时数据</h4>
+
+
+
+					</div>
+
+
+
+					<div class="swiper-container1 swiper-container">
+
+
+
+						<div class="swiper-wrapper">
+
+
+
+							<div class="swiper-slide" v-for="option in switchcount">
+
+
+
+								<div class="form1">
+
+
+
+									<table border='1'>
+
+
+
+										<thead>
+
+
+
+											<tr>
+
+
+
+												<th>电箱-线路</th>
+
+
+
+												<th>电压(伏)</th>
+
+
+
+												<th>电流(安)</th>
+
+
+
+												<th>温度(摄氏度)</th>
+
+
+
+											</tr>
+
+
+
+										</thead>
+
+
+
+										<tbody>
+
+
+
+											<tr v-for="item in switchcont">
+
+
+
+												<td>{{item.deviceBoxName}}-{{item.deviceSwitchName}}</td>
+
+
+
+												<td>{{item.switchVoltage}}</td>
+
+
+
+												<td>{{item.switchElectric}}</td>
+
+
+
+												<td>{{item.switchTemperature}}</td>
+
+
+
+											</tr>
+
+
+
+										</tbody>
+
+
+
+									</table>
+
+
+
+								</div>
+
+
+
+							</div>
+
+
+
+						</div>
+
+
+
+						<div class="swiper-pagination"></div>
+
+
+
+					</div>
+
+
+
+				</div>
+
+
+
+			</div>
+
+
+
+			<div class="clear"></div>
+
+
+
+		</div>
+
+
+
+	</div>
+
+
+
+</body>
+
+<style>
+	@media screen and (max-width: 1400px) {
+		.el-table {
+			height: 220px !important;
+		}
+
+		.el-table td,
+		.el-table th {
+			padding: 0 !important;
+		}
+
+		.el-table__body {
+			width: 100% !important;
+		}
+
+		.cell {
+			padding-left: 5px !important;
+			padding-right: 5px !important;
+		}
+	}
+</style>
+
+
+</html>

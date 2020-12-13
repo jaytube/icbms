@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>电箱设备基础表</title> #parse("modules/sys/header.html")
+
+</head>
+
+
+
+<body>
+
+	<div id="rrapp" v-cloak>
+
+
+
+		<div class="row">
+
+
+
+			<div v-show="showList">
+
+					<div class="col-md-12">
+
+						<div class="form-group col-sm-2">
+
+							<input type="text" class="form-control" v-model="q.deviceBoxNum"
+
+								@keyup.enter="query" placeholder="电箱MAC">
+
+						</div>
+
+						<div class="form-group col-sm-2">
+
+							<input type="text" class="form-control" v-model="q.secBoxGateway"
+
+								@keyup.enter="query" placeholder="二级网关号">
+
+						</div>
+
+	
+
+						<div class="form-group col-sm-2">
+
+							<input type="text" class="form-control" v-model="q.standNo"
+
+								@keyup.enter="query" placeholder="展位号">
+
+						</div>
+
+	
+
+						<button class="layui-btn layui-btn-normal" id="searchSubmit"
+
+							@click="search">
+
+							<i class="layui-icon">&#xe615;</i>查 询
+
+						</button>
+
+						
+
+						
+
+						
+
+					</div>
+
+				
+
+					
+
+					
+
+					<div class="col-md-12">
+
+						
+
+						
+
+					
+
+					<div class="form-group col-sm-2">
+
+						#if($shiro.hasPermission("deviceboxinfo:save"))
+
+						<button class="layui-btn" @click="add" type="button">
+
+	
+
+							<i class="layui-icon">&#xe61f;</i> 新 增
+
+	
+
+						</button>
+
+						#end 
+
+						
+
+						#if($shiro.hasPermission("deviceboxinfo:update"))
+
+						<button class="layui-btn layui-btn-normal" type="button"
+
+							@click="update">
+
+
+
+							<i class="layui-icon">&#xe642;</i>编辑
+
+
+
+						</button>
+
+						#end
+
+					</div>
+
+					<div class="form-group col-sm-4">
+
+					 #if($shiro.hasPermission("deviceboxinfo:delete"))
+
+
+
+					<button class="layui-btn layui-btn-danger" type="button"
+
+						@click="del">
+
+
+
+						<i class="layui-icon">&#xe640;</i>删除
+
+
+
+					</button>
+
+
+
+					#end 
+
+					
+
+					#if($shiro.hasPermission("deviceboxinfo:save"))
+
+
+
+					<button class="layui-btn layui-btn-warm" @click="imp" type="button">
+
+
+
+						<i class="layui-icon">&#xe642;</i> 批量导入
+
+
+
+					</button>
+
+
+
+					#end
+
+					</div>
+
+				</div>
+
+				
+
+		
+
+
+
+				<div class="col-md-3">
+
+
+
+					<div style="font-size: 20px; margin-bottom: 10px">
+
+
+
+						<i class="layui-icon" style="font-size: 20px; color: #009688">&#xe62e;</i>
+
+
+
+						位置树
+
+
+
+					</div>
+
+
+
+					<div class="col-sm-10 treeWrap">
+
+						<ul id="allLocationinfoTree" class="ztree"></ul>
+
+					</div>
+
+
+
+				</div>
+
+
+
+				<div class="col-md-5 col-sm-10">
+
+
+
+					<table id="jqGrid"></table>
+
+
+
+					<div id="jqGridPager"></div>
+
+
+
+				</div>
+
+
+
+			</div>
+
+
+
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+		<div v-show="!showList" class="panel panel-default">
+
+
+
+			<div class="panel-heading">{{title}}</div>
+
+
+
+			<form class="form-horizontal" id="deviceboxinfoFrom">
+
+
+
+				<div class="form-group">
+
+
+
+					<div class="col-sm-2 control-label">归属项目</div>
+
+
+
+					<div class="col-sm-10 control-label" style="text-align: left">
+
+
+
+						{{currentProjectAndLoc.currentProject.projectName}}</div>
+
+
+
+				</div>
+
+
+
+				<input type="hidden"
+
+					v-model="currentProjectAndLoc.currentProject.id"
+
+					id="currentProjectId" />
+
+
+
+				<div class="form-group">
+
+
+
+					<div class="col-sm-2 control-label">归属位置</div>
+
+
+
+					<div class="col-sm-10">
+
+
+
+						<input type="text" class="form-control" style="cursor: pointer;"
+
+							v-model="deviceBoxInfo.locationName" @click="locationinfoTree"
+
+							readonly placeholder="归属位置" />
+
+
+
+					</div>
+
+
+
+				</div>
+
+
+
+				<div class="form-group">
+
+
+
+					<div class="col-sm-2 control-label">设备号(MAC)</div>
+
+
+
+					<div class="col-sm-10">
+
+
+
+						<input type="text" class="form-control"
+
+							v-model="deviceBoxInfo.deviceBoxNum" placeholder="设备号(MAC)" />
+
+
+
+					</div>
+
+				</div>
+
+
+
+				<div class="form-group">
+
+
+
+					<div class="col-sm-2 control-label">二级电箱网关号</div>
+
+
+
+					<div class="col-sm-10">
+
+
+
+						<input type="text" class="form-control"
+
+							v-model="deviceBoxInfo.secBoxGateway" placeholder="二级电箱网关号" />
+
+
+
+					</div>
+
+
+
+				</div>
+
+
+
+
+
+				<div class="form-group">
+
+
+
+					<div class="col-sm-2 control-label">展位号</div>
+
+
+
+					<div class="col-sm-10">
+
+
+
+						<input type="text" class="form-control"
+
+							v-model="deviceBoxInfo.standNo" placeholder="展位号" />
+
+
+
+					</div>
+
+
+
+				</div>
+
+
+
+				<div class="form-group">
+
+
+
+					<div class="col-sm-2 control-label">电箱容量(安培)</div>
+
+
+
+					<div class="col-sm-10">
+
+
+
+						<input type="text" class="form-control"
+
+							v-model="deviceBoxInfo.boxCapacity" placeholder="电箱容量(安培)" />
+
+
+
+					</div>
+
+
+
+				</div>
+
+
+
+				<div class="form-group">
+
+					<div class="col-sm-2 control-label">是否受控</div>
+
+					<label class="radio-inline"> <input type="radio"
+
+						name="open" value="1" v-model="deviceBoxInfo.controlFlag" /> 是
+
+					</label> <label class="radio-inline"> <input type="radio"
+
+						name="open" value="0" v-model="deviceBoxInfo.controlFlag" /> 否
+
+					</label>
+
+				</div>
+
+
+
+				<div class="form-group">
+
+
+
+					<div class="col-sm-2 control-label">备注</div>
+
+
+
+					<div class="col-sm-10">
+
+
+
+						<input type="text" class="form-control"
+
+							v-model="deviceBoxInfo.remark" placeholder="备注" />
+
+
+
+					</div>
+
+
+
+				</div>
+
+
+
+				<div class="form-group">
+
+
+
+					<div class="col-sm-2 control-label"></div>
+
+
+
+					<button class="layui-btn" type="button" @click="saveOrUpdate">保存</button>
+
+
+
+					<button class="layui-btn layui-btn-warm" type="button"
+
+						@click="reload" style="margin-left: 30px">返回</button>
+
+				</div>
+
+			</form>
+
+		</div>
+
+	</div>
+
+
+
+	<!-- 批量导入 -->
+
+
+
+	<div id="batchImpLayer" style="display: none;">
+
+
+
+		<div class="">
+
+
+
+			<div class="layui-row" align="center" style="margin-top: 30px;">
+
+
+
+				<button type="button" class="layui-btn" id="upload">
+
+
+
+					<i class="layui-icon">&#xe67c;</i>选择文件
+
+				</button>
+
+
+
+			</div>
+
+
+
+			<div class="layui-row" align="center" style="margin-top: 30px;">
+				<textarea id="result" cols="50" rows="10"></textarea>
+			</div>
+
+
+
+			<div class="layui-row" align="center" style="margin-top: 10px;">
+				<a href="${rc.contextPath}/plugins/展会用电配置模板.xls"
+					style="color: #FFF">下载模板</a>
+			</div>
+
+		</div>
+
+
+
+	</div>
+
+
+
+
+
+
+
+	<!-- 选择菜单 -->
+
+
+
+	<div id="locationinfoLayer" style="display: none; padding: 10px;">
+
+
+
+		<ul id="locationinfoTree" class="ztree"></ul>
+
+
+
+	</div>
+
+
+
+
+
+
+
+	<script
+
+		src="${rc.contextPath}/js/deviceinfo/deviceboxinfo.js?_${date.systemTime}"></script>
+
+
+
+
+
+
+
+</body>
+
+
+
+
+
+
+
+<style>
+
+.ui-jqgrid .ui-jqgrid-bdiv {
+
+	border-top: 1px solid #E1E1E1;
+
+	overflow-x: auto;
+
+}
+
+
+
+.ui-jqgrid-bdiv {
+
+	overflow-x: scroll !important;
+
+}
+
+
+
+.treeWrap {
+
+	border: 1px solid #E1E1E1;
+
+	height: 400px;
+
+	overflow: auto;
+
+    overflow-x: scroll !important;
+
+}
+
+
+
+::-webkit-scrollbar {
+
+	width: 5px;
+
+	height: 5px;
+
+}
+
+
+
+::-webkit-scrollbar-track {
+
+	background-color: #fff;
+
+}
+
+
+
+::-webkit-scrollbar-thumb {
+
+	background-color: white !important;
+
+}
+
+
+
+</style>
+
+
+
+</html>

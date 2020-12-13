@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wz.modules.report.dao.AlarmInfoReportDao">
+
+
+    <resultMap type="com.wz.modules.report.entity.AlarmInfoReportEntity" id="deviceAlarmInfoLogMap">
+        <result property="id" column="id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="deviceBoxMac" column="device_box_mac"/>
+        <result property="deviceBoxId" column="device_box_id"/>
+        <result property="node" column="node"/>
+        <result property="type" column="type"/>
+        <result property="recordTime" column="record_time"/>
+        <result property="info" column="info"/>
+        <result property="alarmStatus" column="alarm_status"/>
+        <result property="alarmLevel" column="alarm_level"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createId" column="create_id"/>
+        <result property="updateId" column="update_id"/>
+        <result property="remark" column="remark"/>
+      
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+		id, 
+		project_id, 
+		device_box_mac, 
+		device_box_id, 
+		node, 
+		type, 
+		record_time, 
+		info, 
+		alarm_status, 
+		alarm_level,
+		create_time, 
+		update_time, 
+		create_id, 
+		update_id, 
+		remark
+    </sql>
+
+	<select id="queryObject" resultType="com.wz.modules.report.entity.AlarmInfoReportEntity" resultMap="deviceAlarmInfoLogMap">
+		select
+		<include refid="Base_Column_List" />
+		from device_alarm_info_log
+		where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.wz.modules.report.entity.AlarmInfoReportEntity" resultMap="deviceAlarmInfoLogMap">
+		select
+			d.id,
+			d.project_id,
+			d.device_box_id,
+			d.device_box_mac,
+			d.node,
+			d.type,
+			d.record_time,
+			d.info,
+			d.alarm_status, 
+			d.alarm_level,
+			d.create_time,
+			d.update_time,
+			d.create_id,
+			d.update_id,
+			d.remark,
+			box.stand_no
+		from device_alarm_info_log d
+		left join device_box_info box 
+		on d.device_box_id = box.id
+		and d.project_id = box.project_id
+		where 1=1
+		<if test="projectId != null and projectId.trim() != ''" >
+			AND d.project_id=#{projectId}
+		</if>
+		<if test="alarmStatus != null and alarmStatus.trim() != ''" >
+			AND d.alarm_status=#{alarmStatus}
+		</if>
+		<if test="beginTime != null and beginTime.trim() != ''" >
+			AND DATE_FORMAT(d.record_time,'%Y-%m-%d') >= #{beginTime}
+		</if>
+		<if test="endTime != null and endTime.trim() != ''" >
+			<![CDATA[  AND DATE_FORMAT(d.record_time,'%Y-%m-%d') <= #{endTime} ]]>
+		</if>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by d.record_time desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+    <select id="queryListByBean" resultType="com.wz.modules.report.entity.AlarmInfoReportEntity" resultMap="deviceAlarmInfoLogMap">
+        select
+        <include refid="Base_Column_List" />
+        from device_alarm_info_log
+        WHERE 1=1
+      
+    </select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from device_alarm_info_log
+		where 1=1
+		<if test="projectId != null and projectId.trim() != ''" >
+			AND project_id=#{projectId}
+		</if>
+		<if test="alarmStatus != null and alarmStatus.trim() != ''" >
+			AND alarm_status=#{alarmStatus}
+		</if>
+		<if test="beginTime != null and beginTime.trim() != ''" >
+			AND DATE_FORMAT(record_time,'%Y-%m-%d') >= #{beginTime}
+		</if>
+		<if test="endTime != null and endTime.trim() != ''" >
+			<![CDATA[  AND DATE_FORMAT(record_time,'%Y-%m-%d') <= #{endTime} ]]>
+		</if>
+	</select>
+	 
+	<insert id="save" parameterType="com.wz.modules.report.entity.AlarmInfoReportEntity">
+		insert into device_alarm_info_log
+		(
+			`id`, 
+			`project_id`, 
+			`device_box_mac`, 
+			`device_box_id`, 
+			`node`, 
+			`type`, 
+			`record_time`, 
+			`info`, 
+			`alarm_status`, 
+			`create_time`, 
+			`update_time`, 
+			`create_id`, 
+			`update_id`, 
+			`remark`, 
+			`alarm_level`
+		)
+		values
+		(
+			#{id}, 
+			#{projectId}, 
+			#{deviceBoxMac}, 
+			#{deviceBoxId}, 
+			#{autoId}, 
+			#{node}, 
+			#{type}, 
+			#{recordTime}, 
+			#{info}, 
+			#{alarmStatus}, 
+			#{createTime}, 
+			#{updateTime}, 
+			#{createId}, 
+			#{updateId}, 
+			#{remark}, 
+			#{alarmLevel}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.wz.modules.report.entity.AlarmInfoReportEntity">
+		update device_alarm_info_log 
+		<set>
+			<if test="projectId != null">`project_id` = #{projectId}, </if>
+			<if test="deviceBoxMac != null">`device_box_mac` = #{deviceBoxMac}, </if>
+			<if test="deviceBoxId != null">`device_box_id` = #{deviceBoxId}, </if>
+			<if test="node != null">`node` = #{node}, </if>
+			<if test="type != null">`type` = #{type}, </if>
+			<if test="recordTime != null">`record_time` = #{recordTime}, </if>
+			<if test="info != null">`info` = #{info}, </if>
+			<if test="alarmStatus != null">`alarm_status` = #{alarmStatus}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="createId != null">`create_id` = #{createId}, </if>
+			<if test="updateId != null">`update_id` = #{updateId}, </if>
+			<if test="remark != null">`remark` = #{remark}, </if>
+			<if test="alarmLevel != null">`alarm_level` = #{alarmLevel}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from device_alarm_info_log where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from device_alarm_info_log where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

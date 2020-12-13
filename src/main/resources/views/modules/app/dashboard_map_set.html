@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.1/css/select2.min.css">
+<link rel="stylesheet" href="${rc.contextPath}/css/app/index.css">
+<link rel="stylesheet" href="${rc.contextPath}/plugins/ztree/css/metroStyle/metroStyle.css">
+
+<body>
+
+	<div class="con1">
+
+		<div class="box1 fullscreen">
+
+			<div id="new_flashcontent">
+
+				<div class="pop">
+
+					<div class="tit1 tit">实时状态</div>
+
+					<i></i>
+
+					<div class="cenderTop1">
+
+						<span class="standNo">展位号&nbsp;:</span>
+
+						<span class="gatewayAddress">网关地址:</span>
+					</div>
+
+					<div class="cenderTop2">
+						<span class="gatewayMac">网关MAC :</span>
+						<span class="locationName">电箱地址:</span>
+					</div>
+					<div class="cenderTop3">
+						<span class="deviceBoxNum">电箱MAC:</span>
+
+						<span class="boxCapacity">电箱容量:</span>
+					</div>
+
+					<table class="table">
+
+
+
+					</table>
+
+					<div class="not">此电箱暂未添加电路</div>
+
+				</div>
+
+				<div class="panel">
+
+					<div class="tit">位置树</div>
+
+					<div class="con">
+
+						<ul id="allLocationinfoTree" class="ztree"></ul>
+
+					</div>
+
+					<div class="side">位置树</div>
+
+				</div>
+
+				<div class="tip">
+
+					当前缩放比例为<i>1</i>倍
+
+				</div>
+
+				<img src="../images/arr.png" class="arr">
+
+			</div>
+
+		</div>
+
+
+
+		<div id="menu">
+
+			<!-- <ul>
+
+                <li>添加电箱</li>
+
+            </ul> -->
+
+			<div style="    margin: 10px 0 0;" class="form">
+
+				<select id="boxInfo" style="width:200px; margin:10px 0" class="select">
+
+
+
+				</select>
+
+			</div>
+
+
+
+			<span id="thisX"></span><br /><span id="thisY"></span>
+
+
+
+			<div class="cenderTop1">
+
+				<span class="standNo">展位号&nbsp;:</span>
+
+				<span class="gatewayAddress">网关地址:</span>
+			</div>
+
+			<div class="cenderTop2">
+				<span class="gatewayMac">网关MAC :</span>
+				<span class="locationName">电箱地址:</span>
+			</div>
+			<div class="cenderTop3">
+				<span class="deviceBoxNum">电箱MAC:</span>
+
+				<span class="boxCapacity">电箱容量:</span>
+			</div>
+
+
+
+			<div class="buttons">
+
+				<button id="yes">确定</button>
+				<button id="cancel">取消</button>
+
+			</div>
+
+		</div>
+
+	</div>
+
+
+
+	<script src="${rc.contextPath}/js/app/jquery-3.3.1.min.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.1/js/select2.min.js"></script>
+
+	<script src="${rc.contextPath}/plugins/ztree/jquery.ztree.all.min.js"></script>
+
+	<script src="${rc.contextPath}/js/app/d3.v3.min.js"></script>
+
+	<script src="${rc.contextPath}/js/app/TweenMax.min.js"></script>
+
+	<script src="${rc.contextPath}/js/app/index_set.js"></script>
+
+
+
+	<script>
+		$("select").select2({
+
+			placeholder: "请选择...",
+
+			maximumSelectionSize: 1
+
+		});
+
+
+
+		$("#boxInfo").on("change", function (e) {
+			$.ajax({
+
+				url: "../app/dashbaord/getRealDataByBoxMac?deviceBoxMac=" + $("#boxInfo").val().split("---")[1],
+
+				type: "GET",
+
+				async: false,
+
+				success: function (data) {
+
+					if (data.config != null) {
+						$(".gatewayAddress").text("网关地址:" + data.config.gatewayAddress)
+						$(".gatewayMac").text("网关MAC:" + data.config.gatewayMac)
+						$(".locationName").text("电箱地址:" + data.config.deviceBoxAddress);
+					} else {
+						$(".gatewayAddress").text("网关地址:null")
+						$(".gatewayMac").text("网关MAC:null")
+						$(".locationName").text("电箱地址:null");
+					}
+					$(".standNo").text("展位号:" + data.standNo)
+					$(".deviceBoxNum").text("电箱MAC:" + data.deviceBoxNum);
+					$(".boxCapacity").text("电箱容量:" + data.boxCapacity);
+				}
+
+			})
+
+		})
+	</script>
+</body>
+<style>
+	#menu {
+
+		width: 450px;
+
+		height: 300px;
+
+		background: white;
+
+		position: absolute;
+
+		display: none;
+
+		color: #fff;
+
+		font-size: 16px;
+
+		border: 1px #fff solid;
+
+		border-radius: 10px;
+
+		-webkit-box-shadow: 0 0 10px #00334b;
+
+		box-shadow: 0 0 10px #fff;
+
+		background: #0d1a59;
+
+		text-align: center;
+
+
+	}
+
+	.con {
+		overflow: auto !important;
+	}
+
+	::-webkit-scrollbar {
+		width: 5px;
+		height: 5px;
+	}
+
+	::-webkit-scrollbar-track {
+		background-color: #0d1a59;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background-color: white !important;
+	}
+
+	.select {
+
+		width: 200px;
+
+		margin: 30px 50px 30px 50px;
+
+	}
+
+
+
+	.buttons {
+
+		width: 100%;
+
+		position: absolute;
+
+		bottom: 50px;
+
+		display: flex;
+
+		flex-direction: row;
+
+		justify-content: space-around;
+
+	}
+
+
+
+	.buttons button {
+
+		width: 70px;
+
+		text-align: center;
+
+		height: 30px;
+
+		line-height: 30px;
+
+		color: #121c3c;
+
+		background-color: #49d9fe;
+
+		border: none;
+
+		border-radius: 3px;
+
+	}
+
+	#thisX,
+	#thisY {
+		color: #49d9fe;
+		line-height: 30px
+	}
+
+	.cenderTop1 span,
+	.cenderTop2 span,
+	.cenderTop3 span {
+		width: 50%;
+		float: left;
+		padding-left: 10px;
+		line-height: 30px;
+		text-align: left;
+		font-size: 14px;
+	}
+
+
+	.cenderTop1,
+	.cenderTop2,
+	.cenderTop3 {
+
+		line-height: 25px;
+
+		display: flex;
+
+		flex-direction: row;
+
+		justify-content: space-around;
+
+		color: #49d9fe;
+		width: 100%;
+
+	}
+</style>

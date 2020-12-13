@@ -1,0 +1,582 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wz.modules.deviceinfo.dao.DeviceBoxInfoDao">
+	<resultMap type="com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity"
+		id="deviceBoxInfoMap">
+		<result property="id" column="id" />
+		<result property="projectId" column="project_id" />
+		<result property="deviceBoxNum" column="device_box_num" />
+		<result property="deviceBoxPass" column="device_box_pass" />
+		<result property="deviceBoxName" column="device_box_name" />
+		<result property="createTime" column="create_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="createId" column="create_id" />
+		<result property="updateId" column="update_id" />
+		<result property="remark" column="remark" />
+		<result property="online" column="online" />
+		<result property="fx" column="fx" />
+		<result property="fy" column="fy" />
+
+		<result property="secBoxGateway" column="sec_box_gateway" />
+		<result property="standNo" column="stand_no" />
+		<result property="boxCapacity" column="box_capacity" />
+		<result property="controlFlag" column="control_flag" />
+		
+		<result property="locationId" column="locationId" />
+		<result property="locationName" column="locationName" />
+		<result property="alarmLogId" column="alarm_log_id" />
+		<result property="placedFlag" column="placed_flag" />
+
+		<association property="alarm"
+			javaType="com.wz.modules.devicelog.entity.DeviceAlarmInfoLogEntity">
+			<id column="alarmId" property="id" />
+			<result property="node" column="node" />
+			<result property="type" column="type" />
+			<result property="recordTime" column="record_time" />
+			<result property="info" column="info" />
+			<result property="remark" column="remark" />
+			<result property="alarmStatus" column="alarm_status" />
+			<result property="alarmLevel" column="alarm_level" />
+		</association>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		d.id,
+		d.project_id,
+		d.device_box_num,
+		d.device_box_pass,
+		d.device_box_name,
+		d.create_time,
+		d.update_time,
+		d.create_id,
+		d.update_id,
+		d.remark,
+		d.online,
+		d.fx,
+		d.fy,
+		d.sec_box_gateway,
+		d.stand_no,
+		d.control_flag,
+		d.box_capacity,
+		d.placed_flag
+	</sql>
+
+	<select id="queryObject"
+		resultType="com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity">
+		select
+		d.id,
+		d.project_id,
+		d.device_box_num,
+		d.device_box_pass,
+		d.device_box_name,
+		d.create_time,
+		d.update_time,
+		d.create_id,
+		d.update_id,
+		d.remark,
+		d.online,
+		d.fx,
+		d.fy,
+		d.sec_box_gateway,
+		d.stand_no,
+		d.control_flag,
+		d.box_capacity,
+		d.placed_flag,
+		l.id as
+		locationId,
+		l.name as locationName
+		from device_box_info d
+		inner join
+		device_box_location b
+		on d.id = b.device_box_id
+		inner join location_info
+		l
+		on b.location_id = l.id
+		where d.id = #{value} limit 0,1
+	</select>
+
+	<select id="queryByMac"
+		resultType="com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity">
+		select
+		d.id,
+		d.project_id,
+		d.device_box_num,
+		d.device_box_pass,
+		d.device_box_name,
+		d.create_time,
+		d.update_time,
+		d.create_id,
+		d.update_id,
+		d.remark,
+		d.online,
+		d.fx,
+		d.fy,
+		d.sec_box_gateway,
+		d.stand_no,
+		d.control_flag,
+		d.box_capacity,
+		d.placed_flag,
+		l.id as
+		locationId,
+		l.name as locationName
+		from device_box_info d
+		inner join
+		device_box_location b
+		on d.id = b.device_box_id
+		inner join location_info
+		l
+		on b.location_id = l.id
+		where d.device_box_num = #{deviceMac} and
+		d.project_id = #{projectId} limit
+		0,1
+	</select>
+
+	<select id="queryProjectMac"
+		resultType="com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity">
+		select
+		d.id,
+		d.project_id,
+		d.device_box_num,
+		d.device_box_pass,
+		d.device_box_name,
+		d.create_time,
+		d.update_time,
+		d.create_id,
+		d.update_id,
+		d.remark,
+		d.online,
+		d.fx,
+		d.fy,
+		d.sec_box_gateway,
+		d.stand_no,
+		d.control_flag,
+		d.box_capacity,
+		d.placed_flag,
+		l.id as
+		locationId,
+		l.name as locationName
+		from device_box_info d
+		inner join
+		device_box_location b
+		on d.id = b.device_box_id
+		inner join location_info
+		l
+		on b.location_id = l.id
+		where d.device_box_num = #{deviceMac} and
+		d.project_id = #{projectId}
+	</select>
+	
+	<select id="queryProjectDeviceBox"
+		resultType="com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity">
+			select
+				d.id,
+				d.project_id,
+				d.device_box_num,
+				d.device_box_pass,
+				d.device_box_name,
+				d.create_time,
+				d.update_time,
+				d.create_id,
+				d.update_id,
+				d.remark,
+				d.online,
+				d.fx,
+				d.fy,
+				d.sec_box_gateway,
+				d.stand_no,
+				d.control_flag,
+				d.box_capacity,
+				d.placed_flag
+		from device_box_info d
+		where d.device_box_num = #{deviceMac} and d.project_id = #{projectId}
+	</select>
+	
+	<select id="queryList"
+		resultType="com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity"
+		resultMap="deviceBoxInfoMap">
+		select
+		<include refid="Base_Column_List" />,
+		p.project_name as projectName,
+		l.name as locationName,
+		l.id as
+		locationId,
+		alarm.node,
+		alarm.type,
+		alarm.record_time,
+		alarm.info,
+		alarm.remark,
+		alarm.alarm_status,
+		alarm.alarm_level
+		from
+		device_box_info d
+		inner join device_box_location b
+		on d.id =
+		b.device_box_id
+		inner join
+		location_info l
+		on b.location_id = l.id
+		inner
+		join
+		project_info p
+		on
+		d.project_id = p.id
+		left join
+		device_alarm_info_log alarm
+		on
+		d.alarm_log_id = alarm.id
+		WHERE 1=1
+		<if test="deviceBoxMac != null and deviceBoxMac.trim() != ''">
+			AND
+			d.device_box_num=#{deviceBoxMac}
+		</if>
+
+		<if test="deviceBoxNum != null"> and d.device_box_num like CONCAT('%', #{deviceBoxNum},
+			'%') </if>
+		<if test="secBoxGateway != null"> and d.sec_box_gateway like CONCAT('%', #{secBoxGateway},
+			'%') </if>
+		<if test="standNo != null"> and d.stand_no like CONCAT('%', #{standNo}, '%') </if>
+
+		<if test="projectId != null and projectId.trim() != ''">
+			AND
+			d.project_id=#{projectId}
+		</if>
+
+		<if test="xyControl != null and xyControl.trim() != ''">
+			AND d.fx is null
+		</if>
+
+		<if test="root != null and root.trim() != ''">
+			AND l.root LIKE #{root}
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by l.name
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryListByBean"
+		resultType="com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity"
+		resultMap="deviceBoxInfoMap">
+		select
+		<include refid="Base_Column_List" />
+		from device_box_info d
+		WHERE 1=1
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(*) from
+		device_box_info d
+		inner join device_box_location b
+		on d.id = b.device_box_id
+		inner join location_info l
+		on b.location_id =
+		l.id
+		where 1=1
+		<if test="deviceBoxMac != null and deviceBoxMac.trim() != ''">
+			AND
+			d.device_box_num=#{deviceBoxMac}
+		</if>
+
+		<if test="projectId != null and projectId.trim() != ''">
+			AND
+			d.project_id=#{projectId}
+		</if>
+
+		<if test="root != null and root.trim() != ''">
+			AND l.root LIKE concat(#{root},'%')
+		</if>
+	</select>
+
+	<insert id="save"
+		parameterType="com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity">
+		insert into device_box_info
+		(
+		`id`,
+		`project_id`,
+		`device_box_num`,
+		`device_box_pass`,
+		`device_box_name`,
+		`create_time`,
+		`update_time`,
+		`create_id`,
+		`update_id`,
+		`remark`,
+		`sec_box_gateway`,
+		`stand_no`,
+		`box_capacity`,
+		`control_flag`,
+		`placed_flag`
+		)
+		values
+		(
+		#{id},
+		#{projectId},
+		#{deviceBoxNum},
+		#{deviceBoxPass},
+		#{deviceBoxName},
+		#{createTime},
+		#{updateTime},
+		#{createId},
+		#{updateId},
+		#{remark},
+		#{secBoxGateway},
+		#{standNo},
+		#{boxCapacity},
+		#{controlFlag},
+		'0'
+		)
+	</insert>
+	
+	<insert id="saveBoxLocLink" parameterType="com.wz.modules.projectinfo.entity.DboxLocLinkEntity">
+		insert into
+		device_box_location
+		(
+		`id`,
+		`location_id`,
+		`device_box_id`,
+		`create_time`,
+		`update_time`,
+		`create_id`,
+		`update_id`
+		)
+		values
+		(
+		#{id},
+		#{locationInfo.id},
+		#{dboxInfo.id},
+		#{createTime},
+		#{updateTime},
+		#{createId},
+		#{updateId}
+		)
+	</insert>
+
+	<select id="queryLinkListByBoxId" resultType="com.wz.modules.projectinfo.entity.DboxLocLinkEntity"
+		parameterType="java.util.Map">
+		select
+		id,
+		location_id as 'locationInfo.id',
+		device_box_id as
+		'dboxInfo.id'
+		from
+		device_box_location
+		WHERE 1=1
+		<if test="deviceBoxId != null and deviceBoxId.trim() != ''">
+			AND
+			device_box_id=#{deviceBoxId}
+		</if>
+	</select>
+
+	<update id="update"
+		parameterType="com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity">
+		update device_box_info
+		<set>
+			<if test="projectId != null">`project_id` = #{projectId}, </if>
+			<if test="deviceBoxNum != null">`device_box_num` = #{deviceBoxNum}, </if>
+			<if test="deviceBoxPass != null">`device_box_pass` = #{deviceBoxPass}, </if>
+			<if test="deviceBoxName != null">`device_box_name` = #{deviceBoxName}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="createId != null">`create_id` = #{createId}, </if>
+			<if test="updateId != null">`update_id` = #{updateId}, </if>
+			<if test="fx != null">`fx` = #{fx}, </if>
+			<if test="fy != null">`fy` = #{fy}, </if>
+			<if test="secBoxGateway != null">`sec_box_gateway` = #{secBoxGateway}, </if>
+			<if test="standNo != null">`stand_no` = #{standNo}, </if>
+			<if test="boxCapacity != null">`box_capacity` = #{boxCapacity}, </if>
+			<if test="controlFlag != null">`control_flag` = #{controlFlag}, </if>
+			<if test="remark != null">`remark` = #{remark},</if>
+			<if test="alarmLogId != null">`alarm_Log_Id` = #{alarmLogId}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<update id="xyReset"
+		parameterType="com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity">
+		update device_box_info
+		<set>
+			`fx` = null,
+			`fy` = null
+		</set>
+		where id = #{id}
+	</update>
+
+
+	<update id="updateBoxLocLink" parameterType="com.wz.modules.projectinfo.entity.DboxLocLinkEntity">
+		update device_box_location
+		<set>
+			<if test="dboxLocation.locationInfo.id != null">`location_id` = #{dboxLocation.locationInfo.id}, </if>
+			<if test="dboxLocation.dboxInfo.id != null">`device_box_id` = #{dboxLocation.dboxInfo.id}, </if>
+			<if test="dboxLocation.createTime != null">`create_time` = #{dboxLocation.createTime}, </if>
+			<if test="dboxLocation.updateTime != null">`update_time` = #{dboxLocation.updateTime}, </if>
+			<if test="dboxLocation.createId != null">`create_id` = #{dboxLocation.createId}, </if>
+			<if test="dboxLocation.updateId != null">`update_id` = #{dboxLocation.updateId}, </if>
+		</set>
+		where id = #{dboxLocation.id}
+	</update>
+
+	<delete id="delete">
+		delete from device_box_info where id = #{value}
+	</delete>
+	<delete id="deleteLinkByBoxId">
+		delete from device_box_location where id = #{value}
+	</delete>
+	<delete id="deleteBatch">
+		delete from device_box_info where id in
+		<foreach item="id" collection="array" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</delete>
+	<delete id="deleteBoxLocLinkBatch">
+		delete from device_box_location where device_box_id in
+		<foreach item="id" collection="array" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<delete id="deleteBoxInfoByLocation">
+		delete from device_box_info a where a.id in
+		(select
+		b.device_box_id from
+		device_box_location b where a.id =
+		b.device_box_id and
+		b.location_id in
+		<foreach item="locationId" collection="locationIds" open="("
+			separator="," close=")">
+			#{locationId}
+		</foreach>
+		)
+	</delete>
+	
+	<update id="updateBoxPlacedFlag">
+		update device_box_info a set a.placed_flag = #{placedFlag} 
+		where a.project_id = #{projectId} and device_box_num = #{deviceMac}
+	</update>
+
+	<delete id="deleteProjectDeviceBox">
+		delete from device_box_info where project_id =
+		#{projectId}
+	</delete>
+	
+	<select id="findSingleBoxLocation" resultType="string">
+		SELECT LOCATION_ID FROM DEVICE_BOX_LOCATION
+		where 1=1 AND DEVICE_BOX_ID IN 
+		<foreach item="deviceBoxId" collection="deviceBoxIds" open="("
+			separator="," close=")">
+			#{deviceBoxId}
+		</foreach>
+		GROUP BY LOCATION_ID HAVING COUNT(*) = 1
+	</select>
+
+	<select id="findDeviceBoxsInfoByLId"
+		resultType="com.wz.modules.deviceinfo.entity.DeviceSwitchInfoEntity"
+		resultMap="deviceBoxInfoMap">
+		select
+		d.id,
+		d.project_id,
+		d.device_box_num,
+		d.device_box_pass,
+		d.device_box_name,
+		d.create_time,
+		d.update_time,
+		d.create_id,
+		d.update_id,
+		d.remark,
+		d.online,
+		d.fx,
+		d.fy,
+		d.sec_box_gateway,
+		d.stand_no,
+		d.control_flag,
+		d.box_capacity,
+		l.id as
+		locationId,
+		l.name as
+		locationName,
+		alarm.id as alarmId,
+		alarm.node,
+		alarm.type,
+		alarm.record_time,
+		alarm.info,
+		alarm.remark,
+		alarm.alarm_status,
+		alarm.alarm_level
+		from device_box_info d
+		inner join device_box_location
+		b
+		on d.id = b.device_box_id
+		inner join
+		location_info l
+		on b.location_id =
+		l.id
+		inner join
+		project_info p
+		on d.project_id = p.id
+		left join
+		device_alarm_info_log alarm
+		on d.alarm_log_id = alarm.id
+		where 1 = 1
+		<if test="locationId != null">and b.location_id = #{locationId}</if>
+		<if test="projectId != null">and d.project_id = #{projectId}</if>
+	</select>
+
+	<select id="findDeviceBoxsInfoByProjectId" resultMap="deviceBoxInfoMap">
+		select
+		<include refid="Base_Column_List" />
+		from device_box_info d,device_box_location l
+		where 1=1 and d.id = l.device_box_id
+		<if test="projectId != null and projectId.trim() != ''">
+			and project_id = #{projectId}
+		</if>
+	</select>
+
+	<update id="updateDeviceBoxOnline" parameterType="java.lang.String">
+		update device_box_info
+		<set>
+			<if test="online != null">`online` = #{online}</if>
+		</set>
+		where device_box_num = #{deviceMac}
+	</update>
+
+	<select id="queryListByMac"
+		resultType="com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from device_box_info d
+		where 1=1
+		<if test="deviceMac != null and deviceMac.trim() != ''">
+			and device_box_num = #{deviceMac}
+		</if>
+	</select>
+
+
+	<select id="findDeviceBoxsInfoLike"
+		resultType="com.wz.modules.deviceinfo.entity.DeviceSwitchInfoEntity"
+		resultMap="deviceBoxInfoMap">
+		select
+		<include refid="Base_Column_List" />
+		<!-- (SELECT l.room_num FROM location_info l WHERE l.id=s.location_id) 
+			AS locationName -->
+		from device_box_info d
+		where 1=1
+		<if test="projectId != null and projectId.trim() != ''">
+			and project_id = #{projectId}
+		</if>
+
+		<if test="deviceMac != null"> and d.device_box_num like CONCAT('%', #{deviceMac},
+			'%')
+		</if>
+	</select>
+</mapper>

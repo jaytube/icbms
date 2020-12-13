@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+    <title>电量报表</title>
+    #parse("modules/sys/header.html")
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn ">
+
+ 			 <div class=" row">
+                <div class="col-sm-3 form-group">
+                    <div  class="col-sm-8"><input type="text" class="form-control" id="deviceBoxNum"  v-model="q.deviceBoxNum" @keyup.enter="query" placeholder="电箱MAC">
+                    </div>
+                </div>
+                <div class="col-sm-3 form-group">
+                    <div  class="col-sm-8"><input type="text" class="form-control" id="secBoxGateway" v-model="q.secBoxGateway" @keyup.enter="query" placeholder="二级网关号">
+                	</div>
+                </div>
+                <div class="col-sm-3 form-group">
+                    <div  class="col-sm-8"><input type="text" class="form-control" id="standNo" v-model="q.standNo" @keyup.enter="query" placeholder="展位号">
+                	</div>
+                </div>
+     
+                 <button class="layui-btn layui-btn-normal" id="searchSubmit" @click="search"><i class="layui-icon">&#xe615;</i>查 询</button>
+            	<!-- <button class="layui-btn layui-btn-normal " id="exportAll" @click="exportAll"><i class="layui-icon">&#xe615;</i>导出</button> -->
+
+           </div>
+
+            <div class="row">
+            	  <div class="col-sm-12 form-group">
+				    <div style="text-align: right;" class="col-sm-4 control-label">总电量:</div>
+                    <div  class="col-sm-8" id="totalNumDiv">
+                	</div>
+                </div>
+            </div>
+
+
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+    <script src="${rc.contextPath}/js/report/electricDaily.js?_${date.systemTime}"></script>
+</body>
+
+<style>
+    .control-label{
+        height: 40px;
+        line-height: 40px;
+    }
+</style>
+</html>

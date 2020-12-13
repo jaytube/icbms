@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>空开设备基础表; InnoDB free: 401408 kB</title>
+#parse("modules/sys/header.html")
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			#if($shiro.hasPermission("deviceswitchinfo:save"))
+            <button class="layui-btn" @click="add" type="button"><i class="layui-icon">&#xe61f;</i> 新 增</button>
+			#end
+			#if($shiro.hasPermission("deviceswitchinfo:update"))
+            <button class="layui-btn layui-btn-normal" type="button" @click="update"><i class="layui-icon">&#xe642;</i>编辑</button>
+			#end
+			#if($shiro.hasPermission("deviceswitchinfo:delete"))
+            <button class="layui-btn layui-btn-danger" type="button" @click="del"><i class="layui-icon">&#xe640;</i>删除</button>
+			#end
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+		<div class="form-group">
+			   	<div class="col-sm-2 control-label">所属项目</div>
+			   	<div class="col-sm-10">
+			      <select v-model="deviceSwitchInfo.projectId" class="form-control" @change="chooseLocationInfo(deviceSwitchInfo.projectId)">
+					  <option v-for="project in projects" v-bind:value="project.value">
+					    {{ project.text }}
+					  </option>
+					</select>	
+			    </div>
+			</div>
+			<div class="form-group">
+			   	<div class="col-sm-2 control-label">所属位置</div>
+			   	<div class="col-sm-10">
+			      <select  v-model="deviceSwitchInfo.locationId" class="form-control"  @change="chooseDeviceBox(deviceSwitchInfo.locationId)">
+					  <option v-for="locinfo in locinfos" v-bind:value="locinfo.id" >
+					    {{ "楼栋:"+locinfo.buildingNum+",房间："+locinfo.roomNum+",具体位置:"+locinfo.positionDtl }}
+					  </option>
+					 
+					</select>	
+			    </div>
+			</div>
+			<div class="form-group">
+			   	<div class="col-sm-2 control-label">所属电箱</div>
+			   	<div class="col-sm-10">
+			      <select  v-model="deviceSwitchInfo.deviceBoxId" class="form-control">
+					  <option v-for="deviceBox in deviceBoxs" v-bind:value="deviceBox.id" >
+					    {{deviceBox.deviceBoxNum }}
+					  </option>
+					 
+					</select>	
+			    </div>
+			</div>
+			<div class="form-group">
+			   	<div class="col-sm-2 control-label">空开线路名称</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="deviceSwitchInfo.deviceSwitchName" placeholder="空开设备线路名称"/>
+			    </div>
+			</div>
+			<div class="form-group">
+			   	<div class="col-sm-2 control-label">空开线路地址</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="deviceSwitchInfo.address" placeholder="空开线路地址"/>
+			    </div>
+			</div>
+			<div class="form-group">
+			   	<div class="col-sm-2 control-label">备注</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="deviceSwitchInfo.remark" placeholder="备注"/>
+			    </div>
+			</div>
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div>
+                <button class="layui-btn" type="button" @click="saveOrUpdate" >保存</button>
+                <button class="layui-btn layui-btn-warm" type="button" @click="reload" style="margin-left: 30px">返回</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="${rc.contextPath}/js/deviceinfo/deviceswitchinfo.js?_${date.systemTime}"></script>
+</body>
+</html>

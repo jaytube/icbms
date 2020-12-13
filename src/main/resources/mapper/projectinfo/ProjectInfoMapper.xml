@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wz.modules.projectinfo.dao.ProjectInfoDao">
+
+
+    <resultMap type="com.wz.modules.projectinfo.entity.ProjectInfoEntity" id="projectInfoMap">
+        <result property="id" column="id"/>
+        <result property="projectName" column="project_name"/>
+        
+        <result property="gatewayAddress" column="gateway_address"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createId" column="create_id"/>
+        <result property="updateId" column="update_id"/>
+        <result property="effectiveDate" column="effective_date"/>
+        <result property="expireDate" column="expire_date"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+		id, 
+		project_name,
+		gateway_address,
+		create_time, 
+		update_time, 
+		create_id, 
+		update_id, 
+		remark,
+		effective_date,
+		expire_date
+    </sql>
+
+	<select id="queryObject" resultType="com.wz.modules.projectinfo.entity.ProjectInfoEntity" resultMap="projectInfoMap">
+		select
+		<include refid="Base_Column_List" />
+		from project_info
+		where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.wz.modules.projectinfo.entity.ProjectInfoEntity" resultMap="projectInfoMap">
+		select
+		<include refid="Base_Column_List" />
+		from project_info
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+    <select id="queryListByBean" resultType="com.wz.modules.projectinfo.entity.ProjectInfoEntity" resultMap="projectInfoMap">
+        select
+        <include refid="Base_Column_List" />
+        from project_info
+        WHERE 1=1
+    </select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from project_info
+	</select>
+	 
+	<insert id="save" parameterType="com.wz.modules.projectinfo.entity.ProjectInfoEntity">
+		insert into project_info
+		(
+			`id`, 
+			`project_name`, 
+			`create_time`, 
+			`update_time`, 
+			`create_id`, 
+			`update_id`, 
+			`remark`,
+			`effective_date`,
+			`expire_date`,
+			`gateway_address`
+		)
+		values
+		(
+			#{id}, 
+			#{projectName}, 
+			#{createTime}, 
+			#{updateTime}, 
+			#{createId}, 
+			#{updateId}, 
+			#{remark},
+			#{effectiveDate},
+			#{expireDate},
+			#{gatewayAddress}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.wz.modules.projectinfo.entity.ProjectInfoEntity">
+		update project_info 
+		<set>
+			<if test="projectName != null">`project_name` = #{projectName}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="createId != null">`create_id` = #{createId}, </if>
+			<if test="updateId != null">`update_id` = #{updateId}, </if>
+			<if test="effectiveDate != null">`effective_date` = #{effectiveDate}, </if>
+			<if test="expireDate != null">`expire_date` = #{expireDate}, </if>
+			<if test="gatewayAddress != null">`gateway_address` = #{gatewayAddress}, </if>
+			<if test="remark != null">`remark` = #{remark}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from project_info where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from project_info where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<select id="queryListAll" resultType="com.wz.modules.projectinfo.entity.ProjectInfoEntity" resultMap="projectInfoMap">
+		select
+		<include refid="Base_Column_List" />
+		from project_info
+		
+		order by create_time desc
+	</select>
+
+</mapper>

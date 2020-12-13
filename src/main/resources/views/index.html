@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>智慧用电物联平台</title>
+
+    <meta name="renderer" content="webkit">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <meta name="format-detection" content="telephone=no">
+
+    <link rel="stylesheet" type="text/css" href="plugins/layui-v1.0.7/css/layui.css">
+
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+
+    <link rel="stylesheet" type="text/css" href="css/index1.css">
+
+</head>
+
+<style>
+
+    .msg-num{
+
+		background: red;
+
+		width: 18px;
+
+		height: 18px;
+
+		display: inline-block;
+
+		border-radius: 10px;
+
+		line-height: 18px;
+
+		font-size: 12px;
+
+		color: #FFF;
+
+		text-align: center;
+
+		position: absolute;
+
+		top: 14px;
+
+		right: 5px;
+
+	}
+
+</style>
+
+<body>
+
+    <div class="layui-layout layui-layout-admin" id="layui_layout">
+
+        <!-- 顶部区域 -->
+
+        <div class="layui-header header header-demo">
+
+            <div class="layui-main">
+
+                <!-- logo区域 -->
+
+                <div class="admin-logo-box">
+
+                    <!--<a href="#"><img src="images/logo.png"></a>-->
+
+                    <a class="logo" href="javascript:;">智慧用电物联平台</a>
+
+                    <div class="larry-side-menu">
+
+                        <i class="fa fa-bars" aria-hidden="true"></i>
+
+                    </div>
+
+                    <div style="margin-left: 257px;width: 126px;padding-top: 23px;font-size: 15px;">欢迎
+                        {{user.userName}}</div>
+
+                </div>
+
+                <!-- 顶级菜单区域 -->
+
+                <div class="layui-larry-menu">
+
+                    <!-- <ul class="layui-nav clearfix">
+
+                        <li class="layui-nav-item">
+
+                               <a href="javascirpt:;"><i class="iconfont icon-ht_expand"></i>扩展模块</a>
+
+                        </li>
+
+                 </ul>-->
+
+                </div>
+
+                <!-- 右侧导航 -->
+
+                <ul class="layui-nav larry-header-item" lay-filter="side">
+
+
+
+
+
+                    <li class="layui-nav-item">
+
+                        <a href="javascript:;">{{currentProject.projectName}}</a>
+
+                        <span style="display:none" id="projectId">{{currentProject.id}}</span>
+
+                        <dl class="layui-nav-child">
+
+                            <dd v-for="project in projectList"><a @click="selectProject(project.id)">{{project.projectName}}</a></dd>
+
+                        </dl>
+
+                    </li>
+
+
+
+                    <li class="layui-nav-item">
+
+                        <a href="javascript:;" @click="updatePassword"><i class="fa fa-lock"></i> &nbsp;修改密码</a>
+
+                    </li>
+
+                    <li class="layui-nav-item">
+
+                        <a href="logout"><i class="fa fa-sign-out"></i> &nbsp;退出系统</a>
+
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+        <!-- 左侧侧边导航开始 -->
+
+        <div class="layui-side layui-side-bg layui-larry-side" id="larry-side">
+
+            <div class="layui-side-scroll" id="larry-nav-side" lay-filter="side">
+
+                <!-- 左侧菜单 -->
+
+                <ul class="layui-nav layui-nav-tree" id="menuTree"></ul>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- 左侧侧边导航结束 -->
+
+        <!-- 右侧主体内容 -->
+
+        <div class="layui-body" id="larry-body" style="bottom: 0;">
+
+            <div class="layui-tab layui-tab-card larry-tab-box" id="larry-tab" lay-filter="main-tab" lay-allowClose="true">
+
+                <ul class="layui-tab-title">
+
+                    <li class="layui-this" id="admin-home"><i class="fa fa-home"></i><em>控制台</em></li>
+
+                </ul>
+
+
+
+                <div class="layui-tab-content" style="min-height: 150px; ">
+
+                    <div class="layui-tab-item layui-show">
+
+                        <iframe id="mainFrame" class="larry-iframe" data-id='0' src="main.html"></iframe>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+
+
+        </div>
+
+        <!-- 底部区域 -->
+
+        <div class="layui-footer layui-larry-foot" id="larry-footer">
+
+            <div style="color: #ffffff; text-align: center;" class="layui-mian">
+					<div>上海卿誉建筑安装有限公司&nbsp;&nbsp;<a style="color: #ffffff !important;" href="http://www.beian.miit.gov.cn/" target="_blank">沪ICP备19047879号 </a></div>
+
+
+            </div>
+
+        </div>
+
+        <div class="bottons">
+
+            <button class="openAlarms">打开告警推送</button>
+
+            <button class="closeAlarms">关闭告警推送</button>
+
+        </div>
+
+        <div class="cender">
+            <div class="top">实时告警</div>
+            <div class="middle">
+
+            </div>
+            <div class="btn">
+                <a data-url="kk/alarm.html">
+                    <div class="look">查看</div>
+                </a>
+                <div class="cancel">取消</div>
+            </div>
+        </div>
+
+
+        <!-- 修改密码 -->
+
+        <div id="passwordLayer" style="display: none;">
+            <form class="layui-form" action="">
+
+                <div class="layui-form-item">
+
+                    <label class="layui-form-label">账号</label>
+
+                    <label class="layui-form-label laber-account">{{user.userName}}</label>
+
+                </div>
+
+                <div class="layui-form-item">
+
+                    <label class="layui-form-label">原密码</label>
+
+                    <div class="layui-input-inline">
+
+                        <input type="password" v-model="passWord" placeholder="原密码" datatype="*" autocomplete="off"
+                            class="layui-input">
+
+                    </div>
+
+                </div>
+
+                <div class="layui-form-item">
+
+                    <label class="layui-form-label">新密码</label>
+
+                    <div class="layui-input-inline">
+
+                        <input type="password" v-model="newPassWord" placeholder="新密码" datatype="*" autocomplete="off"
+                            class="layui-input">
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+        </form>
+
+    </div>
+
+    </div>
+
+
+
+    <div id="message" style="z-index:1000; position:fixed;left:0;bottom:0;"></div>
+
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+
+    <script type="text/javascript" src="plugins/layui-v1.0.7/layui.js"></script>
+
+    <script type="text/javascript" src="js/vue.min.js"></script>
+
+    <script type="text/javascript" src="js/index1.js"></script>
+
+    <script type="text/javascript" src="plugins/validform/js/Validform_v5.3.2.js"></script>
+
+    <script src="http://cdn.bootcss.com/stomp.js/2.3.3/stomp.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+
+</body>
+
+<style>
+    .btn a {
+        display: block;
+        text-decoration: none;
+    }
+
+    .cender {
+        width: 400px;
+        height: 250px;
+        background-color: white;
+        display: none;
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        z-index: 10000;
+    }
+
+    .cender .top {
+        width: 100%;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        border-bottom: 1px solid grey;
+    }
+
+    .cender .btn {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    .cancel,
+    .look {
+        width: 60px;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        color: white;
+        background-color: blue;
+        border-radius: 4px;
+    }
+
+
+    .alarms {
+
+        width: 50px;
+
+        height: 50px;
+
+        background-color: green;
+
+        border-radius: 25px;
+
+        position: fixed;
+
+        bottom: 10px;
+
+        left: 10px;
+
+        cursor: pointer;
+
+        z-index: 1000;
+
+    }
+
+    .bottons {
+
+        width: 200px;
+
+        height: 50px;
+
+        position: fixed;
+
+        bottom: 0;
+
+        left: 0;
+
+        display: inline;
+
+        z-index: 100000;
+
+    }
+
+    .openAlarms,
+    .closeAlarms {
+
+     width: 90px;
+    height: 30px;
+    margin-bottom: 10px;
+    line-height: 30px;
+    border: 1px solid white;
+    color: #49d9fe;
+    background-color: rgba(255,255,255,0.20);
+    border-radius: 3px;
+    float: left;    margin-right: 8px;
+
+
+
+    }
+
+    #layerDemorb div {
+        padding: 0 !important;
+    }
+
+    #alarmInfoWrap div {
+        width: 100%;
+        line-height: 30px;
+        text-indent: 20px;
+    }
+</style>
+
+<script>
+    $(".cancel").click(function () {
+        $(".cender").css("display", "none")
+    })
+
+
+    var active = {
+
+        offset: function (text) {
+
+            layer.open({
+
+                type: 1
+
+                    ,
+                offset: "rb" //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+
+                    ,
+                id: 'layerDemorb' //防止重复弹出
+
+                    ,
+                content: '<div style="padding: 20px 100px;">' + text + '</div>'
+
+                    ,
+                btn: '确定'
+
+                    ,
+                btnAlign: 'c' //按钮居中
+
+                    ,
+                shade: 0 //不显示遮罩
+
+                    ,
+                yes: function () {
+
+                    layer.closeAll();
+
+                }
+
+            });
+
+        }
+
+    }
+
+
+
+    //建立连接对象（还未发起连接）
+
+    var socket = new SockJS("/icbms/webSocketServer");
+
+
+
+    // 获取 STOMP 子协议的客户端对象
+
+    var stompClient = Stomp.over(socket);
+
+    var isopen = "1";
+
+
+
+    // 向服务器发起websocket连接并发送CONNECT帧
+
+    stompClient.connect(
+
+        {},
+
+        function connectCallback(frame) {
+
+            // 连接成功时（服务器响应 CONNECTED 帧）的回调方法
+
+            // setMessageInnerHTML("连接成功");
+
+            stompClient.subscribe('/topic/subscribeTest', function (response) {
+
+                var returnData = JSON.parse(response.body);
+
+                console.log(returnData.responseMessage)
+
+                var txt = "<div id='alarmInfoWrap'>" +
+                    "<div>展位号:" + JSON.parse(returnData.responseMessage).standNo + "</div>" +
+
+                    "<div>电箱MAC:" + JSON.parse(returnData.responseMessage).deviceBoxMac + "</div>" +
+
+                    "<div>电箱名称:" + JSON.parse(returnData.responseMessage).deviceBoxName + "</div>" +
+
+                    "<div>告警类型:" + JSON.parse(returnData.responseMessage).type + "</div>" +
+
+                    "<div>告警内容:" + JSON.parse(returnData.responseMessage).info + "</div>" +
+
+                    "<div>告警时间:2018-" + JSON.parse(returnData.responseMessage).createTime.month + 1 + "-" +
+                    JSON.parse(returnData.responseMessage).createTime.date + " " + JSON.parse(returnData.responseMessage)
+                    .createTime.hours + ":" + JSON.parse(returnData.responseMessage).createTime.minutes +
+                    ":" + JSON.parse(returnData.responseMessage).createTime.seconds + "</div>" +
+
+                    "</div>"
+
+                if (isopen == "1") {
+                    console.log(JSON.parse(returnData.responseMessage))
+                    if (JSON.parse(returnData.responseMessage).alarmLevel == "4") {
+                        // active.offset(txt)
+                        if ($("#projectId").text() == JSON.parse(returnData.responseMessage).projectId) {
+                            $(".cender .middle").empty().append(txt);
+                            $(".cender").css("display", "block");
+                        }
+                    } else {
+                        console.log(JSON.parse(returnData.responseMessage).alarmLevel)
+                    }
+
+                } else {
+
+                    console.log("推送关闭")
+
+                }
+
+            });
+
+        },
+
+        function errorCallBack(error) {
+
+            // 连接失败时（服务器响应 ERROR 帧）的回调方法
+
+            // setMessageInnerHTML("连接失败");
+
+            console.log("链接失败")
+
+        }
+
+    );
+
+    $(".openAlarms").click(function () {
+
+        isopen = "1";
+
+        layer.alert("打开推送")
+
+    })
+
+
+
+    $(".closeAlarms").click(function () {
+
+        isopen = "2";
+
+        layer.alert("关闭推送")
+
+    })
+</script>
+
+</html>

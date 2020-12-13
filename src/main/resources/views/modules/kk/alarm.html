@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<!-- 声明文档使用的字符编码 -->
+	<meta charset='utf-8'>
+	<title>管理员列表</title> #parse("modules/sys/header.html")
+</head>
+
+<body>
+	<div id="rrapp" v-cloak>
+		<div class="grid-btn ">
+			<div class=" row">
+				<input type="hidden" id="locationId" v-model="q.locationId">
+				<div style="padding: 0;" class="col-sm-2 form-group">
+					<div style="line-height: 40px;text-align: right;" class="col-sm-5 control-label">告警类型:</div>
+					<div style="padding: 0;" class="col-sm-7">
+						<!-- 	* 15 电流预警 14 漏电预警 13 过压预警 12 欠压预警 11 欠压预警 10 打火报警 9 8 漏电保护自检未完成 7
+			 * 漏电保护功能正常 6 过压报警 5 过流报警 4 漏电报警 3 温度报警 2 过载报警 1 浪涌报警 0 短路报警 -->
+						<select id="type" name="type" class="form-control" placeholder="请选择告警类型" v-model="q.type">
+							<option value="">请选择告警类型</option>
+							　　 <option value="短路报警">短路报警</option>
+							<option value="浪涌报警">浪涌报警</option>
+							<option value="过载报警">过载报警</option>
+							<option value="温度报警">温度报警</option>
+							<option value="漏电报警">漏电报警</option>
+							<option value="过流报警">过流报警</option>
+							<option value="过压报警">过压报警</option>
+							<option value="漏电保护功能正常">漏电保护功能正常</option>
+							<option value="漏电保护自检未完成">漏电保护自检未完成</option>
+							<option value="打火报警">打火报警</option>
+							<option value="欠压预警">欠压预警</option>
+							<option value="欠压预警">欠压预警</option>
+							<option value="过压预警">过压预警</option>
+							<option value="漏电预警">漏电预警 </option>
+							<option value="电流预警">电流预警</option>
+							<option value="节点通信中断">节点通信中断</option>
+							<option value="节点通信恢复">节点通信恢复</option>
+						</select>
+					</div>
+				</div>
+
+				<div style="padding: 0;" class="col-sm-2 form-group">
+					<div style="line-height: 40px;text-align: right;" class="col-sm-5 control-label">告警等级:</div>
+					<div style="padding: 0;" class="col-sm-7">
+						<!-- 	* 15 电流预警 14 漏电预警 13 过压预警 12 欠压预警 11 欠压预警 10 打火报警 9 8 漏电保护自检未完成 7
+			 * 漏电保护功能正常 6 过压报警 5 过流报警 4 漏电报警 3 温度报警 2 过载报警 1 浪涌报警 0 短路报警 -->
+						<select id="type" name="type" class="form-control" placeholder="请选择告警类型" v-model="q.alarmStatus">
+							<option value="">请选择告警级别</option>
+							<option value="0">恢复</option>
+							<option value="1">预警</option>
+							<option value="2">一般</option>
+							<option value="3">重要</option>
+							<option value="4">紧急</option>
+						</select>
+					</div>
+				</div>
+
+				<div style="padding: 0;" class="col-sm-2 form-group">
+					<div style="line-height: 40px;text-align: right;" class="col-sm-5 control-label">电箱(MAC):</div>
+					<div style="padding: 0;" class="col-sm-7">
+						<input type="text" class="form-control" v-model="q.deviceBoxMac" placeholder="电箱(MAC)">
+					</div>
+				</div>
+
+				
+				<div style="padding: 0;width: 24%;" class="col-sm-2 form-group">
+					<div style="line-height: 40px;text-align: right;" class="col-sm-5 control-label">开始时间:</div>
+					<div style="padding: 0;" class="col-sm-7">
+						<input type="text" class="form-control" id="startTime"
+							onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss', max: $('#endTime').val(), type:'datetime' });" v-model="q.beginTime"
+							placeholder="开始时间">
+					</div>
+				</div>
+				<div style="padding: 0;width: 24%;" class="col-sm-2 form-group">
+					<div style="line-height: 40px;text-align: right;" class="col-sm-5 control-label">结束时间:</div>
+					<div style="padding: 0;" class="col-sm-7">
+						<input type="text" class="form-control" id="endTime"
+							onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss', min: $('#beginTime').val(), type:'datetime' });"
+							v-model="q.beginTime" placeholder="结束时间">
+					</div>
+				</div>	
+				<div style="padding: 0;width: 24%;" class="col-sm-2 form-group">
+					<div class="col-sm-5"></div>
+					<button  class="layui-btn layui-btn-normal" id="searchSubmit" @click="query">
+						<i class="layui-icon">&#xe615;</i>查 询
+					</button>
+				</div>
+				
+
+			</div>
+
+		</div>
+		<div v-show="showList" class="show-top">
+			<div class="left">
+				<ul id="allLocationinfoTree" class="ztree"></ul>
+			</div>
+			<div class="right">
+
+				<table id="jqGrid"></table>
+				<div id="jqGridPager"></div>
+			</div>
+		</div>
+		<div v-show="!showList" class="panel panel-default"></div>
+	</div>
+	<style type="text/css">
+		html,
+		body {
+			height: 100%;
+		}
+
+		#rrapp {
+			height: 100%;
+		}
+
+		.show-top {
+			display: flex;
+			flex-direction: row;
+			height: 100%;
+		}
+
+		.left {
+			flex: 1;
+			border-right: 1px solid #49d9fe;
+		}
+
+		.right {
+			flex: 4;
+		}
+
+		.onedelete {
+			padding: 5px 7px 5px 12px;
+			font-size: 14px;
+			letter-spacing: 5px
+		}
+
+		tr th {
+			text-align: center;
+		}
+
+		.banner {
+			margin-left: 30px;
+			margin-right: 30px;
+			font-size: 18px;
+			padding-bottom: 56px;
+
+			/*border-bottom: 2px solid #e6e6e6;*/
+		}
+
+		select {
+			width: 70%;
+			border-radius: 3px;
+			height: 28px;
+			line-height: 28px;
+			font-size: 18px;
+		}
+
+		select option {
+			font-size: 18px;
+		}
+	</style>
+	<!-- 选择机构 -->
+	<div id="menuLayer" style="display: none; padding: 10px;">
+		<ul id="organTree" class="ztree"></ul>
+	</div>
+	<script src="${rc.contextPath}/js/kk/alarm.js?_${date.systemTime}"></script>
+</body>
+
+<style type="text/css">
+	.left {
+		border: 1px solid #49d9fe;
+		height: 500px;
+		overflow: auto;
+	}
+
+	::-webkit-scrollbar {
+		width: 5px;
+		height: 5px;
+	}
+
+	::-webkit-scrollbar-track {
+		background-color: #fff;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background-color: white !important;
+	}
+</style>
+
+</html>

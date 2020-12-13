@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wz.modules.projectinfo.dao.ProjectRoleDao">
+
+
+	<resultMap type="com.wz.modules.projectinfo.entity.ProjectRoleEntity"
+		id="projectRoleMap">
+		<result property="projectId" column="project_id" />
+		<result property="roleId" column="role_id" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		project_id,
+		role_id
+	</sql>
+
+	<select id="queryObject" resultType="com.wz.modules.projectinfo.entity.ProjectRoleEntity"
+		resultMap="projectRoleMap">
+		select
+		<include refid="Base_Column_List" />
+		from project_role
+		where project_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.wz.modules.projectinfo.entity.ProjectRoleEntity"
+		resultMap="projectRoleMap">
+		select
+		<include refid="Base_Column_List" />
+		from project_role
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by project_id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryListByBean" resultType="com.wz.modules.projectinfo.entity.ProjectRoleEntity"
+		resultMap="projectRoleMap">
+		select
+		<include refid="Base_Column_List" />
+		from project_role
+		WHERE 1=1
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(*) from
+		project_role
+	</select>
+
+	<insert id="save" parameterType="com.wz.modules.projectinfo.entity.ProjectRoleEntity">
+		insert into project_role
+		(
+		`project_id`,
+		`role_id`
+		)
+		values
+		<foreach collection="roleIdList" item="item" index="index" separator="," >
+		(
+			#{projectId}, 
+			#{item}
+		)
+		</foreach>
+	</insert>
+
+	<update id="update" parameterType="com.wz.modules.projectinfo.entity.ProjectRoleEntity">
+		update project_role
+		<set>
+			<if test="roleId != null">`role_id` = #{roleId}</if>
+		</set>
+		where project_id = #{projectId}
+	</update>
+
+	<delete id="delete">
+		delete from project_role where project_id = #{value}
+	</delete>
+
+	<delete id="deleteBatch">
+		delete from project_role where project_id in
+		<foreach item="projectId" collection="array" open="("
+			separator="," close=")">
+			#{projectId}
+		</foreach>
+	</delete>
+
+	<select id="queryRoleIdList" resultType="String">
+		select role_id from
+		project_role where project_id = #{value,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wz.modules.projectinfo.dao.LocationInfoDao">
+	<resultMap type="com.wz.modules.projectinfo.entity.LocationInfoEntity"
+		id="locationInfoMap">
+		<result property="id" column="id" />
+		<result property="projectId" column="project_id" />
+		<result property="parentId" column="parent_id" />
+		<result property="name" column="name" />
+		<result property="icon" column="icon" />
+		<result property="sort" column="sort" />
+		<result property="status" column="status" />
+		<result property="remark" column="remark" />
+		<result property="createTime" column="create_time" />
+		<result property="createId" column="create_id" />
+		<result property="updateId" column="update_id" />
+		<result property="updateTime" column="update_time" />
+		<result property="type" column="type" />
+		<result property="open" column="open" />
+		<result property="root" column="root" />
+		<result property="fileName" column="file_name" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id,
+		parent_id,
+		name,
+		open,
+		icon,
+		sort,
+		status,
+		remark,
+		create_time,
+		create_id,
+		update_id,
+		update_time,
+		type,
+		root,
+		file_name
+	</sql>
+
+	<select id="queryObject"
+		resultType="com.wz.modules.projectinfo.entity.LocationInfoEntity"
+		resultMap="locationInfoMap">
+		select
+		<include refid="Base_Column_List" />
+		,(SELECT tm.name FROM location_info tm WHERE tm.id=m.parent_id ) AS
+		parentName
+		from location_info m
+		where id = #{value}
+	</select>
+
+	<!--根据父位置Id查询位置 -->
+	<select id="queryListParentId"
+		resultType="com.wz.modules.projectinfo.entity.LocationInfoEntity"
+		resultMap="locationInfoMap">
+		select
+		<include refid="Base_Column_List" />
+		,(SELECT tm.name FROM location_info tm WHERE tm.id=m.parent_id ) AS
+		parentName
+		from location_info m
+		where parent_id = #{parentId} order by
+		name
+	</select>
+
+	<select id="queryList"
+		resultType="com.wz.modules.projectinfo.entity.LocationInfoEntity"
+		resultMap="locationInfoMap">
+		select
+		<include refid="Base_Column_List" />
+		,(SELECT tm.name FROM location_info tm WHERE tm.id=m.parent_id and
+		tm.project_id = #{projectId}) AS parentName
+		from location_info m where
+		m.project_id = #{projectId}
+		order by name
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(*) from
+		location_info
+	</select>
+
+	<insert id="save"
+		parameterType="com.wz.modules.projectinfo.entity.LocationInfoEntity">
+		insert into location_info
+		(
+		`id`,
+		`project_id`,
+		`parent_id`,
+		`name`,
+		open,
+		`icon`,
+		`sort`,
+		`status`,
+		`remark`,
+		`create_time`,
+		`create_id`,
+		`update_id`,
+		`update_time`,
+		`type`,
+		`root`,
+		`file_name`
+		)
+		values
+		(
+		#{id},
+		#{projectId},
+		#{parentId},
+		#{name},
+		#{open},
+		#{icon},
+		#{sort},
+		#{status},
+		#{remark},
+		#{createTime},
+		#{createId},
+		#{updateId},
+		#{updateTime},
+		#{type},
+		#{root},
+		#{fileName}
+		)
+	</insert>
+
+	<update id="update"
+		parameterType="com.wz.modules.projectinfo.entity.LocationInfoEntity">
+		update location_info
+		<set>
+			<if test="parentId != null">
+				parent_id = #{parentId,jdbcType=VARCHAR},
+			</if>
+			<if test="name != null">
+				NAME = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="open != null">
+				open = #{open,jdbcType=VARCHAR},
+			</if>
+			<if test="icon != null">
+				icon = #{icon,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=DECIMAL},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="updateId != null">
+				update_id = #{updateId,jdbcType=VARCHAR},
+			</if>
+			<if test="sort != null">
+				sort = #{sort,jdbcType=INTEGER},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="root != null">
+				ROOT = #{root},
+			</if>
+			<if test="fileName != null">
+				FILE_NAME = #{fileName},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=VARCHAR}
+	</update>
+
+	<delete id="delete">
+		delete from location_info where id = #{value}
+	</delete>
+
+	<delete id="deleteBatch">
+		delete from location_info where id in
+		<foreach item="id" collection="array" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<delete id="deleteLinkByLocId">
+		delete from device_box_location where id = #{value}
+	</delete>
+
+	<delete id="delProjectLocationRel">
+		delete from device_box_location a where
+		a.device_box_id in (
+			select b.id from device_box_info b where
+				b.project_id = #{projectId}
+		)
+	</delete>
+
+
+	<delete id="delProjectLocation">
+		delete from location_info a
+		where a.project_id =
+		#{projectId}
+	</delete>
+
+
+
+
+	<delete id="deleteBoxLocLinkBatch">
+		delete from device_box_location where location_id in
+		<foreach item="id" collection="array" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<select id="findLocInfoByPId"
+		resultType="com.wz.modules.projectinfo.entity.LocationInfoEntity"
+		resultMap="locationInfoMap">
+		select
+		<include refid="Base_Column_List" />
+		from location_info
+		where project_id = #{projectId}
+		order by name
+	</select>
+	
+	
+	<select id="findProjectLocationRel"
+		resultType="com.wz.modules.projectinfo.entity.LocationInfoEntity"
+		resultMap="locationInfoMap">
+		select
+			a.id,
+			a.parent_id,
+			a.name,
+			a.open,
+			a.icon,
+			a.sort,
+			a.status,
+			a.remark,
+			a.create_time,
+			a.create_id,
+			a.update_id,
+			a.update_time,
+			a.type,
+			a.root,
+			a.file_name
+		from location_info a,device_box_location b
+		where a.project_id = #{projectId} and a.id = b.location_id
+		order by a.name
+	</select>
+	
+	
+	
+	
+
+	<select id="findLocIdByLocName" resultType="java.lang.String"
+		parameterType="java.util.Map">
+		select
+		id
+		from location_info
+		where project_id =
+		#{projectId}
+		and name = #{locName}
+		and parent_id = #{parentId}
+	</select>
+</mapper>

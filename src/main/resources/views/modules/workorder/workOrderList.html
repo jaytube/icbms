@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- 声明文档使用的字符编码 -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+      name="viewport"
+    />
+    <script src="${rc.contextPath}/js/jquery.min.js"></script>
+    <script src="${rc.contextPath}/js/plugins/vue.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"
+    />
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <title>工单管理</title>
+  </head>
+
+  <body>
+    <div id="content">
+      <el-form :inline="true">
+        <el-row>
+          <el-col :span="6">
+            <el-form-item label="电箱MAC:">
+              <el-input v-model="params.deviceBoxMac"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="展位号:">
+              <el-input v-model="params.standNo"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="告警类型:">
+              <el-select v-model="params.alarmType" placeholder="请选择">
+                <el-option
+                  v-for="(value, index) in type"
+                  :label="value"
+                  :value="value"
+                  :key="index"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="开始时间:">
+              <el-date-picker
+                v-model="params.alarmStartDate"
+                format="yyyy-MM-dd"
+                value-format="yyyy-MM-dd"
+                type="date"
+                placeholder="选择开始时间"
+              >
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="结束时间:">
+              <el-date-picker
+                v-model="params.alarmEndDate"
+                format="yyyy-MM-dd"
+                value-format="yyyy-MM-dd"
+                type="date"
+                placeholder="选择开始时间"
+              >
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="状态:">
+              <el-select v-model="params.status" placeholder="请选择">
+                <el-option label="待处理" value="0"> </el-option>
+                <el-option label="处理中" value="1"> </el-option>
+                <el-option label="已完成" value="2"> </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="" style="text-align: center;">
+              <el-button type="primary" @click="search">查询</el-button>
+              <el-button type="primary" @click="reset">重置</el-button>
+              <!-- <el-button type='primary' @click='add'>新增</el-button> -->
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-table :data="resultList" border style="margin-top: 20px;">
+            <el-table-column
+              prop="alarmInfoLog.type"
+              label="告警类型"
+              align="center"
+              width="180"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="alarmInfoLog.deviceBoxMac"
+              label="电箱MAC"
+              align="center"
+              width="200"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="alarmInfoLog.standNo"
+              label="展位号"
+              align="center"
+              width="120"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="alarmInfoLog.secBoxGateway"
+              label="二级网关号"
+              align="center"
+              width="120"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="alarmInfoLog.createTime"
+              label="告警时间"
+              align="center"
+              width="250"
+            >
+              <template slot-scope="scope">
+                <div>
+                  <span
+                    >{{scope.row.createTime && dateFormat(scope.row.createTime,
+                    'yyyy-MM-dd hh:mm:ss')}}</span
+                  >
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="dealId"
+              label="处理人"
+              align="center"
+              width="120"
+            >
+              <template slot-scope="scope">
+                <div>
+                  <span
+                    >{{roleList.find(item => item.id == scope.row.dealId) &&
+                    roleList.find(item => item.id ==
+                    scope.row.dealId).userName}}</span
+                  >
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="recordTime"
+              label="处理时间"
+              align="center"
+              width="250"
+            >
+              <template slot-scope="scope">
+                <div>
+                  <span
+                    >{{scope.row.dealTime && dateFormat(scope.row.dealTime,
+                    'yyyy-MM-dd hh:mm:ss')}}</span
+                  >
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="status"
+              label="状态"
+              align="center"
+              width="100"
+            >
+              <template slot-scope="scope">
+                <div>
+                  <span v-if="scope.row.status == 0" style="color:red"
+                    >待处理</span
+                  >
+                  <span v-if="scope.row.status == 1" style="color: yellow;"
+                    >处理中</span
+                  >
+                  <span v-if="scope.row.status == 2" style="color:green"
+                    >已完成</span
+                  >
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="recordTime"
+              label="操作"
+              align="center"
+              width="350"
+            >
+              <template slot-scope="scope">
+                <div>
+                  <el-button
+                    type="text"
+                    v-if="scope.row.status == 2"
+                    @click="showDetail(scope.row.id)"
+                    >工单详情</el-button
+                  >
+                  <el-button
+                    type="text"
+                    v-if="scope.row.status == 0"
+                    @click="zhipai(scope.row.id)"
+                    >指派
+                  </el-button>
+                  <el-button
+                    type="text"
+                    v-if="scope.row.status == 0"
+                    @click="dealNow(scope.row.id)"
+                    >马上处理
+                  </el-button>
+                  <el-button
+                    type="text"
+                    v-if="scope.row.status == 1"
+                    @click="shangbao(scope.row.id)"
+                    >上报结果</el-button
+                  >
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div style="margin-top:20px;text-align:center">
+            <el-pagination
+              background
+              layout="prev, pager, next"
+              :total="total"
+              v-if="total > 0"
+              :current-page="params.page"
+              @current-change="currentChange"
+            >
+            </el-pagination>
+          </div>
+        </el-row>
+        <!-- // 新增弹窗 -->
+        <el-dialog
+          title="新增工单"
+          :visible.sync="dialogVisible"
+          width="800px"
+          :before-close="handleClose"
+        >
+          <el-form
+            :model="ruleForm"
+            :rules="rules"
+            ref="ruleForm"
+            label-width="100px"
+            class="demo-ruleForm"
+            :inline="true"
+          >
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="告警类型" prop="type">
+                  <el-select v-model="ruleForm.type" placeholder="请选择">
+                    <el-option
+                      v-for="(value, index) in type"
+                      :label="value"
+                      :value="value"
+                      :key="index"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="告警类型" prop="type">
+                  <el-select v-model="ruleForm.type" placeholder="请选择">
+                    <el-option
+                      v-for="(value, index) in type"
+                      :label="value"
+                      :value="value"
+                      :key="index"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+          <span
+            slot="footer"
+            class="dialog-footer"
+            style="text-align: center;display:block;"
+          >
+            <el-button @click="addSubmit">提交</el-button>
+            <el-button type="primary" @click="dialogVisible = false"
+              >重置</el-button
+            >
+          </span>
+        </el-dialog>
+        <!-- 指派弹窗 -->
+        <el-dialog title="指派" :visible.sync="showPeopleDialog" width="500px">
+          <div class="block">
+            <span class="demonstration">请选择指派人</span>
+            <el-cascader
+              v-model="roleId"
+              :options="roleTree"
+              :props="{label:'userName', value:'id', children:'userList'}"
+              @change="handleChange"
+            >
+            </el-cascader>
+          </div>
+          <span
+            slot="footer"
+            class="dialog-footer"
+            style="text-align: center;display:block;"
+          >
+            <el-button @click="zhipaiOk">提交</el-button>
+            <el-button type="primary" @click="zhipaiCancel">取消</el-button>
+          </span>
+        </el-dialog>
+        <!-- 上报弹窗 -->
+        <el-dialog title="上报结果" :visible.sync="shangbaoShow" width="800px">
+          <el-form :inline="true">
+            <el-row>
+              <el-col :span="8">
+                <el-form-item label="告警类型:">
+                  <span
+                    >{{currentRow.alarmInfoLog &&
+                    currentRow.alarmInfoLog.type}}</span
+                  >
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="电箱MAC:">
+                  <span
+                    >{{currentRow.alarmInfoLog &&
+                    currentRow.alarmInfoLog.deviceBoxMac}}</span
+                  >
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="展位号:">
+                  <span
+                    >{{currentRow.alarmInfoLog &&
+                    currentRow.alarmInfoLog.standNo}}</span
+                  >
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="二级网关号:">
+                  <span
+                    >{{currentRow.alarmInfoLog &&
+                    currentRow.alarmInfoLog.secBoxGateway}}</span
+                  >
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="告警时间:">
+                  <span
+                    >{{currentRow.alarmInfoLog &&
+                    dateFormat(currentRow.alarmInfoLog.createTime, 'yyyy-MM-dd
+                    hh:mm:ss')}}</span
+                  >
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="处理人:">
+                  <span
+                    >{{roleList.find(item => item.id == currentRow.dealId) &&
+                    roleList.find(item => item.id == currentRow.dealId).userName
+                    }}</span
+                  >
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24" class="remark">
+                <el-form-item label="工单处理记录:">
+                  <el-input
+                    type="textarea"
+                    :rows="5"
+                    placeholder="请输入工单处理记录"
+                    v-model="shangbaoParams.remark"
+                  >
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-form-item label="上传图片">
+                <el-upload
+                  ref="upload"
+                  action="http://119.96.233.75/icbms/app/dashbaord/flowOrderUpload"
+                  list-type="picture-card"
+                  :on-preview="handlePictureCardPreview"
+                  :on-success="handleAvatarSuccess"
+                  :on-remove="handleRemove"
+                >
+                  <i class="el-icon-plus"></i>
+                </el-upload>
+              </el-form-item>
+            </el-row>
+          </el-form>
+          <span
+            slot="footer"
+            class="dialog-footer"
+            style="text-align: center;display:block;"
+          >
+            <el-button @click="shangbaoOk">提交</el-button>
+            <el-button type="primary" @click="shangbaoCancel">取消</el-button>
+          </span>
+        </el-dialog>
+
+        <el-dialog :visible.sync="showImage">
+          <img width="100%" :src="dialogImageUrl" alt="" />
+        </el-dialog>
+        <!-- 详情弹窗 -->
+        <el-dialog title="工单详情" :visible.sync="detailShow" width="800px">
+          <el-form :inline="true">
+            <el-row>
+              <el-col :span="8">
+                <el-form-item label="告警类型:">
+                  <span
+                    >{{currentRow.alarmInfoLog &&
+                    currentRow.alarmInfoLog.type}}</span
+                  >
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="电箱MAC:">
+                  <span
+                    >{{currentRow.alarmInfoLog &&
+                    currentRow.alarmInfoLog.deviceBoxMac}}</span
+                  >
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="展位号:">
+                  <span
+                    >{{currentRow.alarmInfoLog &&
+                    currentRow.alarmInfoLog.standNo}}</span
+                  >
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="二级网关号:">
+                  <span
+                    >{{currentRow.alarmInfoLog &&
+                    currentRow.alarmInfoLog.secBoxGateway}}</span
+                  >
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="告警时间:">
+                  <span
+                    >{{currentRow.alarmInfoLog &&
+                    dateFormat(currentRow.alarmInfoLog.createTime, 'yyyy-MM-dd
+                    hh:mm:ss')}}</span
+                  >
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="处理人:">
+                  <span
+                    >{{roleList.find(item => item.id == currentRow.dealId) &&
+                    roleList.find(item => item.id == currentRow.dealId).userName
+                    }}</span
+                  >
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24" class="remark">
+                <el-form-item label="工单处理记录:">
+                  <el-input
+                    type="textarea"
+                    :rows="5"
+                    disabled
+                    placeholder="请输入工单处理记录"
+                    v-model="currentRow.remark"
+                  >
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-form-item label="工单图片预览">
+                <div v-if="currentRow.filePath">
+                  <div class="imgList" style="height: 210px;;">
+                    <div
+                      style="width:200px;height:200px; float: left;"
+                      v-for="item in currentRow.filePath.split(',')"
+                      :key="item.id"
+                    >
+                      <img
+                        :src="item"
+                        alt=""
+                        @click="showImages(item)"
+                        style="width:200px;height:200px;"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </el-form-item>
+            </el-row>
+          </el-form>
+          <span
+            slot="footer"
+            class="dialog-footer"
+            style="text-align: center;display:block;"
+          >
+            <el-button @click="closeDetail">关闭</el-button>
+          </span>
+        </el-dialog>
+      </el-form>
+    </div>
+  </body>
+  <style>
+    .remark .el-form-item {
+      display: block;
+    }
+    .remark .el-form-item__content {
+      display: block !important;
+    }
+    .el-table td {
+      padding: 0;
+    }
+    .el-table th {
+      padding: 5px 0;
+    }
+    .el-input__inner {
+      border: none;
+      background: rgba(210, 255, 255, 0.1);
+    }
+    .el-form-item__label {
+      color: #cef5ff;
+    }
+    .el-table th,
+    .el-table tr {
+      background: rgba(0, 117, 169, 0.3);
+    }
+    .el-table,
+    .el-table__expanded-cell {
+      background-color: #fff;
+      background: none;
+      color: #cef5ff;
+    }
+    .el-table td,
+    .el-table th.is-leaf {
+      border-bottom: 1px solid #251166;
+
+      border-right: 1px #251166 solid;
+      line-height: 2.5;
+    }
+    .el-table th > .cell {
+      color: #fff;
+    }
+    .el-table--border,
+    .el-table--group {
+      border: 1px solid #ebeef5;
+      border: none;
+    }
+    .el-table::before {
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 0;
+    }
+    .el-table--border::after,
+    .el-table--group::after {
+      top: 0;
+      right: 0;
+      width: 0;
+      height: 100%;
+    }
+    .el-table__fixed-right::before,
+    .el-table__fixed::before {
+      height: 0;
+    }
+    .el-table__header {
+      width: 100% !important;
+    }
+    .el-input__inner {
+      color: #ffffff;
+    }
+    .el-table--enable-row-hover .el-table__body tr:hover > td {
+      background: rgba(0, 117, 169, 0.5);
+    }
+    .el-dialog,
+    .el-pager li {
+      /* background: #FFF; */
+      -webkit-box-sizing: border-box;
+      border: 1px #fff solid;
+      border-radius: 10px;
+      overflow: hidden;
+      -webkit-box-shadow: 0 0 10px #00334b;
+      box-shadow: 0 0 10px #fff;
+      background: #0d1a59;
+    }
+    .el-dialog__header {
+      padding: 20px 20px 10px;
+      font-size: 16px;
+      height: 30px;
+      line-height: 30px;
+      color: #121c3c;
+      text-align: center;
+      padding: 5px 0;
+      font-weight: bold;
+      background-color: #49d9fe;
+    }
+    .el-dialog__body {
+      color: #fff;
+    }
+    .el-textarea__inner,
+    .el-textarea.is-disabled .el-textarea__inner {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+    }
+  </style>
+  <script>
+    const BASEURL = "http://www.shqyjzaz.com/icbms/";
+    let getAction = function(url, data, cb) {
+      $.ajax({
+        url: BASEURL + url,
+        data: data,
+        type: "GET",
+        // dataType: 'JSONP',
+        success(res) {
+          cb && cb(res);
+        }
+      });
+    };
+    let postAction = function(url, data, cb) {
+      $.ajax({
+        url: BASEURL + url,
+        data: data,
+        type: "POST",
+        // dataType: 'JSONP',
+        success(res) {
+          cb && cb(res);
+        }
+      });
+    };
+
+    new Vue({
+      el: "#content",
+      data: {
+        detailShow: false,
+        fileList: [],
+        dialogImageUrl: "",
+        showImage: false, //图片预览
+        shangbaoParams: {
+          remark: "",
+          alarmFlowId: "",
+          pictureNames: ""
+        },
+        // 告警类型
+        currentRow: {},
+        // 上报结果
+        shangbaoShow: false,
+        rowId: "", // 当前操作行id
+        roleId: "", // 选择指派人id
+        showPeopleDialog: false, //控制指派人弹出
+
+        params: {
+          // deviceBoxMac: '',
+          status: "",
+          projectId: "",
+          pageSize: 10,
+          page: 1,
+          alarmStartDate: "",
+          alarmType: "",
+          alarmEndDate: "",
+          standNo: "",
+          deviceBoxMac: ""
+        },
+        total: 0,
+        resultList: [],
+        dialogVisible: false,
+        roleList: [],
+        roleTree: [],
+        ruleForm: {
+          type: ""
+        }, //新增form 表单
+        rules: {
+          type: [
+            {
+              required: true,
+              message: "请选择告警类型",
+              trigger: "blur"
+            }
+          ]
+        }, //新增表单的校验
+        type: [
+          "短路报警",
+          "浪涌报警",
+          "过载报警",
+          "温度报警",
+          "漏电报警",
+          "过流报警",
+          "过压报警",
+          "漏电保护功能正常",
+          "漏电保护自检未完成",
+          "打火报警",
+          "欠压预警",
+          "欠压告警",
+          "过压预警",
+          "漏电预警",
+          "电流预警",
+          "节点通信中断",
+          "节点通信恢复"
+        ] //所有告警类型
+      },
+      created() {
+        let that = this;
+        $.ajax({
+          type: "POST",
+          url: "../projectinfo/getCurrentProject",
+          dataType: "json",
+          cache: false,
+          async: false,
+          success: function(data) {
+            if (data.code == 0) {
+              that.params.projectId = data.currentProject.id;
+              that.search();
+              that.getRoles();
+            }
+          }
+        });
+      },
+      methods: {
+        closeDetail() {
+          this.detailShow = false;
+          this.currentRow = {};
+        },
+        shangbaoOk() {
+          // postAction('')
+          this.shangbaoParams.pictureNames = this.fileList
+            .map(item => BASEURL + "/app/dashbaord/viewFlowImg/" + item)
+            .join(",");
+          console.log(this.shangbaoParams.pictureNames);
+          getAction(
+            "/app/dashbaord/flowOrderSubmit",
+            this.shangbaoParams,
+            res => {
+              console.log(res);
+              let that = this;
+              if (res.code == 0) {
+                this.$message({
+                  type: "success",
+                  message: "上报成功",
+                  onClose() {
+                    getAction(
+                      "/app/dashbaord/updateFlowOrderStatus",
+                      {
+                        alarmFlowId: that.shangbaoParams.alarmFlowId,
+                        status: 2
+                      },
+                      result => {
+                        if (res.code == 0) {
+                          that.$refs.upload.clearFiles();
+                          that.shangbaoParams.pictureNames = "";
+                          that.fileList = [];
+                          that.shangbaoParams.alarmFlowId = "";
+                          that.shangbaoParams.remark = "";
+                          that.shangbaoShow = false;
+                          that.search();
+                        }
+                      }
+                    );
+                  }
+                });
+              }
+            }
+          );
+        },
+        shangbaoCancel() {
+          this.shangbaoShow = false;
+          this.shangbaoParams.pictureNames = "";
+          this.fileList = [];
+          this.shangbaoParams.alarmFlowId = "";
+          this.shangbaoParams.remark = "";
+        },
+        handleAvatarSuccess(res, file) {
+          // console.log(file);
+          // console.log(URL.createObjectURL(file.raw));
+          // console.log(this.fileList);
+          this.fileList.push(res.pictureName);
+          console.log(this.fileList);
+        },
+        handleRemove(file, fileList) {
+          console.log(file, fileList);
+          console.log();
+          let index = this.fileList.indexOf(file.response.pictureName);
+          this.fileList.splice(index, 1);
+          console.log(this.fileList);
+        },
+        handlePictureCardPreview(file) {
+          this.dialogImageUrl = file.url;
+          this.showImage = true;
+        },
+        showImages(url) {
+          this.dialogImageUrl = url;
+          this.showImage = true;
+        },
+        shangbao(id) {
+          getAction(
+            "/app/dashbaord/queryFlowOrderDetail",
+            { alarmFlowId: id },
+            res => {
+              this.shangbaoShow = true;
+              console.log(res);
+              this.currentRow = res.flow;
+              this.shangbaoParams.alarmFlowId = id;
+            }
+          );
+        },
+        showDetail(id) {
+          getAction(
+            "/app/dashbaord/queryFlowOrderDetail",
+            { alarmFlowId: id },
+            res => {
+              this.detailShow = true;
+              console.log(res);
+              this.currentRow = res.flow;
+              // this.shangbaoParams.alarmFlowId = id;
+            }
+          );
+        },
+        // 指派
+        zhipai(id) {
+          this.showPeopleDialog = true;
+          this.rowId = id;
+        },
+        zhipaiOk() {
+          if (!this.roleId) {
+            this.$message({
+              type: "error",
+              message: "请选择指派人"
+            });
+            return;
+          }
+          getAction(
+            "/app/dashbaord/updateFlowOrderDeal",
+            {
+              alarmFlowId: this.rowId,
+              dealId: this.roleId[1]
+            },
+            res => {
+              if (res.code == 0) {
+                let that = this;
+                this.$message({
+                  type: "success",
+                  message: "指派成功",
+                  onClose() {
+                    that.showPeopleDialog = false;
+                    that.rowId = "";
+                    that.roleId = "";
+                    that.search();
+                  }
+                });
+              }
+            }
+          );
+        },
+        zhipaiCancel() {
+          this.showPeopleDialog = false;
+          this.rowId = "";
+          this.roleId = "";
+        },
+        // 选择指派人切换事件
+        handleChange(val) {
+          console.log(val);
+        },
+
+        //dealNow马上处理
+        dealNow(id) {
+          this.$confirm("确定开始处理吗?", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          })
+            .then(() => {
+              getAction(
+                "/app/dashbaord/updateFlowOrderStatus",
+                {
+                  alarmFlowId: id,
+                  status: 1
+                },
+                res => {
+                  if (res.code == 0) {
+                    this.$message({
+                      type: "success",
+                      message: "已经开始处理了哦~"
+                    });
+                    this.search();
+                  }
+                }
+              );
+            })
+            .catch(() => {});
+        },
+        dateFormat(date, format) {
+          date = new Date(date);
+          var map = {
+            M: date.getMonth() + 1, // 月份
+            d: date.getDate(), // 日
+            h: date.getHours(), // 小时
+            m: date.getMinutes(), // 分
+            s: date.getSeconds(), // 秒
+            q: Math.floor((date.getMonth() + 3) / 3), // 季度
+            S: date.getMilliseconds() // 毫秒
+          };
+          format = format.replace(/([yMdhmsqS])+/g, function(all, t) {
+            var v = map[t];
+            if (v !== undefined) {
+              if (all.length > 1) {
+                v = "0" + v;
+                v = v.substr(v.length - 2);
+              }
+              return v;
+            } else if (t === "y") {
+              return (date.getFullYear() + "").substr(4 - all.length);
+            }
+            return all;
+          });
+          return format;
+        },
+        // 查询所有角色
+        getRoles() {
+          getAction("/app/dashbaord/queryRoleUser", {}, res => {
+            console.log(res);
+            res.roleUser.forEach(value => {
+              value.userName = value.name;
+            });
+            this.roleTree = res.roleUser;
+            this.roleList = res.roleUser.reduce(function(total, current) {
+              return total.concat(current.userList);
+            }, []);
+          });
+        },
+        currentChange(page) {
+          console.log(page);
+          this.params.page = page;
+          this.search();
+        },
+        search() {
+          console.log(this.params);
+          getAction("/app/dashbaord/getFlowPage", this.params, res => {
+            console.log(res);
+            this.resultList = res.dataList;
+            this.total = Number(res.total);
+          });
+        },
+        reset() {
+          this.params.alarmStartDate = "";
+          this.params.alarmType = "";
+          this.params.alarmEndDate = "";
+          this.params.standNo = "";
+          this.params.deviceBoxMac = "";
+          this.params.status = "";
+        },
+        add() {
+          this.dialogVisible = true;
+        },
+        handleClose() {
+          console.log(123);
+        },
+        addSubmit() {}
+      }
+    });
+  </script>
+</html>

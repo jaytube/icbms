@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wz.modules.deviceinfo.dao.DeviceSwitchInfoDao">
+
+
+    <resultMap type="com.wz.modules.deviceinfo.entity.DeviceSwitchInfoEntity" id="deviceSwitchInfoMap">
+        <result property="id" column="id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="locationId" column="location_id"/>
+        <result property="deviceBoxId" column="device_box_id"/>
+        <result property="deviceSwitchName" column="device_switch_name"/>
+        <result property="address" column="address"/>
+        <result property="deviceSwitchStatus" column="device_switch_status"/>
+        <result property="switchElectric" column="switch_electric"/>
+        <result property="switchVoltage" column="switch_voltage"/>
+        <result property="switchTemperature" column="switch_temperature"/>
+        <result property="switchPower" column="switch_power"/>
+        <result property="switchLeakage" column="switch_leakage"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createId" column="create_id"/>
+        <result property="updateId" column="update_id"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+		id, 
+		project_id,
+		location_id,
+		device_box_id, 
+		device_switch_name, 
+		address,
+		device_switch_status, 
+		switch_electric, 
+		switch_voltage, 
+		switch_temperature, 
+		switch_power, 
+		switch_leakage, 
+		create_time, 
+		update_time, 
+		create_id, 
+		update_id, 
+		remark
+    </sql>
+
+	<select id="queryObject" resultType="com.wz.modules.deviceinfo.entity.DeviceSwitchInfoEntity" resultMap="deviceSwitchInfoMap">
+		select
+		<include refid="Base_Column_List" />
+		from device_switch_info
+		where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.wz.modules.deviceinfo.entity.DeviceSwitchInfoEntity" resultMap="deviceSwitchInfoMap">
+		select
+		<include refid="Base_Column_List" />,(SELECT project_name FROM project_info p WHERE p.id=s.project_id) AS projectName,
+		(SELECT concat(concat_ws(":","楼栋",l.building_num),concat_ws(":","房间号:",l.room_num),concat_ws(":","具体位置",l.position_dtl)) FROM location_info l WHERE l.id=s.location_id) AS locationName,
+		(SELECT device_box_num FROM device_box_info d WHERE d.id=s.device_box_id) AS deviceBoxName
+		from device_switch_info s
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+    <select id="queryListByBean" resultType="com.wz.modules.deviceinfo.entity.DeviceSwitchInfoEntity" resultMap="deviceSwitchInfoMap">
+        select
+        <include refid="Base_Column_List" />
+        from device_switch_info
+        WHERE 1=1
+    </select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from device_switch_info
+	</select>
+	 
+	<insert id="save" parameterType="com.wz.modules.deviceinfo.entity.DeviceSwitchInfoEntity">
+		insert into device_switch_info
+		(
+			`id`, 
+			`project_id`, 
+			`location_id`, 
+			`device_box_id`, 
+			`device_switch_name`,
+			`address`,
+			`device_switch_status`, 
+			`switch_electric`, 
+			`switch_voltage`, 
+			`switch_temperature`, 
+			`switch_power`, 
+			`switch_leakage`, 
+			`create_time`, 
+			`update_time`, 
+			`create_id`, 
+			`update_id`, 
+			`remark`
+		)
+		values
+		(
+			#{id}, 
+			#{projectId}, 
+			#{locationId}, 
+			#{deviceBoxId}, 
+			#{deviceSwitchName}, 
+			#{address}, 
+			#{deviceSwitchStatus}, 
+			#{switchElectric}, 
+			#{switchVoltage}, 
+			#{switchTemperature}, 
+			#{switchPower}, 
+			#{switchLeakage}, 
+			#{createTime}, 
+			#{updateTime}, 
+			#{createId}, 
+			#{updateId}, 
+			#{remark}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.wz.modules.deviceinfo.entity.DeviceSwitchInfoEntity">
+		update device_switch_info 
+		<set>
+			<if test="projectId != null">`project_id` = #{projectId}, </if>
+			<if test="locationId != null">`location_id` = #{locationId}, </if>
+			<if test="deviceBoxId != null">`device_box_id` = #{deviceBoxId}, </if>
+			<if test="deviceSwitchName != null">`device_switch_name` = #{deviceSwitchName}, </if>
+			<if test="address != null">`address` = #{address}, </if>
+			<if test="deviceSwitchStatus != null">`device_switch_status` = #{deviceSwitchStatus}, </if>
+			<if test="switchElectric != null">`switch_electric` = #{switchElectric}, </if>
+			<if test="switchVoltage != null">`switch_voltage` = #{switchVoltage}, </if>
+			<if test="switchTemperature != null">`switch_temperature` = #{switchTemperature}, </if>
+			<if test="switchPower != null">`switch_power` = #{switchPower}, </if>
+			<if test="switchLeakage != null">`switch_leakage` = #{switchLeakage}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="createId != null">`create_id` = #{createId}, </if>
+			<if test="updateId != null">`update_id` = #{updateId}, </if>
+			<if test="remark != null">`remark` = #{remark}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from device_switch_info where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from device_switch_info where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

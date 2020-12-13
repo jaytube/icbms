@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wz.modules.devicelog.dao.DeviceAlarmFlowDao">
+
+	<resultMap type="com.wz.modules.devicelog.entity.DeviceAlarmFlowEntity"
+		id="deviceAlarmFlowMap">
+		<result property="id" column="id" />
+		<result property="alarmId" column="alarm_id" />
+		<result property="projectId" column="project_id" />
+		<result property="workNo" column="work_no" />
+		<result property="alarmContent" column="alarm_content" />
+		<result property="remark" column="remark" />
+		<result property="filePath" column="file_path" />
+		<result property="status" column="status" />
+		<result property="createTime" column="create_time" />
+		<result property="createId" column="create_id" />
+		<result property="updateId" column="update_id" />
+		<result property="updateTime" column="update_time" />
+		<result property="dealId" column="deal_id" />
+		<result property="dealTime" column="deal_Time" />
+
+		<association property="alarmInfoLog"
+			javaType="com.wz.modules.devicelog.entity.DeviceAlarmInfoLogEntity">
+			<result property="id" column="al_id" />
+			<result property="projectId" column="al_project_id" />
+			<result property="deviceBoxMac" column="al_device_box_mac" />
+			<result property="deviceBoxId" column="al_device_box_id" />
+			<result property="node" column="al_node" />
+			<result property="alarmLevel" column="al_alarm_level" />
+			<result property="createTime" column="al_create_time" />
+
+
+			<result property="type" column="al_type" />
+			<result property="info" column="al_info" />
+			<result property="alarmStatus" column="al_alarm_status" />
+			<result property="remark" column="al_remark" />
+			<result property="secBoxGateway" column="sec_box_gateway" />
+			<result property="standNo" column="stand_no" />
+			<result property="deviceBoxName" column="device_box_name" />
+		</association>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id,
+		alarm_id,
+		project_id,
+		work_no,
+		alarm_content,
+		remark,
+		file_path,
+		status,
+		create_time,
+		create_id,
+		update_id,
+		update_time,
+		deal_id,
+		deal_time
+	</sql>
+
+	<select id="queryObject"
+		resultType="com.wz.modules.devicelog.entity.DeviceAlarmFlowEntity">
+		select
+		<include refid="Base_Column_List" />
+		from device_alarm_flow
+		where id = #{value}
+	</select>
+
+	<select id="queryList"
+		resultType="com.wz.modules.devicelog.entity.DeviceAlarmFlowEntity">
+		select
+		<include refid="Base_Column_List" />
+		from device_alarm_flow
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryListByBean"
+		resultType="com.wz.modules.devicelog.entity.DeviceAlarmFlowEntity">
+		select
+		<include refid="Base_Column_List" />
+		from device_alarm_flow
+		WHERE 1=1
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(*) from
+		device_alarm_flow
+	</select>
+
+	<insert id="save"
+		parameterType="com.wz.modules.devicelog.entity.DeviceAlarmFlowEntity">
+		insert into device_alarm_flow
+		(
+		`id`,
+		`alarm_id`,
+		`project_id`,
+		`work_no`,
+		`alarm_content`,
+		`remark`,
+		`file_path`,
+		`status`,
+		`create_time`,
+		`create_id`,
+		`update_id`,
+		`update_time`,
+		`deal_id`,
+		`deal_time`
+		)
+		values
+		(
+		#{id},
+		#{alarmId},
+		#{projectId},
+		#{workNo},
+		#{alarmContent},
+		#{remark},
+		#{filePath},
+		#{status},
+		#{createTime},
+		#{createId},
+		#{updateId},
+		#{updateTime},
+		#{dealId},
+		#{dealTime}
+		)
+	</insert>
+
+	<update id="update"
+		parameterType="com.wz.modules.devicelog.entity.DeviceAlarmFlowEntity">
+		update device_alarm_flow
+		<set>
+			<if test="alarmId != null">`alarm_id` = #{alarmId}, </if>
+			<if test="workNo != null">`work_no` = #{workNo}, </if>
+			<if test="alarmContent != null">`alarm_content` = #{alarmContent}, </if>
+			<if test="remark != null">`remark` = #{remark}, </if>
+			<if test="filePath != null">`file_path` = #{filePath}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="createId != null">`create_id` = #{createId}, </if>
+			<if test="updateId != null">`update_id` = #{updateId}, </if>
+			<if test="dealId != null">`deal_id` = #{dealId}, </if>
+			<if test="dealTime != null">`deal_time` = #{dealTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<delete id="delete">
+		delete from device_alarm_flow where id = #{value}
+	</delete>
+
+	<delete id="deleteBatch">
+		delete from device_alarm_flow where id in
+		<foreach item="id" collection="array" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<select id="queryFlowPage" resultMap="deviceAlarmFlowMap">
+		select
+		a.id,a.alarm_id,a.project_id,a.work_no,a.alarm_content,a.remark,a.file_path,a.status,
+		a.create_time,a.create_id,a.update_id,a.update_time,a.deal_id,a.deal_time,
+		b.id al_id,b.project_id al_project_id,b.device_box_mac
+		al_device_box_mac,b.device_box_id al_device_box_id,b.type al_type,
+		b.node al_node,b.alarm_level al_alarm_level,b.info
+		al_info,b.alarm_status
+		al_alarm_status,b.remark al_remark,b.create_time
+		al_create_time,
+		c.sec_box_gateway,c.stand_no,c.device_box_name
+		deviceBoxName
+		from device_alarm_flow a,
+		device_alarm_info_log
+		b,device_box_info c
+		where
+		a.alarm_id = b.id and b.device_box_id = c.id
+		and a.project_id = #{projectId}
+
+		<if test="status != null and status.trim() != ''">
+			and a.status = #{status}
+		</if>
+		
+		
+		<if test="alarmStartDate != null and alarmStartDate.trim() != ''">
+			and DATE_FORMAT(b.create_time, '%Y-%m-%d') &gt;=
+			#{alarmStartDate} 
+		</if>
+		
+		<if test="alarmEndDate != null and alarmEndDate.trim() != ''">
+			and DATE_FORMAT(b.create_time, '%Y-%m-%d') &lt;=
+			#{alarmEndDate}
+		</if>
+		
+		<if test="deviceBoxMac != null and deviceBoxMac.trim() != ''">
+			and c.device_box_mac like concat('%',#{deviceBoxMac.trim()},'%')
+		</if>
+		
+		<if test="standNo != null and standNo.trim() != ''">
+			and c.device_box_mac like concat('%',#{standNo.trim()},'%')
+		</if>
+		
+		<if test="alarmType != null and alarmType.trim() != ''">
+			and b.type = #{alarmType}
+		</if>
+		order by a.create_time desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryFlowTotal" resultType="int">
+		select count(1)
+		from
+		device_alarm_flow a,device_alarm_info_log b
+		where a.alarm_id = b.id and
+		a.project_id = #{projectId}
+		<if test="status != null and status.trim() != ''">
+			and a.status = #{status}
+		</if>
+		
+		
+		<if test="alarmStartDate != null and alarmStartDate.trim() != ''">
+			and DATE_FORMAT(b.create_time, '%Y-%m-%d') &gt;=
+			#{alarmStartDate} 
+		</if>
+		
+		<if test="alarmEndDate != null and alarmEndDate.trim() != ''">
+			and DATE_FORMAT(b.create_time, '%Y-%m-%d') &lt;=
+			#{alarmEndDate}
+		</if>
+		
+		<if test="deviceBoxMac != null and deviceBoxMac.trim() != ''">
+			and c.device_box_mac like concat('%',#{deviceBoxMac.trim()},'%')
+		</if>
+		
+		<if test="standNo != null and standNo.trim() != ''">
+			and c.device_box_mac like concat('%',#{standNo.trim()},'%')
+		</if>
+		
+		<if test="alarmType != null and alarmType.trim() != ''">
+			and b.type = #{alarmType}
+		</if>
+	</select>
+</mapper>

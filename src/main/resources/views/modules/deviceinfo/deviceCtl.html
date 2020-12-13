@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>首页</title>
+
+    <link rel="stylesheet" href="${rc.contextPath}/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="${rc.contextPath}/css/index.css">
+
+    <link rel="stylesheet" href="${rc.contextPath}/css/commen.css">
+
+    <link rel="stylesheet" href="${rc.contextPath}/css/control.css">
+
+    <link rel="stylesheet" href="${rc.contextPath}/plugins/ztree/css/metroStyle/metroStyle.css">
+
+</head>
+
+<body>
+
+    <div id="control" v-cloak>
+
+        <el-container class="content">
+
+            <el-aside class="aside" style="width: 23%; ">
+
+                <div class="tree">
+                    <ul id="allLocationinfoTree" class="ztree"></ul>
+                </div>
+
+                <div class="btn1">
+                    <el-radio-group v-model="online" @change='change'>
+                        <el-radio-button label="2">全部</el-radio-button>
+                        <el-radio-button label="0">在线</el-radio-button>
+                        <el-radio-button label="1">离线</el-radio-button>
+                    </el-radio-group>
+                </div>
+            </el-aside>
+
+            <el-container>
+                <el-main v-if="show  && !loading">
+                    <el-tabs v-model="isShishi" type="card" @tab-click="tabsChange">
+                        <el-tab-pane style="border-left: 1px solid rgba(0,241,225,.1);" label="实时数据" name="1">
+                            <div>
+                                <div class="box__top clearfix">
+                                    <div class='box__showNo clearfix'>
+                                        <span>展位号</span>
+                                        <span>{{boxInfo.standNo}}</span>
+                                    </div>
+                                    <div class='box__showNo'>
+                                        <span>电箱号</span>
+                                        <span>{{boxInfo.deviceBoxNum}}</span>
+                                    </div>
+                                    <div class='box__showNo'>
+                                        <span>二级箱号</span>
+                                        <span>{{boxInfo.secBoxGateway}}</span>
+                                    </div>
+                                    <div class='box__showNo'>
+                                        <span>电箱容量</span>
+                                        <span>{{boxInfo.boxCapacity}}</span>
+                                    </div>
+                                </div>
+                                <div class="box__right">
+                                    <div class="box__title clearfix">
+                                        <div style="float:left">
+                                            <el-switch v-model="deviceSwitchStatus" active-color="#13ce66" inactive-color="#ff4949" @click.native='switchChange'>
+                                            </el-switch>
+                                        </div>
+                                        <div style="float:right">
+                                            <el-button type='primary' @click="resetValue">刷新</el-button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="table__top">
+                                    <div class="table__tr clearfix">
+                                        <div>漏电流</div>
+                                        <div>温度</div>
+                                        <div>电压</div>
+                                        <div>电流</div>
+                                        <div>功率</div>
+                                    </div>
+                                    <div class="table__td clearfix" v-if="switchInfo">
+                                        <div>{{switchInfo.switchLeakage}}mA</div>
+                                        <div>{{switchInfo.switchTemperature}}℃</div>
+                                        <div>{{switchInfo.switchVoltage}}V</div>
+                                        <div>{{switchInfo.switchElectric}}A</div>
+                                        <div>{{switchInfo.switchPower}}W</div>
+                                    </div>
+                                </div>
+                                <div class="table__bottom">
+                                    <div class="current__tr clearfix">
+                                        <div></div>
+                                        <div>A相</div>
+                                        <div>B相</div>
+                                        <div>C相</div>
+                                    </div>
+                                    <div class="current__td clearfix">
+                                        <div>电流</div>
+                                        <div>{{switchInfo.phaseCurrentA}}A</div>
+                                        <div>{{switchInfo.phaseCurrentB}}A</div>
+                                        <div>{{switchInfo.phaseCurrentC}}A</div>
+                                    </div>
+                                    <div class="current__td clearfix">
+                                        <div>电压</div>
+                                        <div>{{switchInfo.phaseVoltageA}}V</div>
+                                        <div>{{switchInfo.phaseVoltageB}}V</div>
+                                        <div>{{switchInfo.phaseVoltageC}}V</div>
+                                    </div>
+                                    <div class="current__td clearfix">
+                                        <div>功率</div>
+                                        <div>{{switchInfo.phasePowerA}}W</div>
+                                        <div>{{switchInfo.phasePowerB}}W</div>
+                                        <div>{{switchInfo.phasePowerC}}W</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane style="border-left: 1px solid rgba(0,241,225,.1);" label="历史数据" name="2">
+                            <div>
+                                <div style="width:90%; margin:10px auto; overflow:hidden">
+                                    <div style="float:left">
+                                        <el-radio-group v-model="hours" @change='changeTime'>
+                                            <el-radio-button label="1">一小时</el-radio-button>
+                                            <el-radio-button label="24">一天内</el-radio-button>
+                                            <el-radio-button label="72">三天内</el-radio-button>
+                                        </el-radio-group>
+                                    </div>
+                                    
+    
+                                    <div style="float:right">
+                                        <el-radio-group v-model="types" @change='changeTypes'>
+                                            <el-radio-button label="1">电流</el-radio-button>
+                                            <el-radio-button label="2">电压</el-radio-button>
+                                            <el-radio-button label="3">功率</el-radio-button>
+                                        </el-radio-group>
+                                    </div>
+                                </div>
+                                
+                                <div style="width:90%;margin:20px auto;height:350px;" id='charts'></div>
+                                <div style="width:90%;margin:20px auto;height:500px;">
+                                        <el-table :data="historyInfo" border style="width: 100%" height="500">
+        
+                                            <el-table-column prop="switchElectric" label="电流(A)"  :show-overflow-tooltip='true'>
+                                            </el-table-column>
+    
+                                            <el-table-column prop="switchVoltage" label="电压(V)" :show-overflow-tooltip='true'>
+                                            </el-table-column>
+    
+                                            <el-table-column prop="switchPower" label="功率(W)" :show-overflow-tooltip='true'>
+                                            </el-table-column>
+
+                                            <el-table-column prop="switchTemperature" label="温度(℃)" :show-overflow-tooltip='true'>
+                                            </el-table-column>
+                                            <el-table-column prop="switchLeakage" label="漏电流(mA)" :show-overflow-tooltip='true'>
+                                            </el-table-column>
+                                            <el-table-column prop="createTime" label="时间" :show-overflow-tooltip='true'>
+                                            </el-table-column>
+    
+                                        </el-table>
+                                </div>
+                            </div>
+
+                        </el-tab-pane>
+                        <el-tab-pane label="实时告警" name="3">
+                            <div>
+                                <div class="addressInfoSwitch">
+
+                                    <div class="selectWrap">
+        
+                                        实时告警
+        
+                                    </div>
+        
+                                    <div class="showInfo">
+        
+                                        <div class="infoShow" v-if="status">
+        
+                                        </div>
+        
+                                        <div class="alarmShow">
+        
+                                            <el-table :data="tableData" border style="width: 100%">
+        
+                                                <el-table-column prop="node" label="线路"  :show-overflow-tooltip='true'>
+        
+                                                </el-table-column>
+        
+                                                <el-table-column prop="type" label="告警类型" :show-overflow-tooltip='true'>
+        
+                                                </el-table-column>
+        
+                                                <el-table-column prop="recordTime" label="告警时间" :show-overflow-tooltip='true'>
+        
+                                                </el-table-column>
+        
+                                            </el-table>
+        
+                                        </div>
+        
+                                    </div>
+        
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
+                </el-main>
+
+                <el-main v-if='!show && !loading'>
+                        <div style="text-align:center;margin-top: 50px">
+                            <H1>抱歉，此电箱暂无数据</H1>
+                        </div>
+                </el-main>
+            </el-container>
+        </el-container>
+
+    </div>
+
+</body>
+
+<script src="${rc.contextPath}/js/plugins/vue.js"></script>
+
+<script src="${rc.contextPath}/js/app/echarts.min.js"></script>
+
+<script src="${rc.contextPath}/js/jquery.min.js"></script>
+
+<script src="${rc.contextPath}/js/bootstrap.min.js"></script>
+
+<script src="${rc.contextPath}/js/plugins/element.js"></script>
+
+<script src="${rc.contextPath}/js/plugins/plugin.js"></script>
+
+<script src="${rc.contextPath}/js/plugins/consts.js"></script>
+
+<script src="${rc.contextPath}/js/plugins/getData.js"></script>
+
+<script src="${rc.contextPath}/plugins/ztree/jquery.ztree.all.min.js"></script>
+
+<script src="${rc.contextPath}/js/ztree.hide.js"></script>
+
+<script src="${rc.contextPath}/js/ztree.util.js"></script>
+
+<script src="${rc.contextPath}/js/control.js"></script>
+
+</html>
+
+<style>
+    .ztree li a.curSelectedNode{
+        background-color: burlywood
+    }
+    .ztree li span.button.ico_docu{
+        margin-top: 5px;
+    }
+    .el-tabs__item.is-top{
+        color: #cef5ff;
+    }
+    .el-tabs__item.is-top.is-active{
+        color: #ffffff;background-color: rgba(0,241,225,.1);
+    }
+    .box-left{
+        position:relative;
+    }
+    .change__btn{
+        height: 50px;
+    }
+    .content{
+        height: 100vh;
+    }
+    .table__bottom{
+        padding: 20px;
+        margin-top: 20px;
+    }
+    .current__tr{
+        border: 2px solid rgba(0,241,225,.1);
+    }
+    .current__tr div{
+        line-height: 40px;
+        height: 40px;
+        text-align: center;
+        width: 25%;    color: rgba(206,245,225,.5);
+        float: left;
+        background-color: rgba(0,241,225,.1);
+        border-right: 2px solid rgba(0,241,225,.1);
+    }
+    .current__td{
+        border: 2px solid rgba(0,241,225,.1);
+        border-top: none;
+    }
+    .current__td div{
+        line-height: 40px;
+        height: 40px;
+        text-align: center;
+        width: 25%;
+        float: left;    color: rgba(206,245,225,.9);
+        border-right: 2px solid rgba(0,241,225,.1);border-top: 2px solid rgba(0,241,225,.1);
+    }
+    .current__td div:nth-child(1){
+        background-color: rgba(0,241,225,.1);
+    }
+    .current__tr div:nth-child(4){
+        border-right: none;
+    }
+    .table__top{
+        padding: 20px;
+        line-height: 40px;
+    }
+    .table__tr{
+        border: 2px solid rgba(0,241,225,.1);
+        text-align: center;
+    }
+    .table__tr div{
+        width: 20%;
+        float: left;
+        border-right: 2px solid rgba(0,241,225,.1);    color: rgba(206,245,225,.5);
+        box-sizing: border-box;
+        text-align: center;
+        background-color: rgba(0,241,225,.1);
+    }
+    .table__tr div:nth-child(5){
+        border: none;
+    }
+    .table__td{
+        border: 2px solid rgba(0,241,225,.1);
+        text-align: center;
+        border-top: none;
+    }
+    .table__td div{
+        width: 20%;
+        float: left;
+        border-right: 2px solid rgba(0,241,225,.1);
+        box-sizing: border-box;
+        text-align: center;
+    }
+    .table__td div:nth-child(5){
+        border: none;
+    }
+    .box__title{
+        height: 40px;
+        margin-top: 10px;
+        line-height: 40px;
+        padding: 0 20px;
+    }
+    .clearfix:after {
+        content: ".";
+        display: block;
+        height: 0;
+        clear: both;
+        visibility: hidden
+    }
+    
+    .clearfix {
+        *+height: 1%;
+    }
+
+    .box__top {
+        width: 95%;
+        margin: 0 auto;
+    }
+
+    .box__showNo {
+        width: 45%;
+        float: left; height: 43px;
+        margin-left: 10%;
+        border: 2px solid rgba(0,241,225,.1);
+        text-align: center;
+        margin-bottom: 20px;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .box__showNo:nth-child(1),
+    .box__showNo:nth-child(3) {
+        margin-left: 0;
+    }
+
+    .box__showNo span {
+        display: block;
+        float: left;
+        height: 40px;
+        line-height: 40px;
+    }
+
+    .box__showNo span:nth-child(1) {
+        width: 30%;
+    }
+
+    .box__showNo span:nth-child(2) {
+        width: 70%;
+    }
+
+    .box__showNo span:nth-child(1),
+    .box__showNo span:nth-child(3) {
+        background: rgba(0,241,225,.1);    color: rgba(206,245,225,.5);
+    }
+
+    .big {
+        width: 70% !important;
+        margin: 0 auto;
+    }
+
+    .liwrap {
+        width: 100% !important;
+    }
+
+    .boxInfo {
+        float: left;
+        width: 55%;
+        text-align: left;
+    }
+
+    .boxInfo1,
+    .boxInfo2,
+    .boxInfo3 {
+        height: 25px;
+        line-height: 25px;
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+    }
+
+    .big {
+        height: 280px !important;
+    }
+
+    .topright ul li {
+        width: 50%;
+        float: left;
+    }
+
+    .maintop {
+        height: 245px;
+    }
+
+    .boxInfo1 span,
+    .boxInfo2 span,
+    .boxInfo3 span {
+
+        width: 50%;
+        font-size: 14px;
+        text-align: left;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis
+    }
+
+    .disabeld {
+        background-color: rgba(0, 0, 0, 0.3)
+    }
+
+    .aside {
+        overflow: auto
+    }
+
+    .aside::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+
+    .aside::-webkit-scrollbar-track {
+        background-color: #fff;
+    }
+
+    .aside::-webkit-scrollbar-thumb {
+        background-color: white;
+    }
+
+    .el-header {
+        overflow-x: auto;
+        display: inline;
+        white-space: nowrap;
+    }
+
+    .el-header::-webkit-scrollbar {
+        width: 5px !important;
+        height: 5px !important;
+    }
+
+    /* .el-header::-webkit-scrollbar-track{background-color:#fff;} */
+    .el-header::-webkit-scrollbar-thumb {
+        background-color: #fff;
+    }
+
+    .center1 .el-switch.is-disabled {
+        opacity: 1 !important;
+    }
+
+    .center1 .el-switch.is-disabled .el-switch__core,
+    .el-switch.is-disabled .el-switch__label {
+        cursor: pointer !important;
+    }
+    .addressInfoSwitch{
+        padding:0
+    }
+</style>

@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wz.modules.sys.dao.UserDao">
+
+
+    <resultMap type="com.wz.modules.sys.entity.UserEntity" id="userMap">
+        <result property="id" column="id"/>
+        <result property="bapid" column="bapid"/>
+        <result property="baid" column="baid"/>
+        <result property="userName" column="user_name"/>
+        <result property="loginName" column="login_name"/>
+        <result property="passWord" column="pass_word"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="status" column="status"/>
+        <result property="salt" column="salt"/>
+        <result property="phone" column="phone"/>
+        <result property="photo" column="photo"/>
+        <result property="email" column="email"/>
+        <result property="createId" column="create_id"/>
+        <result property="updateId" column="update_id"/>
+        <result property="remark" column="remark"/>
+        <result property="projectIds" column="projectIds"/>
+    </resultMap>
+    
+    
+    <resultMap type="com.wz.modules.sys.entity.RoleEntity" id="roleUserMap">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="code" column="code" />
+		<result property="status" column="status" />
+		<result property="roleType" column="role_type" />
+		<result property="remark" column="remark" />
+
+		<collection property="userList" ofType="com.wz.modules.sys.entity.UserEntity">
+			<result property="id" column="user_id" />
+			<result property="bapid" column="user_bapid" />
+			<result property="userName" column="user_name" />
+			<result property="loginName" column="login_name" />
+			<result property="phone" column="phone" />
+		</collection>
+	</resultMap>
+
+    <sql id="Base_Column_List" >
+		id, 
+		bapid,
+		baid,
+		user_name,
+		login_name, 
+		pass_word, 
+		create_time, 
+		update_time, 
+		status, 
+		salt,
+		phone,
+		photo, 
+		email, 
+		create_id, 
+		update_id, 
+		remark,
+		projectIds
+    </sql>
+
+	<select id="queryObject" resultType="com.wz.modules.sys.entity.UserEntity" resultMap="userMap">
+		select
+		<include refid="Base_Column_List" />,(SELECT name FROM sys_organ o WHERE o.id=s.baid) AS baName
+		from sys_user s
+		where id = #{value}
+	</select>
+	
+	<select id="queryUserProjectRel" resultType="com.wz.modules.sys.entity.UserEntity" resultMap="userMap">
+		select
+		<include refid="Base_Column_List" />
+		from sys_user s
+		where 1=1
+		<if test="projectId != null and projectId.trim() != ''" >
+			AND projectIds LIKE concat('%',#{projectId},'%')
+		</if>
+	</select>
+	
+	<select id="queryObjectByRole" resultType="com.wz.modules.sys.entity.UserEntity" resultMap="userMap">
+		select
+			s.id, 
+			s.bapid,
+			s.baid,
+			s.user_name,
+			s.login_name, 
+			s.pass_word, 
+			s.create_time, 
+			s.update_time, 
+			s.status, 
+			s.salt,
+			s.phone,
+			s.photo, 
+			s.email, 
+			s.create_id, 
+			s.update_id, 
+			s.remark,
+			s.projectIds
+		from sys_user s,sys_user_role ur,sys_role r
+		where s.id = ur.user_id and ur.role_id = r.id and r.name = '运维'
+	</select>
+	
+	<!--根据登陆用户查询有效的用户-->
+	<select id="queryByLoginName" resultType="com.wz.modules.sys.entity.UserEntity" resultMap="userMap">
+		select
+		<include refid="Base_Column_List" />,(SELECT name FROM sys_organ o WHERE o.id=u.baid) AS baName,
+		(SELECT name FROM sys_organ o WHERE o.id=u.bapid) AS bapName
+		from sys_user u
+		where login_name = #{0}
+	</select>
+
+	<!--用户对应的组织id,数据权限控制-->
+	<select id="queryOrganIdByUserId" resultType="java.util.Map">
+		select
+			o.id organId,orl.role_id roleId
+		from sys_user_role ur LEFT JOIN
+			sys_organ_role orl ON ur.role_id=orl.role_id LEFT JOIN
+			sys_organ o ON orl.organ_id=o.id
+		where ur.user_id=#{userId} AND o.type=#{type}
+	</select>
+
+	<!--用户对应的组织id,数据权限控制 返回数组-->
+	<select id="queryOrganIdByUserIdArray" resultType="java.lang.String">
+		select
+		o.id
+		from sys_user_role ur LEFT JOIN
+		sys_role r on ur.role_id = r.id LEFT JOIN
+		sys_organ_role orl ON ur.role_id=orl.role_id LEFT JOIN
+		sys_organ o ON orl.organ_id=o.id
+		where ur.user_id=#{userId} AND o.type=#{type} AND r.status = '0'
+	</select>
+
+	<select id="queryList" resultType="com.wz.modules.sys.entity.UserEntity" resultMap="userMap">
+		select
+		<include refid="Base_Column_List" />,(SELECT name FROM sys_organ o WHERE o.id=s.baid) AS baName,
+		(SELECT name FROM sys_organ o WHERE o.id=s.bapid) AS bapName
+		from sys_user s
+		WHERE 1=1
+		<if test="userName != null and userName.trim() != ''" >
+			AND user_name=#{userName}
+		</if>
+
+		<!--  数据过滤  -->
+		${dataAuthSql}
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryListByBean" resultType="com.wz.modules.sys.entity.UserWindowDto">
+		select
+			id,user_name AS name,bapid
+		from sys_user
+		WHERE 1=1
+		<if test="name != null and name.trim() != ''" >
+			AND user_name LIKE concat('%',#{name},'%')
+		</if>
+
+	</select>
+
+
+
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from sys_user
+	</select>
+	 
+	<insert id="save"  parameterType="com.wz.modules.sys.entity.UserEntity">
+		insert into sys_user
+		(
+			`id`, 
+			`bapid`,
+			`baid`,
+			`user_name`,
+			`login_name`, 
+			`pass_word`, 
+			`create_time`, 
+			`update_time`, 
+			`status`, 
+			`salt`,
+			`phone`,
+			`photo`, 
+			`email`, 
+			`create_id`, 
+			`update_id`, 
+			`remark`,
+			`projectIds`
+		)
+		values
+		(
+			#{id}, 
+			#{bapid},
+			#{baid},
+			#{userName},
+			#{loginName}, 
+			#{passWord}, 
+			#{createTime}, 
+			#{updateTime}, 
+			#{status}, 
+			#{salt},
+			#{phone},
+			#{photo}, 
+			#{email}, 
+			#{createId}, 
+			#{updateId}, 
+			#{remark},
+			#{projectIds}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.wz.modules.sys.entity.UserEntity">
+		update sys_user 
+		<set>
+			<if test="bapid != null">`bapid` = #{bapid}, </if>
+			<if test="baid != null">`baid` = #{baid}, </if>
+			<if test="userName != null">`user_name` = #{userName}, </if>
+			<if test="loginName != null">`login_name` = #{loginName}, </if>
+			<if test="passWord != null">`pass_word` = #{passWord}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="salt != null">`salt` = #{salt}, </if>
+			<if test="phone != null">`phone` = #{phone}, </if>
+			<if test="photo != null">`photo` = #{photo}, </if>
+			<if test="email != null">`email` = #{email}, </if>
+			<if test="createId != null">`create_id` = #{createId}, </if>
+			<if test="updateId != null">`update_id` = #{updateId}, </if>
+			<if test="remark != null">`remark` = #{remark}</if>
+			<if test="projectIds != null">`projectIds` = #{projectIds}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<update id="updatePassword" parameterType="java.util.Map">
+		update sys_user
+		set pass_word=#{passWord},salt=#{salt}
+		where id = #{id}
+	</update>
+
+	<!--批量重置密码-->
+	<update id="resetPassWord" parameterType="java.util.Map">
+		update sys_user
+		set pass_word=#{passWord},salt=#{salt}
+		where id IN
+		<foreach item="id" collection="ids" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+	<!--批量更新用户状态-->
+	<update id="updateBatchStatus" parameterType="java.util.Map">
+		update sys_user
+		set status=#{status}
+		where id IN
+		<foreach item="id" collection="ids" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+	<delete id="delete">
+		delete from sys_user where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from sys_user where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<select id="queryRoleUser" resultMap="roleUserMap">
+		SELECT 
+		a.id,a.name,a.code,a.status,a.role_type,a.remark,
+		c.id user_id,c.bapid user_bapid,c.user_name,c.login_name,c.phone
+		FROM SYS_ROLE a,sys_user_role b,sys_user c
+		WHERE a.id = b.role_id AND b.user_id = c.id
+	</select>
+</mapper>

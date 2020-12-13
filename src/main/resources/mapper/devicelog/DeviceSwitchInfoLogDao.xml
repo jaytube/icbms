@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wz.modules.devicelog.dao.DeviceSwitchInfoLogDao">
+	<resultMap type="com.wz.modules.devicelog.entity.DeviceSwitchInfoLogEntity"
+		id="deviceSwitchInfoLogMap">
+		<result property="id" column="id" />
+		<result property="projectId" column="project_id" />
+		<result property="deviceBoxId" column="device_box_id" />
+		<result property="deviceSwitchName" column="device_switch_name" />
+		<result property="address" column="address" />
+		<result property="deviceSwitchStatus" column="device_switch_status" />
+		<result property="switchElectric" column="switch_electric" />
+		<result property="switchVoltage" column="switch_voltage" />
+		<result property="switchTemperature" column="switch_temperature" />
+		<result property="switchPower" column="switch_power" />
+		<result property="switchLeakage" column="switch_leakage" />
+		<result property="createTime" column="create_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="createId" column="create_id" />
+		<result property="updateId" column="update_id" />
+		<result property="remark" column="remark" />
+		<result property="online" column="online" />
+		<result property="interfaceUpdateTime" column="interface_update_time" />
+		<result property="enableNetCtrl" column="enable_net_ctrl" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id,
+		project_id,
+		device_box_id,
+		device_switch_name,
+		address,
+		device_switch_status,
+		switch_electric,
+		switch_voltage,
+		switch_temperature,
+		switch_power,
+		switch_leakage,
+		create_time,
+		update_time,
+		create_id,
+		update_id,
+		remark,
+		online,
+		interface_update_time,
+		enable_net_ctrl
+	</sql>
+
+	<select id="queryObject"
+		resultType="com.wz.modules.devicelog.entity.DeviceSwitchInfoLogEntity"
+		resultMap="deviceSwitchInfoLogMap">
+		select
+		<include refid="Base_Column_List" />
+		from device_switch_info_log
+		where id = #{value}
+	</select>
+
+	<select id="queryList"
+		resultType="com.wz.modules.devicelog.entity.DeviceSwitchInfoLogEntity"
+		resultMap="deviceSwitchInfoLogMap">
+		select
+		<include refid="Base_Column_List" />
+		from device_switch_info_log
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryListByBean"
+		resultType="com.wz.modules.devicelog.entity.DeviceSwitchInfoLogEntity"
+		resultMap="deviceSwitchInfoLogMap">
+		select
+		<include refid="Base_Column_List" />
+		from device_switch_info_log
+		WHERE 1=1
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(*) from
+		device_switch_info_log
+	</select>
+
+	<insert id="save"
+		parameterType="com.wz.modules.devicelog.entity.DeviceSwitchInfoLogEntity">
+		insert into device_switch_info_log
+		(
+		`id`,
+		`project_id`,
+		`device_box_id`,
+		`device_switch_name`,
+		`address`,
+		`device_switch_status`,
+		`switch_electric`,
+		`switch_voltage`,
+		`switch_temperature`,
+		`switch_power`,
+		`switch_leakage`,
+		`create_time`,
+		`update_time`,
+		`create_id`,
+		`update_id`,
+		`remark`,
+		`online`,
+		`interface_update_time`,
+		`enable_net_ctrl`
+		)
+		values
+		(
+		#{id},
+		#{projectId},
+		#{deviceBoxId},
+		#{deviceSwitchName},
+		#{address},
+		#{deviceSwitchStatus},
+		#{switchElectric},
+		#{switchVoltage},
+		#{switchTemperature},
+		#{switchPower},
+		#{switchLeakage},
+		#{createTime},
+		#{updateTime},
+		#{createId},
+		#{updateId},
+		#{remark},
+		#{online},
+		#{interfaceUpdateTime},
+		#{enableNetCtrl}
+		)
+	</insert>
+
+	<delete id="deleteDeviceSwitchLog">
+		delete from device_switch_info_log where
+		interface_update_time &lt;= #{synDate}
+	</delete>
+
+	<update id="update"
+		parameterType="com.wz.modules.devicelog.entity.DeviceSwitchInfoLogEntity">
+		update device_switch_info_log
+		<set>
+			<if test="projectId != null">`project_id` = #{projectId}, </if>
+			<if test="deviceBoxId != null">`device_box_id` = #{deviceBoxId}, </if>
+			<if test="deviceSwitchName != null">`device_switch_name` = #{deviceSwitchName}, </if>
+			<if test="address != null">`address` = #{address}, </if>
+			<if test="deviceSwitchStatus != null">`device_switch_status` = #{deviceSwitchStatus}, </if>
+			<if test="switchElectric != null">`switch_electric` = #{switchElectric}, </if>
+			<if test="switchVoltage != null">`switch_voltage` = #{switchVoltage}, </if>
+			<if test="switchTemperature != null">`switch_temperature` = #{switchTemperature}, </if>
+			<if test="switchPower != null">`switch_power` = #{switchPower}, </if>
+			<if test="switchLeakage != null">`switch_leakage` = #{switchLeakage}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="createId != null">`create_id` = #{createId}, </if>
+			<if test="updateId != null">`update_id` = #{updateId}, </if>
+			<if test="remark != null">`remark` = #{remark}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<delete id="delete">
+		delete from device_switch_info_log where id =
+		#{value}
+	</delete>
+
+	<delete id="deleteBatch">
+		delete from device_switch_info_log where id in
+		<foreach item="id" collection="array" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<select id="queryAppList"
+		resultType="com.wz.modules.devicelog.entity.DeviceSwitchInfoLogEntity"
+		resultMap="deviceSwitchInfoLogMap">
+		select
+		<include refid="Base_Column_List" />
+		from device_switch_info_log WHERE 1=1
+		<if test="beginTime != null and beginTime.trim() != ''">
+			AND CREATE_TIME &gt;= #{beginTime}
+		</if>
+		<if test="endTime != null and endTime.trim() != ''">
+			AND CREATE_TIME &lt;= #{endTime}
+		</if>
+
+		<if test="projectId != null and projectId.trim() != ''">
+			AND PROJECT_ID = #{projectId}
+		</if>
+
+		order by CREATE_TIME desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryAppTotal" resultType="int">
+		select count(*) from
+		device_alarm_info_log WHERE 1=1
+		<if test="beginTime != null and beginTime.trim() != ''">
+			AND record_time &gt;= #{beginTime}
+		</if>
+		<if test="endTime != null and endTime.trim() != ''">
+			AND record_time &lt;= #{endTime}
+		</if>
+
+		<if test="projectId != null and projectId.trim() != ''">
+			AND PROJECT_ID = #{projectId}
+		</if>
+	</select>
+
+	<select id="getDeviceBoxHistory" resultMap="deviceSwitchInfoLogMap">
+		SELECT a.*
+			FROM device_switch_info_log a
+			WHERE create_time> DATE_ADD(NOW(), INTERVAL-#{hours} HOUR)
+			and project_id = #{projectId} and device_box_id = #{deviceBoxId}
+			order by a.create_time desc
+	</select>
+</mapper>

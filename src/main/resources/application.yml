@@ -1,0 +1,47 @@
+# Tomcat
+server:
+    tomcat:
+        uri-encoding: UTF-8
+        max-threads: 1000
+        min-spare-threads: 30
+    port: 8083
+    connection-timeout: 5000
+    context-path: /icbms
+spring:
+    # 环境 dev|test|pro
+    profiles:
+        active: dev #部署生产换成pro,开发dev
+
+    http:
+        multipart:
+            max-file-size: 100MB
+            max-request-size: 100MB
+            enabled: true
+    jackson:
+        time-zone: GMT+8
+        date-format: yyyy-MM-dd HH:mm:ss
+    resources: # 静态资源的路径
+        static-locations: classpath:/statics/,classpath:/views/
+    #JSP视图解析器
+    # 页面默认前缀目录
+    mvc:
+        view:
+            prefix: /WEB-INF/jsp/
+            suffix: .jsp
+
+# Mybatis配置
+mybatis:
+    mapperLocations: classpath:mapper/**/*.xml
+    configLocation: classpath:mybatis-config.xml
+
+# APP模块
+jwt:
+    # token 加密秘钥
+    secret: 3733b9170b1e4994bddcf1ce62c4c082
+    # token有效时长，7天，单位秒
+    expire: 604800
+    header: token
+
+security:
+    basic:
+        enabled: false

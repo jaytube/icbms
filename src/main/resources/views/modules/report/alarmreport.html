@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+    <title>告警报表</title>
+    #parse("modules/sys/header.html")
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn ">
+ 			 <div class=" row">
+                <div class="col-sm-4 form-group">
+				    <div style="line-height: 40px;text-align: right;" class="col-sm-4 control-label">开始时间:</div>
+                    <div  class="col-sm-8"><input type="text" class="form-control" id="beginTime" onclick="laydate({istime: false, format: 'YYYY-MM-DD', max: $('#endTime').val() });" v-model="q.beginTime" @keyup.enter="query" placeholder="开始时间">
+                    </div>
+                </div>
+                <div class="col-sm-4 form-group">
+				    <div style="line-height: 40px;text-align: right;" class="col-sm-4 control-label">结束时间:</div>
+                    <div  class="col-sm-8"><input type="text" class="form-control" id="endTime" onclick="laydate({istime: false, format: 'YYYY-MM-DD', min: $('#beginTime').val() });" v-model="q.beginTime" @keyup.enter="query" placeholder="结束时间">
+                	</div>
+                </div>
+                <button class="layui-btn layui-btn-normal" id="searchSubmit" @click="search"><i class="layui-icon">&#xe615;</i>查 询</button>
+            	<button class="layui-btn layui-btn-normal " id="exportAll" @click="exportAll"><i class="layui-icon">&#xe615;</i>导出</button>
+             </div>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+    <script src="${rc.contextPath}/js/report/alarmReport.js?_${date.systemTime}"></script>
+</body>
+<style>
+    .control-label{
+        height: 40px;
+        line-height: 40px;
+    }
+</style>
+</html>

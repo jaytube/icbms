@@ -1,0 +1,208 @@
+#control{
+    width: 100%;
+    margin:0 auto;
+}
+[v-cloak]{
+    display: none;
+}
+.banner{
+    height:10vh;
+    line-height: 10vh;
+    overflow: hidden;
+    display: flex;
+}
+.content{
+    width: 100%;
+    height:86vh;
+   /* border:1px solid black;*/
+}
+.aside{
+    width: 20%;
+   /* border-right:1px solid black;*/    background: rgba(0,117,169,0.3);
+}
+.aside-top{
+    width: 100%;
+    height: 5vh;
+    line-height: 5vh;
+    text-align: center;
+    background-color:#7ecef4;
+    color: white;
+    font-size:1.5rem;
+}
+.aside-banner{
+    border-bottom: 1px solid blueviolet;
+}
+.el-menu-item-group__title{
+    padding: 0;
+}
+.el-menu-item{
+    border-top: 1px solid black;
+}
+.el-tag div{
+    padding: 0 40px;
+    cursor: pointer;
+}
+.el-tag{
+    padding: 0;
+    margin: 0 10px;
+    overflow: hidden;
+}
+.el-header{
+    padding: 5px;
+    /*border-bottom: 1px solid black;*/border: 1px solid rgba(73,217,254,0.2);  
+    height: 42px!important;
+}
+.activeSwitchBox{
+    background-color: #11248f; color:#fff;
+}
+.boxWrap{
+    min-height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    background-color: red
+}
+.box-left{
+    flex: 2;
+    /*border-right: 1px solid black;*/    background: rgba(0,117,169,0.3);    overflow-y: auto;
+}
+.box-right{
+    flex: 1;    background: rgba(0,117,169,0.3);
+    margin-left: 10px;
+}
+.el-main{
+    padding: 0;
+    /* display: flex; */
+}
+.switchForAll{
+    text-align: right;;
+    padding: 20px;
+}
+.switchForAll .el-switch__core{
+    width: 80px!important;
+    height: 32px;
+    border-radius: 16px;
+}
+.switchForAll .el-switch__core:after{
+    width: 28px;
+    height: 28px;
+}
+.switchForAll .el-switch.is-checked .el-switch__core::after{
+    margin-left: -29px;
+}
+.addresses ul.liwrap{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    /* padding: 25px; */
+    padding-left: 20px;
+    padding-right: 20px;
+}
+.addresses ul li.big{
+    width: 23%;
+    height: 200px;
+    line-height: 30px;
+    /* display: flex;
+    flex-direction: column;
+    justify-content: center; */
+    /*background-color: aqua;*/border: 1px solid #49d9fe;
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.addressInfoSwitch{
+    padding: 20px;
+}
+.topright02 {
+    float: right;
+    padding-right: 5px;color: #49d9fe;
+    font-weight: bold;}
+	.topright01 {
+    float: left;
+    padding-left: 5px;}
+.selectWrap{
+    width: 100px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    margin: 0 auto;
+    /* display: flex; */
+    border-radius:16px;
+    /*border: 1px solid black;*/font-weight: bold;
+    overflow: hidden; 
+    margin-bottom: 36px;
+}
+.addressinfo,.alarms{
+    width: 100px;
+    border-radius: 16px;
+    line-height: 32px;
+    text-align: center;
+    float: left;
+    cursor: pointer;
+}
+.bg{
+    background-color: aqua;
+}
+.timeInfo li {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 5vh;
+    line-height: 5vh;
+}
+.center{
+    text-align: center;
+}
+.el-menu-item.is-active{
+    background-color: aquamarine;
+}
+.addresses ul li.activebg{
+    background-color: red;
+}
+.alarmShow{
+    box-sizing: border-box;
+}
+
+.maintop{
+    width: 100%;
+    height: 160px;
+    display: flex;
+    border-bottom: 1px solid #49d9fe;
+}
+.topleft{
+    flex: 1;
+    border-right: 1px solid #49d9fe;
+    /* padding-top: 20px; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+}
+.topleft img{
+    width: 50%;
+    margin-left:25%;
+}
+.topright{
+    flex: 2;
+}
+.topright ul li{
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;    font-size: 12px;
+}
+
+.tree{
+    height: 90%;
+    overflow: scroll;
+}
+.el-aside.aside{
+    position: relative
+}
+.btn1{
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    bottom: 20px;
+}

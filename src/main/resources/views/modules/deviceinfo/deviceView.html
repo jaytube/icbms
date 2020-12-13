@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>电箱配置表; InnoDB free: 237568 kB</title>
+#parse("modules/sys/header.html")
+</head>
+<body>
+	<div id="rrapp" v-cloak>
+		<div v-show="showList">
+			<div class="form-group col-sm-2">
+				<input type="text" class="form-control" v-model="q.deviceBoxMac"
+					@keyup.enter="query" placeholder="电箱MAC">
+			</div>
+			<!-- <div class="form-group col-sm-2">
+				<select v-model='q.online' placeholder='是否在线' style='width: 100%;height: 40px;line-height:40px;outline: none;text-indent:5px;background-color: white;border: 1px solid #ccc;border-radius:3px;'>
+					<option value ="0">在线</option>
+					<option value ="1">不在线</option>
+					<option value ="">所有</option>
+				</select>
+				<style>
+					option{
+						height: 40px;line-height:40px;outline: none;text-indent:5px;background-color: white;
+					}
+				</style>
+			</div> -->
+			
+			<button class="layui-btn layui-btn-normal" id="searchSubmit"
+				@click="search">
+				<i class="layui-icon">&#xe615;</i>查 询
+			</button>
+			<table id="jqGrid"></table>
+			<div id="jqGridPager"></div>
+		</div>
+
+		<div v-show="!showList" class="panel panel-default">
+			<div class="panel-heading">{{title}}</div>
+			<form class="form-horizontal">
+				<div class="form-group">
+					<div class="col-sm-2 control-label">电箱地址</div>
+					<div class="col-sm-10">
+						<input type="text" class="form-control"
+							v-model="deviceBoxConfig.deviceBoxAddress" placeholder="电箱地址" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-2 control-label">电箱MAC地址</div>
+					<div class="col-sm-10">
+						<input type="text" class="form-control"
+							v-model="deviceBoxConfig.deviceBoxMac" placeholder="电箱MAC地址" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-sm-2 control-label"></div>
+
+					<button class="layui-btn layui-btn-warm" type="button"
+						@click="reload" style="margin-left: 30px">返回</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script
+		src="${rc.contextPath}/js/deviceinfo/deviceView.js?_${date.systemTime}"></script>
+</body>
+</html>
