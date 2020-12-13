@@ -76,6 +76,34 @@
 		order by name
 	</select>
 
+	<select id="fetchAll"
+			resultType="com.wz.modules.projectinfo.entity.LocationInfoEntity"
+			resultMap="locationInfoMap">
+		select
+		<include refid="Base_Column_List" />
+		from location_info
+	</select>
+
+	<select id="findProjectXhibitionNodes"
+			resultType="com.wz.modules.projectinfo.entity.LocationInfoEntity"
+			resultMap="locationInfoMap">
+		select
+		<include refid="Base_Column_List" />
+		from location_info
+		where project_id = #{projectId} and type = 'EXHIBITION'
+		order by name
+	</select>
+
+	<update id="updateTypeBatch" parameterType="list" keyProperty="id">
+		<foreach collection="list" index="index" item="item" open="" separator=";" close="">
+			update location_info
+			<set>
+				type = #{item.type,jdbcType=VARCHAR},
+			</set>
+			WHERE id = #{item.id,jdbcType=VARCHAR}
+		</foreach>
+	</update>
+
 	<select id="queryTotal" resultType="int">
 		select count(*) from
 		location_info

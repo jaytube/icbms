@@ -1,6 +1,9 @@
 package com.wz.modules.migration.service.impl;
 
 import com.wz.modules.migration.service.MigrationService;
+import com.wz.modules.migration.util.LocationInfoUtil;
+import com.wz.modules.projectinfo.dao.LocationInfoDao;
+import com.wz.modules.projectinfo.entity.LocationInfoEntity;
 import com.wz.modules.sys.dao.UserDao;
 import com.wz.modules.sys.dao.UserProjectDao;
 import com.wz.modules.sys.entity.UserEntity;
@@ -31,16 +34,19 @@ public class MigrationServiceImpl implements MigrationService {
     @Autowired
     private UserDao userDao;
 
+    @Autowired
+    private LocationInfoDao locationInfoDao;
+
     @Override
     public Boolean migrateUserProjects() {
         Map<String, Object> map = new HashMap<>();
         List<UserEntity> users = userService.queryList(map);
 
-        if(!CollectionUtils.isEmpty(users)) {
+        if (!CollectionUtils.isEmpty(users)) {
             String[] userIds = users.stream().map(UserEntity::getId).collect(Collectors.toList()).toArray(new String[]{});
-            for(UserEntity user : users) {
+            for (UserEntity user : users) {
                 String projectIds = user.getProjectIds();
-                if(StringUtils.isNotBlank(projectIds)) {
+                if (StringUtils.isNotBlank(projectIds)) {
                     List<UserProjectEntity> userProjectEntities = Arrays.stream(projectIds.split(","))
                             .map(String::trim)
                             .map(t -> {
@@ -56,5 +62,23 @@ public class MigrationServiceImpl implements MigrationService {
         }
 
         return true;
+    }
+
+    @Override
+    public Boolean migrateLocationInfos() {
+        List<LocationInfoEntity> locationInfoEntities = locationInfoDao.fetchAll();
+        buildTree(locationInfoEntities);
+        return true;
+    }
+
+    private void buildTree(List<LocationInfoEntity> locationInfoEntities) {
+        if (org.apache.commons.collections.CollectionUtils.isEmpty(locationInfoEntities)) {
+            return;
+        }
+
+        locationInfoEntities.forEach(locationInfoEntity -> {
+            LocationInfoUtil.parseLocationNodeType(locationInfoEntity);
+        });
+        locationInfoDao.updateTypeBatch(locationInfoEntities);
     }
 }

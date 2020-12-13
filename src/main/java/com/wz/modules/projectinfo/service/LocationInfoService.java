@@ -43,4 +43,5 @@ public interface LocationInfoService {
 	int delProjectLocationRel(String projectId);
 
 	int delProjectLocation(String projectId);
+
 }

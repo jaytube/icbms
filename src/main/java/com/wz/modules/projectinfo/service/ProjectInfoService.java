@@ -33,4 +33,7 @@ public interface ProjectInfoService {
 	List<ProjectInfoEntity> queryListAll();
 
 	List<String> queryRoleIdList(String projectId);
+
+	void setProjectPicture(ProjectInfoEntity projectInfoEntity);
+
 }
