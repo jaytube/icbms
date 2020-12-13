@@ -88,4 +88,6 @@ public interface UserDao extends BaseDao<UserEntity> {
 	List<UserEntity> queryUserProjectRel(@Param("projectId") String projectId);
 	
 	List<RoleEntity> queryRoleUser();
+
+	int updateBatchProjectIds(String[] userIds);
 }

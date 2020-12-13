@@ -266,6 +266,16 @@
 		</foreach>
 	</update>
 
+	<!--批量更新用户状态-->
+	<update id="updateBatchProjectIds">
+		update sys_user
+		set projectIds= ''
+		where id IN
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
 	<delete id="delete">
 		delete from sys_user where id = #{value}
 	</delete>

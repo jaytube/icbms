@@ -1,18 +1,5 @@
 package com.wz.modules.sys.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.RandomStringUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.wz.modules.common.common.Constant;
 import com.wz.modules.common.exception.MyException;
 import com.wz.modules.common.page.Page;
@@ -21,13 +8,20 @@ import com.wz.modules.common.utils.ShiroUtils;
 import com.wz.modules.common.utils.UserUtils;
 import com.wz.modules.common.utils.Utils;
 import com.wz.modules.sys.dao.UserDao;
+import com.wz.modules.sys.dao.UserProjectDao;
 import com.wz.modules.sys.dao.UserRoleDao;
-import com.wz.modules.sys.entity.OrganEntity;
-import com.wz.modules.sys.entity.RoleEntity;
-import com.wz.modules.sys.entity.UserEntity;
-import com.wz.modules.sys.entity.UserWindowDto;
+import com.wz.modules.sys.entity.*;
 import com.wz.modules.sys.service.OrganService;
 import com.wz.modules.sys.service.UserService;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service("userService")
 public class UserServiceImpl implements UserService {
@@ -40,9 +34,15 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private OrganService organService;
 
+	@Autowired
+	private UserProjectDao userProjectDao;
+
 	@Override
 	public UserEntity queryObject(String id) {
 		UserEntity userEntity = userDao.queryObject(id);
+		List<String> projectIds = userProjectDao.queryProjectIdList(userEntity.getId());
+		if(CollectionUtils.isNotEmpty(projectIds))
+			userEntity.setProjectIds(String.join(",", projectIds));
 		return userEntity;
 	}
 
@@ -77,6 +77,7 @@ public class UserServiceImpl implements UserService {
 		user.setCreateTime(new Date());
 		user.setSalt(salt);
 		saveUserRole(user);
+		saveUserProject(user);
 		userDao.save(user);
 	}
 
@@ -91,7 +92,25 @@ public class UserServiceImpl implements UserService {
 		user.setUpdateTime(new Date());
 		// 保存用户与角色关系
 		saveUserRole(user);
+		saveUserProject(user);
 		userDao.update(user);
+	}
+
+	private void saveUserProject(UserEntity user) {
+		if(StringUtils.isNotBlank(user.getProjectIds())) {
+			String projectIds = user.getProjectIds();
+			List<UserProjectEntity> userProjectEntities = Arrays.stream(projectIds.split(","))
+					.map(String::trim)
+					.map(t -> {
+						UserProjectEntity userPro = new UserProjectEntity();
+						userPro.setUserId(user.getId());
+						userPro.setProjectId(t);
+						return userPro;
+					}).collect(Collectors.toList());
+			userProjectDao.deleteBatchByUserId(new String[] {user.getId()});
+			userProjectDao.saveBatch(userProjectEntities);
+		}
+		user.setProjectIds(null);
 	}
 
 	/**
@@ -122,6 +141,8 @@ public class UserServiceImpl implements UserService {
 		map.put("roleIdList", user.getRoleIdList());
 		userRoleDao.save(map);
 	}
+
+
 
 	/**
 	 * 查询父机构

@@ -9,7 +9,8 @@ public class Constant {
     /**
      * 超级用户
      */
-    public static final String SUPERR_USER="026a564bbfd84861ac4b65393644beef";
+    //public static final String SUPERR_USER="026a564bbfd84861ac4b65393644beef";
+    public static final String SUPERR_USER="d183a7d431384a9395acd6cde1547707";
 
     /**
      * 系统默认密码
