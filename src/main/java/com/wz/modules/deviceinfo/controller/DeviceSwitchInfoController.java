@@ -3,6 +3,7 @@ package com.wz.modules.deviceinfo.controller;
 import java.util.List;
 import java.util.Map;
 
+import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ import com.wz.modules.deviceinfo.service.DeviceSwitchInfoService;
  */
 @CrossOrigin
 @RestController
+@Api(tags = "空开设备管理接口")
 @RequestMapping("deviceswitchinfo")
 public class DeviceSwitchInfoController extends BaseController{
 	@Autowired

@@ -16,6 +16,7 @@ import com.wz.modules.oss.entity.SysOssEntity;
 import com.wz.modules.oss.service.SysOssService;
 import com.wz.modules.sys.service.SysConfigService;
 
+import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +37,7 @@ import java.util.Map;
  * @date 2017-08-25 16:17:21
  */
 @RestController
+@Api(tags = "云文件上传接口")
 @RequestMapping("sys/oss")
 public class SysOssController {
 	@Autowired
@@ -44,7 +46,7 @@ public class SysOssController {
     private SysConfigService sysConfigService;
 
     private final static String KEY = Constant.CLOUD_STORAGE_CONFIG_KEY;
-	
+
 	/**
 	 * 列表
 	 */

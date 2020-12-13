@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import io.swagger.annotations.Api;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -43,7 +44,8 @@ import com.wz.modules.sys.entity.UserEntity;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("deviceboxinfo")
+@Api(tags = "电箱设备管理接口")
+@RequestMapping("/deviceboxinfo")
 public class DeviceBoxInfoController extends BaseController {
 	@Autowired
 	private DeviceBoxInfoService deviceBoxInfoService;

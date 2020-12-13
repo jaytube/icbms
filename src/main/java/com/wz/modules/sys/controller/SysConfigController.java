@@ -1,5 +1,6 @@
 package com.wz.modules.sys.controller;
 
+import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ import java.util.Map;
  */
 @CrossOrigin
 @RestController
+@Api(tags = "系统配置信息接口")
 @RequestMapping("/sys/config")
 public class SysConfigController extends BaseController {
 	@Autowired

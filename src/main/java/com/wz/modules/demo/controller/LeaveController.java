@@ -1,5 +1,6 @@
 package com.wz.modules.demo.controller;
 
+import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @CrossOrigin
 @RequestMapping("demo/leave")
+@Api(tags = "demo:请假相关接口")
 @Controller
 public class LeaveController {
 

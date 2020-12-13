@@ -1,5 +1,6 @@
 package com.wz.modules.sys.controller;
 
+import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ import java.util.Map;
  */
 @CrossOrigin
 @RestController
+@Api(tags = "角色管理接口")
 @RequestMapping("sys/role")
 public class RoleController extends BaseController {
 	@Autowired

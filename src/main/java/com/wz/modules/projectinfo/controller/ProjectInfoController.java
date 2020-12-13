@@ -3,6 +3,7 @@ package com.wz.modules.projectinfo.controller;
 import java.util.List;
 import java.util.Map;
 
+import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,7 @@ import com.wz.modules.projectinfo.service.ProjectInfoService;
  * @date 2018-03-13 15:14:33
  */
 @RestController
+@Api(tags = "项目基础信息相关操作接口")
 @RequestMapping("projectinfo")
 public class ProjectInfoController extends BaseController {
 	@Autowired

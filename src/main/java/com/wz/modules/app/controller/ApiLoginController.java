@@ -1,6 +1,7 @@
 package com.wz.modules.app.controller;
 
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,6 +25,7 @@ import java.util.Map;
  */
 @CrossOrigin
 @Controller
+@Api(tags = "APP登录")
 @RequestMapping("/app")
 public class ApiLoginController {
     @Autowired

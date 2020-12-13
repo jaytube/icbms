@@ -1,5 +1,6 @@
 package com.wz.modules.activiti.controller;
 
+import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -39,6 +40,7 @@ import java.util.Map;
  */
 @CrossOrigin
 @Controller
+@Api(tags = "流程模型相关操作接口")
 @RequestMapping("act/model")
 public class ExtendActModelController {
     private Logger log = Logger.getLogger(getClass());

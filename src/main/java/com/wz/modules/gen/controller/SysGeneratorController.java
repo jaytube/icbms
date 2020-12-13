@@ -8,6 +8,7 @@ import com.wz.modules.common.utils.Result;
 import com.wz.modules.common.xss.XssHttpServletRequestWrapper;
 import com.wz.modules.gen.service.SysGeneratorService;
 
+import io.swagger.annotations.Api;
 import org.apache.commons.io.IOUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import java.util.Map;
  * @date 2017-08-25 16:20:43
  */
 @Controller
+@Api(tags = "代码生成器接口")
 @RequestMapping("/sys/generator")
 public class SysGeneratorController {
 	@Autowired

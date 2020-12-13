@@ -1,5 +1,6 @@
 package com.wz.modules.activiti.controller;
 
+import io.swagger.annotations.Api;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.log4j.Logger;
@@ -45,6 +46,7 @@ import java.util.Set;
 @CrossOrigin
 @Controller
 @RequestMapping("act/deal")
+@Api(tags = "流程图相关操作接口")
 public class ExtendActDealController {
     private Logger log = Logger.getLogger(getClass());
 

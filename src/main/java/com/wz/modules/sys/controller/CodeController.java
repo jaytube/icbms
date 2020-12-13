@@ -1,5 +1,6 @@
 package com.wz.modules.sys.controller;
 
+import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @RequestMapping("/sys/code")
+@Api(tags = "系统数据字典")
 public class CodeController extends BaseController {
 	@Autowired
 	private CodeService codeService;

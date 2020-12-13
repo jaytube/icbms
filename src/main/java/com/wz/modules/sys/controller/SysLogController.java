@@ -1,5 +1,6 @@
 package com.wz.modules.sys.controller;
 
+import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,7 @@ import java.util.Map;
  */
 @CrossOrigin
 @Controller
+@Api(tags = "系统日志接口")
 @RequestMapping("/sys/log")
 public class SysLogController {
 	@Autowired

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import com.wz.modules.report.service.ElectricReportService;
 @CrossOrigin
 @RestController
 @RequestMapping("/report/electric")
+@Api(tags = "用电报表接口")
 public class ElectricReportController extends BaseController {
 	@Autowired
 	private ElectricReportService electricReportService;

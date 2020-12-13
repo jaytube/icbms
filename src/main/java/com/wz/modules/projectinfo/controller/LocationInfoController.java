@@ -9,6 +9,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +36,7 @@ import com.wz.modules.projectinfo.service.LocationInfoService;
  * @date 2018-03-13 15:14:33
  */
 @RestController
+@Api(tags = "位置基础信息接口")
 @RequestMapping("locationinfo")
 public class LocationInfoController extends BaseController {
 	@Autowired
