@@ -45,6 +45,7 @@
         <swagger.version>2.9.2</swagger.version>
         <activiti.version>5.22.0</activiti.version>
         <pagehelper>1.1.2</pagehelper>
+        <!--<jedis.version>3.2.0</jedis.version>-->
     </properties>
 
     <!-- 阿里云maven仓库 -->
@@ -537,6 +538,13 @@
             <artifactId>mina-core</artifactId>
             <version>2.0.19</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
     </dependencies>
 
     <build>
