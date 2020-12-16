@@ -29,6 +29,7 @@ import java.util.UUID;
  * @email rui.sun.java@gmail.com
  * @date 2018-03-13 15:14:33
  */
+@CrossOrigin
 @RestController
 @Api(tags = "位置基础信息接口")
 @RequestMapping("locationinfo")
