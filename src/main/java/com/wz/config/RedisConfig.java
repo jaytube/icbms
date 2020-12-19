@@ -73,4 +73,5 @@ public class RedisConfig {
 	public void setTimeout(int timeout) {
 		this.timeout = timeout;
 	}
+
 }

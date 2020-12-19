@@ -57,4 +57,63 @@ public class DateUtils {
 		Date date1 = new Date(calendar.getTimeInMillis());
 		return sdf.format(date1);
 	}
+
+	/**
+	 * 根据秒数获取时间串
+	 *
+	 * @param second (eg: 100s)
+	 * @return (eg : 00 : 01 : 40)
+	 */
+	public static String getTimeStrBySecond(long second) {
+
+		long day = second / 60 / 60 / 24;
+		long hour = second / 60 / 60 % 24;
+		long minute = second / 60 % 60;
+		long seconds = second % 60;
+
+		StringBuilder sb = new StringBuilder();
+		if (day != 0) {
+			sb.append(day).append("天");
+		}
+		if (hour != 0) {
+			sb.append(hour).append("小时");
+		}
+		if (minute != 0) {
+			sb.append(minute).append("分");
+		}
+		if (seconds != 0) {
+			sb.append(seconds).append("秒");
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * 获取两个日期之间的天数
+	 *
+	 * @param before
+	 * @param after
+	 * @return
+	 */
+	public static double getDistanceOfTwoDate(Date before, Date after) {
+		long beforeTime = before.getTime();
+		long afterTime = after.getTime();
+		return (afterTime - beforeTime) / (1000 * 60 * 60 * 24);
+	}
+
+	public static int getExpire(int expire, String unit) {
+		int e = expire;
+		if ("seconds".equalsIgnoreCase(unit)) {
+			e = expire;
+		}
+		if ("minute".equalsIgnoreCase(unit)) {
+			e = expire * 60;
+		}
+		if ("hours".equalsIgnoreCase(unit)) {
+			e = expire * 60 * 60;
+		}
+		if ("days".equalsIgnoreCase(unit)) {
+			e = (expire * 60 * 60) * 24;
+		}
+		return e;
+	}
 }

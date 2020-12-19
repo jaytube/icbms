@@ -6,11 +6,7 @@ import java.util.Map;
 import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.wz.modules.common.annotation.SysLog;
 import com.wz.modules.common.controller.BaseController;
@@ -29,6 +25,7 @@ import com.wz.modules.projectinfo.service.ProjectInfoService;
  * @email rui.sun.java@gmail.com
  * @date 2018-03-13 15:14:33
  */
+@CrossOrigin
 @RestController
 @Api(tags = "项目基础信息相关操作接口")
 @RequestMapping("projectinfo")
@@ -43,7 +40,7 @@ public class ProjectInfoController extends BaseController {
 	 * 列表
 	 */
 	@RequestMapping("/list")
-	@RequiresPermissions("projectinfo:list")
+	//@RequiresPermissions("projectinfo:list")
 	@SysLog("查看项目信息")
 	public Result list(@RequestParam Map<String, Object> params) {
 		// 查询列表数据

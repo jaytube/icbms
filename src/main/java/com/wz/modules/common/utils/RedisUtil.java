@@ -1,25 +1,29 @@
 package com.wz.modules.common.utils;
 
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisShardInfo;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 @Component
 public class RedisUtil {
 
-	private Logger log = Logger.getLogger(RedisUtil.class);
+	private static Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	@Autowired
 	private JedisPool jedisPool;
 
-	private Jedis getJedis() {
+	public Jedis getJedis() {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
