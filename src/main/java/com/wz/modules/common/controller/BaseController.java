@@ -62,7 +62,6 @@ public class BaseController {
 			setCurrProjectSession();
 			currentProject = (ProjectInfoEntity) request.getSession().getAttribute("currentProject");
 		}
-		projectInfoService.setProjectPicture(currentProject);
 		return currentProject;
 	}
 

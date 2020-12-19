@@ -541,6 +541,18 @@
 		</if>
 	</select>
 
+	<select id="findDeviceBoxsInfoByProjectIds" resultMap="deviceBoxInfoMap">
+		select
+		<include refid="Base_Column_List" />
+		from device_box_info d,device_box_location l
+		where 1=1 and d.id = l.device_box_id
+		AND d.project_id in
+		<foreach item="projectId" collection="array" open="("
+				 separator="," close=")">
+			#{projectId}
+		</foreach>
+	</select>
+
 	<update id="updateDeviceBoxOnline" parameterType="java.lang.String">
 		update device_box_info
 		<set>

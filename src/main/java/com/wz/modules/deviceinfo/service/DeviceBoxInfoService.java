@@ -38,6 +38,8 @@ public interface DeviceBoxInfoService {
 
 	List<DeviceBoxInfoEntity> findDeviceBoxsInfoByProjectId(String projectId);
 
+	List<DeviceBoxInfoEntity> findDeviceBoxsInfoByProjectIds(String[] projectIds);
+
 	void updateDeviceBoxOnline(String deviceMac, String online);
 
 	// 保持电箱和位置

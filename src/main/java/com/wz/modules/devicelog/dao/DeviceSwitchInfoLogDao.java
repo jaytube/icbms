@@ -21,8 +21,15 @@ public interface DeviceSwitchInfoLogDao extends BaseDao<DeviceSwitchInfoLogEntit
 			@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("offset") Integer offset,
 			@Param("limit") Integer limit);
 
+	public List<DeviceSwitchInfoLogEntity> queryAppListByIds(@Param("projectIds") String[] projectIds,
+														@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("offset") Integer offset,
+														@Param("limit") Integer limit);
+
 	public int queryAppTotal(@Param("projectId") String projectId, @Param("beginTime") String beginTime,
 			@Param("endTime") String endTime);
+
+	public int queryAppTotalByIds(@Param("projectIds") String[] projectId, @Param("beginTime") String beginTime,
+							 @Param("endTime") String endTime);
 
 	int insertDeviceSwitchHis(@Param("synDate") String synDate);
 

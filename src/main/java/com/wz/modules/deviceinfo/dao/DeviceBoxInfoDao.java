@@ -26,6 +26,8 @@ public interface DeviceBoxInfoDao extends BaseDao<DeviceBoxInfoEntity> {
 
 	List<DeviceBoxInfoEntity> findDeviceBoxsInfoByProjectId(@Param("projectId") String projectId);
 
+	List<DeviceBoxInfoEntity> findDeviceBoxsInfoByProjectIds(String[] ids);
+
 	void updateDeviceBoxOnline(String deviceMac, String online);
 
 	// 保存电箱和位置

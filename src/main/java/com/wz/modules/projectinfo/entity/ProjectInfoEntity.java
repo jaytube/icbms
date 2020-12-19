@@ -49,7 +49,8 @@ public class ProjectInfoEntity extends BaseEntity implements Serializable {
      */
     private List<String> roleIdList;
 
-    private List<LocationInfoEntity> exhibitions = new ArrayList<>();
+    // 文件名称
+    private String fileName;
 
     /**
      * 设置：id主键
@@ -192,11 +193,11 @@ public class ProjectInfoEntity extends BaseEntity implements Serializable {
         this.roleIdList = roleIdList;
     }
 
-    public List<LocationInfoEntity> getExhibitions() {
-        return exhibitions;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setExhibitions(List<LocationInfoEntity> exhibitions) {
-        this.exhibitions = exhibitions;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

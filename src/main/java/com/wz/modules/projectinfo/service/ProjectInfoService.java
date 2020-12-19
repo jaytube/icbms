@@ -16,6 +16,8 @@ public interface ProjectInfoService {
 
 	ProjectInfoEntity queryObject(String id);
 
+	List<ProjectInfoEntity> queryProjects(String[] ids);
+
 	List<ProjectInfoEntity> queryList(Map<String, Object> map);
 
 	List<ProjectInfoEntity> queryListByBean(ProjectInfoEntity entity);
@@ -33,7 +35,5 @@ public interface ProjectInfoService {
 	List<ProjectInfoEntity> queryListAll();
 
 	List<String> queryRoleIdList(String projectId);
-
-	void setProjectPicture(ProjectInfoEntity projectInfoEntity);
 
 }

@@ -7,7 +7,6 @@
     <resultMap type="com.wz.modules.projectinfo.entity.ProjectInfoEntity" id="projectInfoMap">
         <result property="id" column="id"/>
         <result property="projectName" column="project_name"/>
-        
         <result property="gatewayAddress" column="gateway_address"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
@@ -16,32 +15,46 @@
         <result property="effectiveDate" column="effective_date"/>
         <result property="expireDate" column="expire_date"/>
         <result property="remark" column="remark"/>
+		<result property="fileName" column="file_name"/>
     </resultMap>
 
     <sql id="Base_Column_List" >
-		id, 
-		project_name,
-		gateway_address,
-		create_time, 
-		update_time, 
-		create_id, 
-		update_id, 
-		remark,
-		effective_date,
-		expire_date
+		a.id as id,
+		a.project_name as project_name,
+		a.gateway_address as gateway_address,
+		a.create_time as create_time,
+		a.update_time as update_time,
+		a.create_id as create_id,
+		a.update_id as update_id,
+		a.remark as remark,
+		a.effective_date as effective_date,
+		a.expire_date as expire_date,
+		b.file_name as file_name
     </sql>
 
 	<select id="queryObject" resultType="com.wz.modules.projectinfo.entity.ProjectInfoEntity" resultMap="projectInfoMap">
 		select
 		<include refid="Base_Column_List" />
-		from project_info
-		where id = #{value}
+		from project_info a left join location_info b ON ( a.id = b.project_id AND b.type = 'EXHIBITION' )
+		where a.id = #{value}
+	</select>
+
+	<select id="queryProjectsByIds" resultType="com.wz.modules.projectinfo.entity.ProjectInfoEntity"
+			resultMap="projectInfoMap">
+		select
+		<include refid="Base_Column_List"/>
+		from project_info a left join location_info b ON ( a.id = b.project_id AND b.type = 'EXHIBITION' )
+		where a.id in
+		<foreach item="projectId" collection="array" open="("
+				 separator="," close=")">
+			#{projectId}
+		</foreach>
 	</select>
 
 	<select id="queryList" resultType="com.wz.modules.projectinfo.entity.ProjectInfoEntity" resultMap="projectInfoMap">
 		select
 		<include refid="Base_Column_List" />
-		from project_info
+		from project_info a left join location_info b ON ( a.id = b.project_id AND b.type = 'EXHIBITION' )
         <choose>
             <when test="sidx != null and sidx.trim() != ''">
                 order by ${sidx} ${order}
@@ -58,7 +71,7 @@
     <select id="queryListByBean" resultType="com.wz.modules.projectinfo.entity.ProjectInfoEntity" resultMap="projectInfoMap">
         select
         <include refid="Base_Column_List" />
-        from project_info
+        from project_info a left join location_info b ON ( a.id = b.project_id AND b.type = 'EXHIBITION' )
         WHERE 1=1
     </select>
 	
@@ -125,8 +138,7 @@
 	<select id="queryListAll" resultType="com.wz.modules.projectinfo.entity.ProjectInfoEntity" resultMap="projectInfoMap">
 		select
 		<include refid="Base_Column_List" />
-		from project_info
-		
+		from project_info a left join location_info b ON ( a.id = b.project_id AND b.type = 'EXHIBITION' )
 		order by create_time desc
 	</select>
 

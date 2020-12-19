@@ -21,6 +21,11 @@ public class ApiProjectServiceImpl implements ApiProjectService {
     }
 
     @Override
+    public List<ProjectInfoEntity> queryProjects(String[] ids) {
+        return null;
+    }
+
+    @Override
     public List<ProjectInfoEntity> queryList(Map<String, Object> map) {
         return null;
     }
@@ -64,11 +69,6 @@ public class ApiProjectServiceImpl implements ApiProjectService {
     public List<String> queryRoleIdList(String projectId) {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public void setProjectPicture(ProjectInfoEntity projectInfoEntity) {
-        // TODO Auto-generated method stub
     }
 
 }

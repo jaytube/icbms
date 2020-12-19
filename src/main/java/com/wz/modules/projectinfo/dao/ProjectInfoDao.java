@@ -18,4 +18,7 @@ import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
 public interface ProjectInfoDao extends BaseDao<ProjectInfoEntity> {
 	
 	public List<ProjectInfoEntity> queryListAll();
+
+	public List<ProjectInfoEntity> queryProjectsByIds(String[] ids);
+
 }

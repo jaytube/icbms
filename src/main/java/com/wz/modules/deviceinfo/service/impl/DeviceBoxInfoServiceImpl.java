@@ -159,6 +159,11 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
 	}
 
 	@Override
+	public List<DeviceBoxInfoEntity> findDeviceBoxsInfoByProjectIds(String[] projectIds) {
+		return deviceBoxInfoDao.findDeviceBoxsInfoByProjectIds(projectIds);
+	}
+
+	@Override
 	public void updateDeviceBoxOnline(String deviceMac, String online) {
 		deviceBoxInfoDao.updateDeviceBoxOnline(deviceMac, online);
 	}

@@ -9,6 +9,9 @@ public enum LocationNodeType {
 
     ROOT("根节点"),
     VENUE("场馆"),
+    /**
+     * project
+     */
     EXHIBITION("展会"),
     DEVICE("设备/电箱");
 

@@ -4,16 +4,13 @@ import com.alibaba.druid.util.StringUtils;
 import com.wz.modules.common.utils.RedisUtil;
 import com.wz.modules.common.utils.Utils;
 import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
-import com.wz.modules.projectinfo.dao.LocationInfoDao;
 import com.wz.modules.projectinfo.dao.ProjectInfoDao;
 import com.wz.modules.projectinfo.dao.ProjectRoleDao;
-import com.wz.modules.projectinfo.entity.LocationInfoEntity;
 import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
 import com.wz.modules.projectinfo.service.LocationInfoService;
 import com.wz.modules.projectinfo.service.ProjectInfoService;
 import com.wz.modules.sys.dao.UserDao;
 import com.wz.modules.sys.entity.UserEntity;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,24 +38,25 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
     @Autowired
     private DeviceBoxInfoService deviceBoxInfoService;
 
-    @Autowired
-    private LocationInfoDao locationInfoDao;
-
     @Override
     public ProjectInfoEntity queryObject(String id) {
         ProjectInfoEntity projectInfoEntity = projectInfoDao.queryObject(id);
-        this.setProjectPicture(projectInfoEntity);
         return projectInfoEntity;
     }
 
     @Override
+    public List<ProjectInfoEntity> queryProjects(String[] ids) {
+        return projectInfoDao.queryProjectsByIds(ids);
+    }
+
+    @Override
     public List<ProjectInfoEntity> queryList(Map<String, Object> map) {
-        return queryAllProjectPictures(projectInfoDao.queryList(map));
+        return projectInfoDao.queryList(map);
     }
 
     @Override
     public List<ProjectInfoEntity> queryListByBean(ProjectInfoEntity entity) {
-        return queryAllProjectPictures(projectInfoDao.queryListByBean(entity));
+        return projectInfoDao.queryListByBean(entity);
     }
 
     @Override
@@ -150,32 +148,12 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
 
     @Override
     public List<ProjectInfoEntity> queryListAll() {
-        return queryAllProjectPictures(projectInfoDao.queryListAll());
+        return projectInfoDao.queryListAll();
     }
 
     @Override
     public List<String> queryRoleIdList(String projectId) {
         return projectRoleDao.queryRoleIdList(projectId);
-    }
-
-    @Override
-    public void setProjectPicture(ProjectInfoEntity projectInfoEntity) {
-        if (projectInfoEntity == null) {
-            return;
-        }
-        List<LocationInfoEntity> projectXhibitionNodes = locationInfoDao.findProjectXhibitionNodes(projectInfoEntity.getId());
-        if (CollectionUtils.isNotEmpty(projectXhibitionNodes)) {
-            projectInfoEntity.setExhibitions(projectXhibitionNodes);
-        }
-    }
-
-    private List<ProjectInfoEntity> queryAllProjectPictures(List<ProjectInfoEntity> projectInfoEntities) {
-        if (CollectionUtils.isNotEmpty(projectInfoEntities)) {
-            for (ProjectInfoEntity projectInfoEntity : projectInfoEntities) {
-                this.setProjectPicture(projectInfoEntity);
-            }
-        }
-        return projectInfoEntities;
     }
 
     private String removeProjectStrs(String tmpStr, String str) {

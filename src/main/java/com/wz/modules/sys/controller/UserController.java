@@ -97,10 +97,8 @@ public class UserController extends BaseController {
 		String projectIds = user.getProjectIds();
 		List<ProjectInfoEntity> projectList = new ArrayList<ProjectInfoEntity>();
 		if (StringUtils.isNotBlank(projectIds)) {
-			for (String projectId : projectIds.split(",")) {
-				ProjectInfoEntity project = projectInfoService.queryObject(projectId);
-				projectList.add(project);
-			}
+			String[] ids = projectIds.split(",");
+			projectList.addAll(projectInfoService.queryProjects(ids));
 		}
 		ProjectInfoEntity currentProject = this.getCurrentProject();
 		if (null == currentProject && projectList.size() > 0) {
