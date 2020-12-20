@@ -4,6 +4,7 @@ import com.wz.front.dto.ProjectAlarmTotalDto;
 import com.wz.front.dto.ProjectBoxInfoCntDto;
 import com.wz.front.dto.ProjectInfoDto;
 import com.wz.front.service.ClientProjectInfoService;
+import com.wz.front.service.CurrentUser;
 import com.wz.modules.common.utils.ShiroUtils;
 import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
 import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
@@ -18,7 +19,10 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,9 +51,13 @@ public class ClientProjectInfoServiceImpl implements ClientProjectInfoService {
     @Autowired
     private ProjectInfoService projectInfoService;
 
+    @Autowired
+    private CurrentUser currentUser;
+
     @Override
     public List<ProjectInfoEntity> getUserProjects() {
-        UserEntity user = userService.queryObject(ShiroUtils.getUserId());
+        String currentUser = this.currentUser.getCurrentUser();
+        UserEntity user = userService.queryObject(currentUser);
         String projectIds = user.getProjectIds();
         List<ProjectInfoEntity> projectList = new ArrayList<>();
         if (StringUtils.isNotBlank(projectIds)) {

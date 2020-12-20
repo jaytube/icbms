@@ -300,8 +300,6 @@
             resultMap="projectAlarmTotalDto">
         select d.project_id as project_id , count(1) as total
         from device_alarm_info_log d
-        inner join device_box_location b
-        on d.device_box_id = b.device_box_id
         where d.project_id in
         <foreach item="projectId" collection="array" open="("
                  separator="," close=")">
@@ -313,8 +311,6 @@
     <select id="queryProjectsTotalInt" resultType="int">
         select count(1)
         from device_alarm_info_log d
-        inner join device_box_location b
-        on d.device_box_id = b.device_box_id
         where d.project_id in
         <foreach item="projectId" collection="array" open="("
                  separator="," close=")">

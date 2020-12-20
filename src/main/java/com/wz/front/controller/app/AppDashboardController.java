@@ -3,6 +3,7 @@ package com.wz.front.controller.app;
 import com.wz.front.dto.ProjectBoxInfoCntDto;
 import com.wz.front.service.AppDashboardService;
 import com.wz.front.service.ClientProjectInfoService;
+import com.wz.modules.app.annotation.LoginRequired;
 import com.wz.modules.common.utils.CommonResponse;
 import com.wz.modules.common.utils.DateUtils;
 import com.wz.modules.devicelog.dao.DeviceElectricityLogDao;
@@ -49,24 +50,28 @@ public class AppDashboardController {
     private DeviceElectricityLogService deviceElectricityLogService;
 
     @GetMapping("/getAllBoxInfoCnt")
+    @LoginRequired
     @ApiOperation(value = "该账户下,该场馆所有可见的 设备总数,在线空开,离线空开")
     public CommonResponse getAllBoxInfoCnt() {
         return appDashboardService.getAllBoxInfoCnt();
     }
 
     @GetMapping("/getAllAlarmsPage")
+    @LoginRequired
     @ApiOperation(value = "实时数据列表")
     public CommonResponse getAllAlarmsPage(String startTime, String endTime, String pageSize, String page, String alarmLevel) {
         return appDashboardService.getAllAlarmsPage(startTime, endTime, pageSize, page, alarmLevel);
     }
 
     @GetMapping("/getAllSwitchesPage")
+    @LoginRequired
     @ApiOperation(value = "告警数据列表+告警总数")
     public CommonResponse getAllSwitchesPage(String startTime, String endTime, String pageSize, String page) {
         return appDashboardService.getAllSwitchesPage(startTime, endTime, pageSize, page);
     }
 
     @GetMapping("/getBoxInfoCnt")
+    @LoginRequired
     @ApiOperation(value = "单项目")
     public CommonResponse getBoxInfoCnt(String projectId) {
         ProjectBoxInfoCntDto projectBoxInfoCnt = clientProjectInfoService.getProjectBoxInfoCnt(projectId);
@@ -80,6 +85,7 @@ public class AppDashboardController {
     }
 
     @GetMapping("/getAlarmsStat")
+    @LoginRequired
     @ApiOperation(value = "单项目 告警")
     public CommonResponse getAlarmsStat(String projectId, String startDate) {
         List<DeviceAlarmStatEntity> result = deviceAlarmInfoLogService.doStatDeviceAlarm(projectId, startDate);
@@ -87,6 +93,7 @@ public class AppDashboardController {
     }
 
     @GetMapping("/getElecStat")
+    @LoginRequired
     @ApiOperation(value = "单项目 用电分析")
     public CommonResponse getElecStat(String projectId, String startDate) {
         List<DeviceElecStatEntity> result = deviceElectricityLogService.doStatDeviceElec(projectId, startDate);

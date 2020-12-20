@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.wz.front.service.CurrentUser;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class BaseController {
 	private UserService userService;
 	@Autowired
 	private ProjectInfoService projectInfoService;
+
+	@Autowired
+	protected CurrentUser currentUser;
 
 	/**
 	 * 获取当前登陆用户
@@ -79,7 +83,7 @@ public class BaseController {
 	}
 	
 	private void setCurrProjectSession(){
-		UserEntity user = userService.queryObject(ShiroUtils.getUserId());
+		UserEntity user = userService.queryObject(currentUser.getCurrentUser());
 		String projectIds = user.getProjectIds();
 		List<ProjectInfoEntity> projectList = new ArrayList<ProjectInfoEntity>();
 		if (StringUtils.isNotBlank(projectIds)) {

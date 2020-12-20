@@ -1,11 +1,13 @@
 package com.wz.modules.sys.controller;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.wz.front.service.CurrentUser;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -56,6 +58,9 @@ public class UserController extends BaseController {
 	@Autowired
 	private ProjectInfoService projectInfoService;
 
+	@Autowired
+	private CurrentUser currentUser;
+
 	/**
 	 * 列表
 	 */
@@ -93,7 +98,7 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping("/info")
 	public Result info() {
-		UserEntity user = userService.queryObject(ShiroUtils.getUserId());
+		UserEntity user = userService.queryObject(currentUser.getCurrentUser());
 		String projectIds = user.getProjectIds();
 		List<ProjectInfoEntity> projectList = new ArrayList<ProjectInfoEntity>();
 		if (StringUtils.isNotBlank(projectIds)) {

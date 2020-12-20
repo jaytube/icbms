@@ -84,7 +84,7 @@ public class MenuController extends BaseController {
 	 */
 	@RequestMapping(value = "/userMenu")
 	public Result userMenu(){
-        List<MenuEntity> menuEntities = menuService.queryListUser(ShiroUtils.getUserId());
+        List<MenuEntity> menuEntities = menuService.queryListUser(currentUser.getCurrentUser());
 
         return Result.ok().put("menuList",menuEntities);
 	}

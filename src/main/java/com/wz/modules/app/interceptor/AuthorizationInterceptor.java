@@ -1,5 +1,12 @@
 package com.wz.modules.app.interceptor;
 
+import com.wz.front.util.DeviceType;
+import com.wz.front.util.DeviceUtils;
+import com.wz.modules.app.annotation.LoginRequired;
+import com.wz.modules.app.service.ApiUserService;
+import com.wz.modules.app.utils.JwtUtils;
+import com.wz.modules.common.exception.MyException;
+import com.wz.modules.sys.entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,18 +14,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.wz.modules.app.annotation.LoginRequired;
-import com.wz.modules.app.service.ApiUserService;
-import com.wz.modules.app.utils.JwtUtils;
-import com.wz.modules.common.exception.MyException;
-import com.wz.modules.sys.entity.UserEntity;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
  * 类AuthorizationInterceptor的功能描述:
  * 权限(Token)验证
+ *
  * @auther hxy
  * @date 2017-10-16 14:16:47
  */
@@ -35,32 +37,35 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         LoginRequired annotation;
-        if(handler instanceof HandlerMethod) {
+        if (handler instanceof HandlerMethod) {
             annotation = ((HandlerMethod) handler).getMethodAnnotation(LoginRequired.class);
-        }else{
+        } else {
             // 如果不是映射到方法直接通过
             return true;
         }
         //如果不需要登陆验证，直接通过
-        if(annotation == null){
+        if (annotation == null) {
+            return true;
+        }
+        if (DeviceUtils.checkDeviceType(request) != DeviceType.MOBILE_APP) {
             return true;
         }
 
         //需要验证，获取用户凭证
         String token = request.getHeader(jwtUtils.getHeader());
 
-        if(StringUtils.isBlank(token)){
+        if (StringUtils.isBlank(token)) {
             token = request.getParameter(jwtUtils.getHeader());
         }
 
         //凭证为空
-        if(StringUtils.isBlank(token)){
+        if (StringUtils.isBlank(token)) {
             throw new MyException("无token，请重新登录");
         }
 
         //验证token
         Claims claims = jwtUtils.getClaimByToken(token);
-        if(claims == null || jwtUtils.isTokenExpired(claims.getExpiration())){
+        if (claims == null || jwtUtils.isTokenExpired(claims.getExpiration())) {
             throw new MyException("凭证失效，请重新登录");
         }
 
