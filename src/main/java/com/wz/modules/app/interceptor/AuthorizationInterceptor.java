@@ -6,6 +6,7 @@ import com.wz.modules.app.annotation.LoginRequired;
 import com.wz.modules.app.service.ApiUserService;
 import com.wz.modules.app.utils.JwtUtils;
 import com.wz.modules.common.exception.MyException;
+import com.wz.modules.common.utils.ShiroUtils;
 import com.wz.modules.sys.entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import org.apache.commons.lang.StringUtils;
@@ -48,7 +49,11 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
         if (DeviceUtils.checkDeviceType(request) != DeviceType.MOBILE_APP) {
-            return true;
+            boolean login = ShiroUtils.isLogin();
+            if (login) {
+                return true;
+            }
+            throw new MyException("凭证失效，请重新登录");
         }
 
         //需要验证，获取用户凭证
