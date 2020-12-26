@@ -553,6 +553,14 @@
 		</foreach>
 	</select>
 
+	<select id="findDeviceBoxsInfoByUserId" resultMap="deviceBoxInfoMap">
+		select
+		<include refid="Base_Column_List" />
+		from device_box_info d
+		where EXISTS (select project_id from sys_user_project a
+		where  d.project_id = a.project_id and user_id = #{userId})
+	</select>
+
 	<update id="updateDeviceBoxOnline" parameterType="java.lang.String">
 		update device_box_info
 		<set>

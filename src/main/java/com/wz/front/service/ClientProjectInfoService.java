@@ -5,6 +5,7 @@ import com.wz.front.dto.ProjectInfoDto;
 import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: Cherry
@@ -19,6 +20,8 @@ public interface ClientProjectInfoService {
 
     ProjectBoxInfoCntDto getProjectBoxInfoCnt(String projectId);
 
-    List<ProjectBoxInfoCntDto> getProjectBoxInfoCntByIds(String[] projectIds);
+    Map<String, ProjectBoxInfoCntDto> getProjectBoxInfoCntByIds(String[] projectIds);
+
+    Map<String, ProjectBoxInfoCntDto> getProjectBoxInfoCntByUserId(String userId);
 
 }

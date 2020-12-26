@@ -450,6 +450,50 @@ public class KkServiceImpl implements KkService {
 		return result;
 	}
 
+	@Override
+	public Map<String, Integer> statDeviceBoxOnline(List<DeviceBoxInfoEntity> boxList) {
+		Map<String, DeviceBoxInfoEntity> boxMap = new HashMap<String, DeviceBoxInfoEntity>();
+		for (DeviceBoxInfoEntity b : boxList) {
+			boxMap.put(Integer.parseInt(b.getDeviceBoxNum().substring(10)) + "", b);
+		}
+
+		Map<String, Integer> result = new HashMap<String, Integer>();
+		int onlineNums = 0;
+		String gateWayAddress = "0";
+		Map<String, String> tmp = redisUtil.hgetAll(Integer.parseInt(gateWayAddress), "TERMINAL_STATUS");
+		Map<String, String> tmpResult = new HashMap<String, String>();
+		tmpResult.putAll(tmp);
+		for (Map.Entry<String, String> tmpEntry : tmpResult.entrySet()) {
+			JSONObject jsonObj = JSONObject.fromObject(tmpEntry.getValue());
+			if ("0".equals(jsonObj.getString("status")) && boxMap.containsKey(tmpEntry.getKey())) {
+				onlineNums++;
+			}
+		}
+		result.put("onlineNums", onlineNums);
+		return result;
+	}
+
+	@Override
+	public Map<String, Integer> statDeviceBoxOnline(List<DeviceBoxInfoEntity> boxList, Map<String, String> redisStatus) {
+		Map<String, DeviceBoxInfoEntity> boxMap = new HashMap<String, DeviceBoxInfoEntity>();
+		for (DeviceBoxInfoEntity b : boxList) {
+			boxMap.put(Integer.parseInt(b.getDeviceBoxNum().substring(10)) + "", b);
+		}
+
+		Map<String, Integer> result = new HashMap<String, Integer>();
+		int onlineNums = 0;
+		Map<String, String> tmpResult = new HashMap<String, String>();
+		tmpResult.putAll(redisStatus);
+		for (Map.Entry<String, String> tmpEntry : tmpResult.entrySet()) {
+			JSONObject jsonObj = JSONObject.fromObject(tmpEntry.getValue());
+			if ("0".equals(jsonObj.getString("status")) && boxMap.containsKey(tmpEntry.getKey())) {
+				onlineNums++;
+			}
+		}
+		result.put("onlineNums", onlineNums);
+		return result;
+	}
+
 	public void doKkProject() {
 		// this.deviceBoxConfigService.updateUse();
 		// this.deviceBoxConfigService.updateNotUse();

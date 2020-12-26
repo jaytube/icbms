@@ -3,6 +3,7 @@ package com.wz.front.service.impl;
 import com.wz.front.dto.ProjectBoxInfoCntDto;
 import com.wz.front.service.AppDashboardService;
 import com.wz.front.service.ClientProjectInfoService;
+import com.wz.front.service.CurrentUser;
 import com.wz.modules.common.utils.CommonResponse;
 import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
 import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
@@ -46,6 +47,9 @@ public class AppDashboardServiceImpl implements AppDashboardService {
     @Autowired
     private CodeService codeService;
 
+    @Autowired
+    private CurrentUser currentUser;
+
     @ResponseBody
     public CommonResponse getAllBoxInfoCnt() {
         List<ProjectInfoEntity> userProjects = clientProjectInfoService.getUserProjects();
@@ -61,8 +65,8 @@ public class AppDashboardServiceImpl implements AppDashboardService {
         for (int i = 0; i < size; i++) {
             ids[i] = userProjects.get(i).getId();
         }
-        List<ProjectBoxInfoCntDto> projectBoxInfoCntByIds = clientProjectInfoService.getProjectBoxInfoCntByIds(ids);
-        for (ProjectBoxInfoCntDto dto : projectBoxInfoCntByIds) {
+        Map<String, ProjectBoxInfoCntDto> projectBoxInfoCntByIds = clientProjectInfoService.getProjectBoxInfoCntByIds(ids);
+        for (ProjectBoxInfoCntDto dto : projectBoxInfoCntByIds.values()) {
             boxTotal += dto.getBoxTotal();
             switchOnlineTotal += dto.getSwitchOnlineTotal();
             switchLeaveTotal += dto.getSwitchLeaveTotal();
@@ -165,8 +169,7 @@ public class AppDashboardServiceImpl implements AppDashboardService {
         String deviceBoxId = null;
         int curPage = Integer.parseInt(page);
         Integer offset = (curPage - 1) * Integer.parseInt(pageSize);
-        List<DeviceAlarmInfoLogEntity> result = this.deviceAlarmInfoLogDao.queryAppListByProjectIds(startTime, endTime, null, null,
-                offset, Integer.parseInt(pageSize), null, deviceBoxId, alarmLevel, projectIds);
+        List<DeviceAlarmInfoLogEntity> result = this.deviceAlarmInfoLogDao.queryAppListByUserId(currentUser.getCurrentUser(), offset, Integer.parseInt(pageSize));
         if (null != result && 0 < result.size()) {
             Map<String, String> levelMap = this.codeService.queryChildsMapByMark("alarm_level");
             for (DeviceAlarmInfoLogEntity alarm : result) {

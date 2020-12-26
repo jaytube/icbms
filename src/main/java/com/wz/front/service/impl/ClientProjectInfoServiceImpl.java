@@ -5,7 +5,8 @@ import com.wz.front.dto.ProjectBoxInfoCntDto;
 import com.wz.front.dto.ProjectInfoDto;
 import com.wz.front.service.ClientProjectInfoService;
 import com.wz.front.service.CurrentUser;
-import com.wz.modules.common.utils.ShiroUtils;
+import com.wz.modules.common.utils.DateUtils;
+import com.wz.modules.common.utils.RedisUtil;
 import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
 import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
 import com.wz.modules.devicelog.dao.DeviceAlarmInfoLogDao;
@@ -19,14 +20,8 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author: Cherry
@@ -53,6 +48,11 @@ public class ClientProjectInfoServiceImpl implements ClientProjectInfoService {
 
     @Autowired
     private CurrentUser currentUser;
+
+    @Autowired
+    private RedisUtil redisUtil;
+
+    private static final String REDIS_GATEWAYADDRESS = "0";
 
     @Override
     public List<ProjectInfoEntity> getUserProjects() {
@@ -92,10 +92,20 @@ public class ClientProjectInfoServiceImpl implements ClientProjectInfoService {
     }
 
     @Override
-    public List<ProjectBoxInfoCntDto> getProjectBoxInfoCntByIds(String[] projectIds) {
+    public Map<String, ProjectBoxInfoCntDto> getProjectBoxInfoCntByIds(String[] projectIds) {
         List<DeviceBoxInfoEntity> allBoxInfoList = deviceBoxInfoService.findDeviceBoxsInfoByProjectIds(projectIds);
+        return getAllProjectBoxInfoCnt(allBoxInfoList);
+    }
+
+    @Override
+    public Map<String, ProjectBoxInfoCntDto> getProjectBoxInfoCntByUserId(String userId) {
+        List<DeviceBoxInfoEntity> allBoxInfoList = deviceBoxInfoService.findDeviceBoxsInfoByUserId(userId);
+        return getAllProjectBoxInfoCnt(allBoxInfoList);
+    }
+
+    private Map<String, ProjectBoxInfoCntDto> getAllProjectBoxInfoCnt(List<DeviceBoxInfoEntity> allBoxInfoList) {
         if (CollectionUtils.isEmpty(allBoxInfoList)) {
-            return new ArrayList<>();
+            return new HashMap<>();
         }
         Map<String, List<DeviceBoxInfoEntity>> projectMap = new HashMap<>();
         for (DeviceBoxInfoEntity entity : allBoxInfoList) {
@@ -105,11 +115,11 @@ public class ClientProjectInfoServiceImpl implements ClientProjectInfoService {
             }
             projectMap.get(projectId).add(entity);
         }
-
-        List<ProjectBoxInfoCntDto> all = new ArrayList<>();
+        Map<String, ProjectBoxInfoCntDto> all = new HashMap<>();
+        Map<String, String> redisStatus = redisUtil.hgetAll(Integer.parseInt(REDIS_GATEWAYADDRESS), "TERMINAL_STATUS");
         for (Map.Entry<String, List<DeviceBoxInfoEntity>> entry : projectMap.entrySet()) {
             ProjectBoxInfoCntDto resultMap = new ProjectBoxInfoCntDto();
-            Map<String, Integer> onlineMaps = this.kkService.statDeviceBoxOnline(entry.getKey());
+            Map<String, Integer> onlineMaps = this.kkService.statDeviceBoxOnline(entry.getValue(), redisStatus);
             List<DeviceBoxInfoEntity> boxInfoList = entry.getValue();
             resultMap.setBoxTotal(boxInfoList.size());
             try {
@@ -120,12 +130,13 @@ public class ClientProjectInfoServiceImpl implements ClientProjectInfoService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            all.add(resultMap);
+            all.put(entry.getKey(), resultMap);
         }
         return all;
     }
 
     private List<ProjectInfoDto> convert(List<ProjectInfoEntity> userProjects) {
+        String currentUser = this.currentUser.getCurrentUser();
         if (CollectionUtils.isEmpty(userProjects)) {
             return new ArrayList<>();
         }
@@ -141,10 +152,14 @@ public class ClientProjectInfoServiceImpl implements ClientProjectInfoService {
         for (ProjectAlarmTotalDto dto : projectAlarmTotalDtos) {
             totalMap.put(dto.getProjectId(), dto.getAlarmTotal());
         }
+        Map<String, ProjectBoxInfoCntDto> projectBoxInfoCntDtoMap = getProjectBoxInfoCntByUserId(currentUser);
         for (ProjectInfoEntity entity : userProjects) {
             ProjectInfoDto dto = new ProjectInfoDto();
             String projectId = entity.getId();
-            ProjectBoxInfoCntDto projectBoxInfoCnt = getProjectBoxInfoCnt(projectId);
+            ProjectBoxInfoCntDto projectBoxInfoCnt = projectBoxInfoCntDtoMap.get(projectId);
+            if (projectBoxInfoCnt == null) {
+                continue;
+            }
             dto.setBoxTotal(projectBoxInfoCnt.getBoxTotal());
             dto.setSwitchOnlineTotal(projectBoxInfoCnt.getSwitchOnlineTotal());
             dto.setSwitchLeaveTotal(projectBoxInfoCnt.getSwitchLeaveTotal());

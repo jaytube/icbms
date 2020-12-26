@@ -37,6 +37,10 @@ public interface KkService {
 
 	public Map<String, Integer> statDeviceBoxOnline(String projectId);
 
+	public Map<String, Integer> statDeviceBoxOnline(List<DeviceBoxInfoEntity> boxList);
+
+	public Map<String, Integer> statDeviceBoxOnline(List<DeviceBoxInfoEntity> boxList, Map<String, String> redisStatus);
+
 	public void doKkProject();
 
 	// 设置网关参数

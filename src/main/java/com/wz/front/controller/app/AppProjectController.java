@@ -6,6 +6,7 @@ import com.wz.front.service.CurrentUser;
 import com.wz.modules.app.annotation.LoginRequired;
 import com.wz.modules.common.controller.BaseController;
 import com.wz.modules.common.utils.CommonResponse;
+import com.wz.modules.common.utils.DateUtils;
 import com.wz.modules.common.utils.ShiroUtils;
 import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
 import com.wz.modules.projectinfo.service.ProjectInfoService;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,9 +50,11 @@ public class AppProjectController extends BaseController {
     @LoginRequired
     @ApiOperation(value = "该账户下,该场馆所有可见的 设备总数,在线空开,离线空开")
     public CommonResponse list() {
+        System.out.println(1 + DateUtils.formatMS(new Date()));
         List<ProjectInfoDto> projectList = clientProjectInfoService.listProjects();
         Map<String, Object> result = new HashMap<>();
         result.put("projectList", projectList);
+        System.out.println(2 + DateUtils.formatMS(new Date()));
         return CommonResponse.success(result);
     }
 

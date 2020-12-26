@@ -255,6 +255,42 @@
         </if>
     </select>
 
+    <select id="queryAppListByUserId"
+            resultType="com.wz.modules.devicelog.entity.DeviceAlarmInfoLogEntity"
+            resultMap="deviceAlarmInfoLogMap">
+        select
+        d.id,
+        d.project_id,
+        d.device_box_id,
+        d.device_box_mac,
+        d.node,
+        d.type,
+        d.record_time,
+        d.info,
+        d.alarm_status,
+        d.alarm_level,
+        d.create_time,
+        d.update_time,
+        d.create_id,
+        d.update_id,
+        d.remark,
+        box.device_box_name,
+        box.sec_box_gateway,
+        box.stand_no,
+        box.box_capacity,
+        box.control_flag
+        from device_alarm_info_log d
+        left join device_box_info box
+        on d.device_box_id = box.id
+        and d.project_id = box.project_id
+        where EXISTS (select project_id from sys_user_project a
+        where  d.project_id = a.project_id and user_id = #{userId})
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+
+    </select>
+
     <select id="queryAppTotal" resultType="int">
         select count(1)
         from device_alarm_info_log d
