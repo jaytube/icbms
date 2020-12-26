@@ -3,6 +3,7 @@ package com.wz.modules.kk.service;
 import java.util.List;
 import java.util.Map;
 
+import com.wz.front.dto.ProjectBoxStatusCntDto;
 import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
 import com.wz.modules.deviceinfo.entity.DeviceSwitchInfoEntity;
 import com.wz.modules.devicelog.entity.DeviceElectricityLogEntity;
@@ -85,4 +86,6 @@ public interface KkService {
 	public Map<String, String> getTerminalParams(String termainlAddr, String switchAddr);
 	//同步终端配置
 	public void doSynTerminalConfig(String projectId);
+
+	ProjectBoxStatusCntDto getBoxesRecentStatus(String projectId);
 }

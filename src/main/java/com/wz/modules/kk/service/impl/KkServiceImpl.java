@@ -1,21 +1,7 @@
 package com.wz.modules.kk.service.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.druid.util.StringUtils;
+import com.wz.front.dto.ProjectBoxStatusCntDto;
 import com.wz.modules.common.jiguang.JiguangPush;
 import com.wz.modules.common.utils.DateConverUtil;
 import com.wz.modules.common.utils.DateUtils;
@@ -23,6 +9,7 @@ import com.wz.modules.common.utils.RedisUtil;
 import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
 import com.wz.modules.deviceinfo.entity.DeviceSwitchInfoEntity;
 import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
+import com.wz.modules.devicelog.dao.DeviceAlarmInfoLogDao;
 import com.wz.modules.devicelog.entity.DeviceAlarmInfoLogEntity;
 import com.wz.modules.devicelog.entity.DeviceElectricityLogEntity;
 import com.wz.modules.devicelog.service.DeviceAlarmInfoLogService;
@@ -38,9 +25,20 @@ import com.wz.modules.projectinfo.service.ProjectInfoService;
 import com.wz.modules.sys.entity.UserEntity;
 import com.wz.modules.sys.service.UserService;
 import com.wz.socket.cinterface.ClientRequestCmdSend;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service("kkService")
 public class KkServiceImpl implements KkService {
@@ -63,6 +61,9 @@ public class KkServiceImpl implements KkService {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private DeviceAlarmInfoLogDao deviceAlarmInfoLogDao;
 
 /*	@Override
 	public String setCmdSwitch(String deviceBoxMac, String switchAddStrs, String cmd, String projectId) {
@@ -451,6 +452,42 @@ public class KkServiceImpl implements KkService {
 	}
 
 	@Override
+	public ProjectBoxStatusCntDto getBoxesRecentStatus(String projectId) {
+		List<DeviceBoxInfoEntity> boxList = this.deviceBoxInfoService.findDeviceBoxsInfoByProjectId(projectId);
+		List<DeviceAlarmInfoLogEntity> latestAlarmList = deviceAlarmInfoLogDao.getLatestAlarmOfDeviceByProjectId(projectId);
+		Map<String, DeviceBoxInfoEntity> boxMap = new HashMap<>();
+		for (DeviceBoxInfoEntity b : boxList) {
+			boxMap.put(Integer.parseInt(b.getDeviceBoxNum().substring(10)) + "", b);
+		}
+		Map<String, DeviceAlarmInfoLogEntity> alarmInfoMap = new HashMap<>();
+		if(CollectionUtils.isNotEmpty(latestAlarmList))
+			alarmInfoMap = latestAlarmList.stream().collect(Collectors.toMap(t -> Integer.toString(Integer.parseInt(t.getDeviceBoxMac().substring(10))), t -> t));
+		Map<String, String> tmp = redisUtil.hgetAll(0, "TERMINAL_STATUS");
+		Map<String, String> tmpResult = new HashMap<>();
+		tmpResult.putAll(tmp);
+		int onlineCnt = 0;
+		int errorCnt = 0;
+		int warningCnt = 0;
+		int normalCnt = 0;
+		for (Map.Entry<String, String> tmpEntry : tmpResult.entrySet()) {
+			JSONObject jsonObj = JSONObject.fromObject(tmpEntry.getValue());
+			if ("0".equals(jsonObj.getString("status")) && boxMap.containsKey(tmpEntry.getKey())) {
+				onlineCnt ++;
+				DeviceAlarmInfoLogEntity alarm = alarmInfoMap.getOrDefault(tmpEntry.getKey(), null);
+				if(alarm != null) {
+					if(alarm.getAlarmLevel().equals("4"))
+						errorCnt ++;
+					else
+						warningCnt ++;
+				}
+			}
+		}
+		int offlineCnt = boxList.size() - onlineCnt;
+		normalCnt = onlineCnt - warningCnt - errorCnt;
+		return new ProjectBoxStatusCntDto(normalCnt, offlineCnt, warningCnt, errorCnt);
+	}
+
+	@Override
 	public Map<String, Integer> statDeviceBoxOnline(List<DeviceBoxInfoEntity> boxList) {
 		Map<String, DeviceBoxInfoEntity> boxMap = new HashMap<String, DeviceBoxInfoEntity>();
 		for (DeviceBoxInfoEntity b : boxList) {
@@ -537,7 +574,7 @@ public class KkServiceImpl implements KkService {
 	 *            服务器发送命令至网关，网关插队或排队发送至节点标志位
 	 * @param reportCycle
 	 *            上报周期
-	 * @param Gw2DxOverTime
+	 * @param gw2DxOverTime
 	 *            网关发送节点命令回应超时时间
 	 * @return
 	 */

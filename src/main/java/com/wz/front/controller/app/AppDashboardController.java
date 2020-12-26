@@ -12,10 +12,12 @@ import com.wz.modules.devicelog.entity.DeviceAlarmStatEntity;
 import com.wz.modules.devicelog.entity.DeviceElecStatEntity;
 import com.wz.modules.devicelog.service.DeviceAlarmInfoLogService;
 import com.wz.modules.devicelog.service.DeviceElectricityLogService;
+import com.wz.modules.kk.service.KkService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,6 +57,10 @@ public class AppDashboardController {
     @Autowired
     private DeviceAlarmInfoLogDao deviceAlarmInfoLogDao;
 
+    @Autowired
+    @Qualifier("kkService")
+    private KkService kkService;
+
     @GetMapping("/getAllBoxInfoCnt")
     @LoginRequired
     @ApiOperation(value = "该账户下,该场馆所有可见的 设备总数,在线空开,离线空开")
@@ -90,6 +96,13 @@ public class AppDashboardController {
         }
         projectBoxInfoCnt.setAlarmTotal(alarmTotal);
         return CommonResponse.success(projectBoxInfoCnt);
+    }
+
+    @GetMapping("/getBoxStatusCnt")
+    @LoginRequired
+    @ApiOperation(value = "单项目")
+    public CommonResponse getBoxStatusCnt(String projectId) {
+        return CommonResponse.success(kkService.getBoxesRecentStatus(projectId));
     }
 
     @GetMapping("/getAlarmsStat")

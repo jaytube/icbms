@@ -72,4 +72,5 @@ public interface DeviceBoxInfoDao extends BaseDao<DeviceBoxInfoEntity> {
 
 	int updateBoxPlacedFlag(@Param("projectId") String projectId, @Param("deviceMac") String deviceMac,
 			@Param("placedFlag") String placedFlag);
+
 }
