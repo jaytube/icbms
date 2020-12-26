@@ -2,6 +2,7 @@ package com.wz.front.service.impl;
 
 import com.wz.front.dto.ProjectAlarmTotalDto;
 import com.wz.front.dto.ProjectBoxInfoCntDto;
+import com.wz.front.dto.ProjectBoxStatusCntDto;
 import com.wz.front.dto.ProjectInfoDto;
 import com.wz.front.service.ClientProjectInfoService;
 import com.wz.front.service.CurrentUser;
@@ -91,6 +92,8 @@ public class ClientProjectInfoServiceImpl implements ClientProjectInfoService {
         return resultMap;
     }
 
+
+
     @Override
     public Map<String, ProjectBoxInfoCntDto> getProjectBoxInfoCntByIds(String[] projectIds) {
         List<DeviceBoxInfoEntity> allBoxInfoList = deviceBoxInfoService.findDeviceBoxsInfoByProjectIds(projectIds);
@@ -101,6 +104,11 @@ public class ClientProjectInfoServiceImpl implements ClientProjectInfoService {
     public Map<String, ProjectBoxInfoCntDto> getProjectBoxInfoCntByUserId(String userId) {
         List<DeviceBoxInfoEntity> allBoxInfoList = deviceBoxInfoService.findDeviceBoxsInfoByUserId(userId);
         return getAllProjectBoxInfoCnt(allBoxInfoList);
+    }
+
+    @Override
+    public ProjectBoxStatusCntDto getProjectBoxStatusInfoCnt(String projectId) {
+        return null;
     }
 
     private Map<String, ProjectBoxInfoCntDto> getAllProjectBoxInfoCnt(List<DeviceBoxInfoEntity> allBoxInfoList) {

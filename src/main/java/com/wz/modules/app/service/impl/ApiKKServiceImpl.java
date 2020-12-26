@@ -1,5 +1,6 @@
 package com.wz.modules.app.service.impl;
 
+import com.wz.front.dto.ProjectBoxStatusCntDto;
 import com.wz.modules.app.service.ApiKKService;
 import com.wz.modules.common.utils.RedisUtil;
 import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
@@ -212,7 +213,7 @@ public class ApiKKServiceImpl implements ApiKKService {
      * @param okFlag          配置有效标志位
      * @param queueFlag       服务器发送命令至网关，网关插队或排队发送至节点标志位
      * @param reportCycle     上报周期
-     * @param Gw2DxOverTime   网关发送节点命令回应超时时间
+     * @param gw2DxOverTime   网关发送节点命令回应超时时间
      * @return
      */
     @Override
@@ -233,6 +234,11 @@ public class ApiKKServiceImpl implements ApiKKService {
     public void doSynTerminalConfig(String projectId) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public ProjectBoxStatusCntDto getBoxesRecentStatus(String projectId) {
+        return null;
     }
 
 }

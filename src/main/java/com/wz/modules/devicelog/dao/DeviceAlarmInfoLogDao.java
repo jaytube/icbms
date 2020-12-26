@@ -2,6 +2,7 @@ package com.wz.modules.devicelog.dao;
 
 import com.wz.front.dto.ProjectAlarmTotalDto;
 import com.wz.modules.common.dao.BaseDao;
+import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
 import com.wz.modules.devicelog.entity.DeviceAlarmInfoLogEntity;
 import com.wz.modules.devicelog.entity.DeviceAlarmStatEntity;
 import org.apache.ibatis.annotations.Mapper;
@@ -52,4 +53,6 @@ public interface DeviceAlarmInfoLogDao extends BaseDao<DeviceAlarmInfoLogEntity>
                                                          @Param("startDate") String startDate);
 
     public List<DeviceAlarmInfoLogEntity> queryDeviceAlarmList(@Param("deviceBoxId") String deviceBoxId);
+
+    List<DeviceAlarmInfoLogEntity> getLatestAlarmOfDeviceByProjectId(@Param("projectId") String projectId);
 }

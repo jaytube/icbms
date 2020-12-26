@@ -461,4 +461,15 @@
         order by create_time desc
         limit 1
     </select>
+
+    <select id="getLatestAlarmOfDeviceByProjectId"
+            resultType="com.wz.modules.devicelog.entity.DeviceAlarmInfoLogEntity">
+        with _tmp as (
+        select <include refid="Base_Column_List" />, row_number()
+        over (PARTITION by device_box_id order by create_time) as row_num from device_alarm_info_log where 1 =1
+        <if test="projectId != null and projectId.trim() != ''">
+            and project_id = #{projectId}
+        </if>
+        ) select * from _tmp where row_num = 1;
+    </select>
 </mapper>
