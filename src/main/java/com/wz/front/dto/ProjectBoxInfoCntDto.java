@@ -13,6 +13,8 @@ public class ProjectBoxInfoCntDto {
 
     private int switchLeaveTotal = 0;
 
+    private int alarmTotal = 0;
+
     private String dailyElecTotal;
 
     public ProjectBoxInfoCntDto(int boxTotal, int switchOnlineTotal, int switchLeaveTotal) {
@@ -54,5 +56,13 @@ public class ProjectBoxInfoCntDto {
 
     public void setDailyElecTotal(String dailyElecTotal) {
         this.dailyElecTotal = dailyElecTotal;
+    }
+
+    public int getAlarmTotal() {
+        return alarmTotal;
+    }
+
+    public void setAlarmTotal(int alarmTotal) {
+        this.alarmTotal = alarmTotal;
     }
 }

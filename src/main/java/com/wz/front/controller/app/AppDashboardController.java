@@ -6,6 +6,7 @@ import com.wz.front.service.ClientProjectInfoService;
 import com.wz.modules.app.annotation.LoginRequired;
 import com.wz.modules.common.utils.CommonResponse;
 import com.wz.modules.common.utils.DateUtils;
+import com.wz.modules.devicelog.dao.DeviceAlarmInfoLogDao;
 import com.wz.modules.devicelog.dao.DeviceElectricityLogDao;
 import com.wz.modules.devicelog.entity.DeviceAlarmStatEntity;
 import com.wz.modules.devicelog.entity.DeviceElecStatEntity;
@@ -49,6 +50,9 @@ public class AppDashboardController {
     @Autowired
     private DeviceElectricityLogService deviceElectricityLogService;
 
+    @Autowired
+    private DeviceAlarmInfoLogDao deviceAlarmInfoLogDao;
+
     @GetMapping("/getAllBoxInfoCnt")
     @LoginRequired
     @ApiOperation(value = "该账户下,该场馆所有可见的 设备总数,在线空开,离线空开")
@@ -58,14 +62,14 @@ public class AppDashboardController {
 
     @GetMapping("/getAllAlarmsPage")
     @LoginRequired
-    @ApiOperation(value = "实时数据列表")
+    @ApiOperation(value = "告警数据列表+告警总数")
     public CommonResponse getAllAlarmsPage(String startTime, String endTime, String pageSize, String page, String alarmLevel) {
         return appDashboardService.getAllAlarmsPage(startTime, endTime, pageSize, page, alarmLevel);
     }
 
     @GetMapping("/getAllSwitchesPage")
     @LoginRequired
-    @ApiOperation(value = "告警数据列表+告警总数")
+    @ApiOperation(value = "实时数据列表")
     public CommonResponse getAllSwitchesPage(String startTime, String endTime, String pageSize, String page) {
         return appDashboardService.getAllSwitchesPage(startTime, endTime, pageSize, page);
     }
@@ -76,11 +80,13 @@ public class AppDashboardController {
     public CommonResponse getBoxInfoCnt(String projectId) {
         ProjectBoxInfoCntDto projectBoxInfoCnt = clientProjectInfoService.getProjectBoxInfoCnt(projectId);
         List<DeviceElecStatEntity> deviceElecStatEntities = deviceElectricityLogDao.doStatDeviceElec(projectId, DateUtils.format(new Date(), DATE_PATTERN));
+        int alarmTotal = this.deviceAlarmInfoLogDao.queryProjectTotalInt(projectId);
         if (CollectionUtils.isEmpty(deviceElecStatEntities) || deviceElecStatEntities.get(0) == null) {
             projectBoxInfoCnt.setDailyElecTotal("0.00");
         } else {
             projectBoxInfoCnt.setDailyElecTotal(deviceElecStatEntities.get(0).getElec());
         }
+        projectBoxInfoCnt.setAlarmTotal(alarmTotal);
         return CommonResponse.success(projectBoxInfoCnt);
     }
 

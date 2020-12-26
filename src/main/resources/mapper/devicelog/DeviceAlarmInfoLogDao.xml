@@ -318,6 +318,12 @@
         </foreach>
     </select>
 
+    <select id="queryProjectTotalInt" resultType="int">
+        select count(1)
+        from device_alarm_info_log d
+        where d.project_id = #{projectId}
+    </select>
+
     <insert id="save"
             parameterType="com.wz.modules.devicelog.entity.DeviceAlarmInfoLogEntity">
 		insert into device_alarm_info_log

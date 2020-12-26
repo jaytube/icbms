@@ -42,6 +42,8 @@ public interface DeviceAlarmInfoLogDao extends BaseDao<DeviceAlarmInfoLogEntity>
 
     public List<ProjectAlarmTotalDto> queryProjectsTotal(String[] ids);
 
+    public int queryProjectTotalInt(@Param("projectId") String projectId);
+
     public int queryProjectsTotalInt(String[] ids);
 
     public List<DeviceAlarmStatEntity> doStatDeviceAlarm(@Param("projectId") String projectId,

@@ -67,7 +67,9 @@ public class AppDashboardServiceImpl implements AppDashboardService {
             switchOnlineTotal += dto.getSwitchOnlineTotal();
             switchLeaveTotal += dto.getSwitchLeaveTotal();
         }
+        int alarmTotal = this.deviceAlarmInfoLogDao.queryProjectsTotalInt(ids);
         ProjectBoxInfoCntDto all = new ProjectBoxInfoCntDto(boxTotal, switchOnlineTotal, switchLeaveTotal);
+        all.setAlarmTotal(alarmTotal);
         return CommonResponse.success(all);
     }
 
