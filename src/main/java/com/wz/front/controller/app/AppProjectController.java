@@ -54,6 +54,7 @@ public class AppProjectController extends BaseController {
         List<ProjectInfoDto> projectList = clientProjectInfoService.listProjects();
         Map<String, Object> result = new HashMap<>();
         result.put("projectList", projectList);
+        result.put("gymName", "世博展览馆");
         System.out.println(2 + DateUtils.formatMS(new Date()));
         return CommonResponse.success(result);
     }
