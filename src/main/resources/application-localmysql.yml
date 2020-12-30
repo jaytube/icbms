@@ -30,13 +30,13 @@ spring:
           config:
             multi-statement-allow: true
   sms:
-    accessKeyId: LTAI4G6JLeTaPpvb5xavmpMH
-    accessKeySecret: 65sv7q5F4hDnp0PxhNNNlaVBTK8BST
-    templateCode: 01
+    accessKeyId: xxxx
+    accessKeySecret: xxx
+    templateCode: xxxx
   email:
-    host: smtp.qq.com
-    username: 180835910@qq.com
-    password: lolvqladslrzbgfg
+    host: xxxx
+    username: xxxx
+    password: xxxx
 
   redis:
     database: 0

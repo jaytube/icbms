@@ -29,6 +29,14 @@ spring:
         wall:
           config:
             multi-statement-allow: true
+  sms:
+    accessKeyId: xxxx
+    accessKeySecret: xxx
+    templateCode: xxxx
+  email:
+    host: xxxx
+    username: xxxx
+    password: xxxx
 
   redis:
     database: 0
