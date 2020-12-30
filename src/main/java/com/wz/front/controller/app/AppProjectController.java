@@ -50,12 +50,10 @@ public class AppProjectController extends BaseController {
     @LoginRequired
     @ApiOperation(value = "该账户下,该场馆所有可见的 设备总数,在线空开,离线空开")
     public CommonResponse list() {
-        System.out.println(1 + DateUtils.formatMS(new Date()));
         List<ProjectInfoDto> projectList = clientProjectInfoService.listProjects();
         Map<String, Object> result = new HashMap<>();
         result.put("projectList", projectList);
         result.put("gymName", "世博展览馆");
-        System.out.println(2 + DateUtils.formatMS(new Date()));
         return CommonResponse.success(result);
     }
 
