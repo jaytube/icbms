@@ -40,6 +40,14 @@ public interface UserService {
 	UserEntity queryByLoginName(String logName);
 
 	/**
+	 * 重置用户密码
+	 * @param loginName 登录用户名
+	 * @param phoneNumber 登录用户手机号
+	 * @return
+	 */
+	String resetPassword(String loginName, String phoneNumber);
+
+	/**
 	 * 用户对应的机构id,数据权限控制
 	 * @param userId
 	 * @return key:roleId 角色id value:角色所对应的机构集合

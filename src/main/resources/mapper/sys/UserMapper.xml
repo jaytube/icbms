@@ -111,6 +111,14 @@
 		where login_name = #{0}
 	</select>
 
+	<select id="queryByLoginNameAndPhone" resultType="com.wz.modules.sys.entity.UserEntity" resultMap="userMap">
+		select
+		<include refid="Base_Column_List" />,(SELECT name FROM sys_organ o WHERE o.id=u.baid) AS baName,
+		(SELECT name FROM sys_organ o WHERE o.id=u.bapid) AS bapName
+		from sys_user u
+		where login_name = #{loginName} and phone = #{phone}
+	</select>
+
 	<!--用户对应的组织id,数据权限控制-->
 	<select id="queryOrganIdByUserId" resultType="java.util.Map">
 		select
@@ -254,6 +262,12 @@
 		<foreach item="id" collection="ids" open="(" separator="," close=")">
 			#{id}
 		</foreach>
+	</update>
+
+	<update id="resetOnePassWord" parameterType="java.util.Map">
+		update sys_user
+		set pass_word=#{passWord},salt=#{salt}
+		where id = #{userId}
 	</update>
 
 	<!--批量更新用户状态-->

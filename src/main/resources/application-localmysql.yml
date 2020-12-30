@@ -3,7 +3,7 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driverClassName: com.mysql.jdbc.Driver
     druid:
-      url: jdbc:mysql://127.0.0.1:3310/icbms_pro2020?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+      url: jdbc:mysql://192.168.1.7:3310/icbms_pro2020?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
       username: root
       password: 123456
       initial-size: 10
@@ -29,6 +29,14 @@ spring:
         wall:
           config:
             multi-statement-allow: true
+  sms:
+    accessKeyId: LTAI4G6JLeTaPpvb5xavmpMH
+    accessKeySecret: 65sv7q5F4hDnp0PxhNNNlaVBTK8BST
+    templateCode: 01
+  email:
+    host: smtp.qq.com
+    username: 180835910@qq.com
+    password: lolvqladslrzbgfg
 
   redis:
     database: 0
