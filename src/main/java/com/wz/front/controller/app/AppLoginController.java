@@ -6,13 +6,15 @@ import com.wz.modules.app.service.ApiUserService;
 import com.wz.modules.app.utils.JwtUtils;
 import com.wz.modules.common.utils.CommonResponse;
 import com.wz.modules.common.utils.Result;
-import com.wz.modules.common.utils.ShiroUtils;
 import com.wz.modules.sys.entity.UserEntity;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,10 +61,10 @@ public class AppLoginController {
     }
 
 
-    @GetMapping("/forget/{phoneNumber}/{userName}")
+    @RequestMapping(value = "/forget", method = RequestMethod.GET)
     @ApiOperation(tags = "忘记密码", value = "忘记密码")
     @ResponseBody
-    public Result forget(@PathVariable("phoneNumber") String phoneNumber, @PathVariable("userName") String userName) {
+    public Result forget(String phoneNumber, String userName) {
         String password = userApiService.resetPassword(userName, phoneNumber);
         if (password == null) {
             return Result.error("用户名和手机号不匹配，密码重置失败！");
@@ -72,7 +74,7 @@ public class AppLoginController {
         CommonResponse email = notificationService.sendEmail(userEntity.getEmail(), "密码重置（请勿回复）", text);
         CommonResponse sms = notificationService.sendSms(userEntity.getPhone(), password);
         Map<String, Object> result = new HashMap<>();
-        result.put("密码重置状态：", "密码重置成功!");
+        result.put("密码重置状态：", "密码重置成功! + 【进测试用，后面会删除】临时密码【" + password + "】");
         result.put("邮件通知：", email);
         result.put("短信通知：", sms);
         return Result.ok(result);
