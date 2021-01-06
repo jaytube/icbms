@@ -4,9 +4,8 @@ import com.wz.front.dto.ProjectAlarmTotalDto;
 import com.wz.front.dto.ProjectBoxInfoCntDto;
 import com.wz.front.dto.ProjectBoxStatusCntDto;
 import com.wz.front.dto.ProjectInfoDto;
-import com.wz.front.service.ClientProjectInfoService;
+import com.wz.front.service.AppProjectInfoService;
 import com.wz.front.service.CurrentUser;
-import com.wz.modules.common.utils.DateUtils;
 import com.wz.modules.common.utils.RedisUtil;
 import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
 import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
@@ -22,15 +21,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: Cherry
  * @Date: 2020/12/19
- * @Desc: ClientProjectInfoServiceImpl
+ * @Desc: AppProjectInfoServiceImpl
  */
 @Service
-public class ClientProjectInfoServiceImpl implements ClientProjectInfoService {
+public class AppProjectInfoServiceImpl implements AppProjectInfoService {
 
     @Autowired
     private KkService kkService;
@@ -69,6 +71,18 @@ public class ClientProjectInfoServiceImpl implements ClientProjectInfoService {
     }
 
     @Override
+    public String[] getUserProjectIds() {
+        String currentUser = this.currentUser.getCurrentUser();
+        UserEntity user = userService.queryObject(currentUser);
+        String projectIds = user.getProjectIds();
+        List<ProjectInfoEntity> projectList = new ArrayList<>();
+        if (StringUtils.isNotBlank(projectIds)) {
+            return projectIds.split(",");
+        }
+        return new String[]{};
+    }
+
+    @Override
     public List<ProjectInfoDto> listProjects() {
         return convert(getUserProjects());
     }
@@ -91,7 +105,6 @@ public class ClientProjectInfoServiceImpl implements ClientProjectInfoService {
         }
         return resultMap;
     }
-
 
 
     @Override

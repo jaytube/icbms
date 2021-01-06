@@ -2,7 +2,7 @@ package com.wz.front.service.impl;
 
 import com.wz.front.dto.ProjectBoxInfoCntDto;
 import com.wz.front.service.AppDashboardService;
-import com.wz.front.service.ClientProjectInfoService;
+import com.wz.front.service.AppProjectInfoService;
 import com.wz.front.service.CurrentUser;
 import com.wz.modules.common.utils.CommonResponse;
 import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
@@ -33,7 +33,7 @@ import java.util.Map;
 public class AppDashboardServiceImpl implements AppDashboardService {
 
     @Autowired
-    private ClientProjectInfoService clientProjectInfoService;
+    private AppProjectInfoService appProjectInfoService;
 
     @Autowired
     private DeviceBoxInfoService deviceBoxInfoService;
@@ -52,7 +52,7 @@ public class AppDashboardServiceImpl implements AppDashboardService {
 
     @ResponseBody
     public CommonResponse getAllBoxInfoCnt() {
-        List<ProjectInfoEntity> userProjects = clientProjectInfoService.getUserProjects();
+        List<ProjectInfoEntity> userProjects = appProjectInfoService.getUserProjects();
         if (CollectionUtils.isEmpty(userProjects)) {
             return CommonResponse.success(new HashMap<>());
         }
@@ -65,7 +65,7 @@ public class AppDashboardServiceImpl implements AppDashboardService {
         for (int i = 0; i < size; i++) {
             ids[i] = userProjects.get(i).getId();
         }
-        Map<String, ProjectBoxInfoCntDto> projectBoxInfoCntByIds = clientProjectInfoService.getProjectBoxInfoCntByIds(ids);
+        Map<String, ProjectBoxInfoCntDto> projectBoxInfoCntByIds = appProjectInfoService.getProjectBoxInfoCntByIds(ids);
         for (ProjectBoxInfoCntDto dto : projectBoxInfoCntByIds.values()) {
             boxTotal += dto.getBoxTotal();
             switchOnlineTotal += dto.getSwitchOnlineTotal();
@@ -79,7 +79,7 @@ public class AppDashboardServiceImpl implements AppDashboardService {
 
     @Override
     public CommonResponse getAllAlarmsPage(String startTime, String endTime, String pageSize, String page, String alarmLevel) {
-        List<ProjectInfoEntity> userProjects = clientProjectInfoService.getUserProjects();
+        List<ProjectInfoEntity> userProjects = appProjectInfoService.getUserProjects();
         PageInfo<DeviceAlarmInfoLogEntity> pageInfo = new PageInfo<DeviceAlarmInfoLogEntity>();
         if (CollectionUtils.isEmpty(userProjects)) {
             return CommonResponse.success(pageInfo);
@@ -111,7 +111,7 @@ public class AppDashboardServiceImpl implements AppDashboardService {
 
     @Override
     public CommonResponse getAllSwitchesPage(String startTime, String endTime, String pageSize, String page) {
-        List<ProjectInfoEntity> userProjects = clientProjectInfoService.getUserProjects();
+        List<ProjectInfoEntity> userProjects = appProjectInfoService.getUserProjects();
         PageInfo<DeviceSwitchInfoLogEntity> pageInfo = new PageInfo<DeviceSwitchInfoLogEntity>();
         if (CollectionUtils.isEmpty(userProjects)) {
             return CommonResponse.success(pageInfo);

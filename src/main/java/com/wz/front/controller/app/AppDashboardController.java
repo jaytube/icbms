@@ -2,7 +2,7 @@ package com.wz.front.controller.app;
 
 import com.wz.front.dto.ProjectBoxInfoCntDto;
 import com.wz.front.service.AppDashboardService;
-import com.wz.front.service.ClientProjectInfoService;
+import com.wz.front.service.AppProjectInfoService;
 import com.wz.modules.app.annotation.LoginRequired;
 import com.wz.modules.common.utils.CommonResponse;
 import com.wz.modules.common.utils.DateUtils;
@@ -43,7 +43,7 @@ public class AppDashboardController {
     private AppDashboardService appDashboardService;
 
     @Autowired
-    private ClientProjectInfoService clientProjectInfoService;
+    private AppProjectInfoService appProjectInfoService;
 
     @Autowired
     private DeviceElectricityLogDao deviceElectricityLogDao;
@@ -86,7 +86,7 @@ public class AppDashboardController {
     @LoginRequired
     @ApiOperation(value = "单项目")
     public CommonResponse getBoxInfoCnt(String projectId) {
-        ProjectBoxInfoCntDto projectBoxInfoCnt = clientProjectInfoService.getProjectBoxInfoCnt(projectId);
+        ProjectBoxInfoCntDto projectBoxInfoCnt = appProjectInfoService.getProjectBoxInfoCnt(projectId);
         List<DeviceElecStatEntity> deviceElecStatEntities = deviceElectricityLogDao.doStatDeviceElec(projectId, DateUtils.format(new Date(), DATE_PATTERN));
         int alarmTotal = this.deviceAlarmInfoLogDao.queryProjectTotalInt(projectId);
         if (CollectionUtils.isEmpty(deviceElecStatEntities) || deviceElecStatEntities.get(0) == null) {
