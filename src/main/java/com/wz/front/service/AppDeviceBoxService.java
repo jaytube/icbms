@@ -1,5 +1,6 @@
 package com.wz.front.service;
 
+import com.wz.front.enums.DeviceBoxStatus;
 import com.wz.modules.common.utils.CommonResponse;
 
 /**
@@ -9,9 +10,9 @@ import com.wz.modules.common.utils.CommonResponse;
  */
 public interface AppDeviceBoxService {
 
-    CommonResponse getAllProjectsDeviceBoxInfos(boolean showBoxOnline);
+    CommonResponse getAllProjectsDeviceBoxInfos(DeviceBoxStatus deviceBoxStatus);
 
-    CommonResponse getProjectDeviceBoxInfos(String projectId, boolean showBoxOnline);
+    CommonResponse getProjectDeviceBoxInfos(String projectId);
 
     CommonResponse getDeviceBoxInfo(String projectId, String deviceBoxMac);
 

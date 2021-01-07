@@ -1,5 +1,6 @@
 package com.wz.front.controller.app;
 
+import com.wz.front.enums.DeviceBoxStatus;
 import com.wz.front.service.AppDeviceBoxService;
 import com.wz.modules.app.annotation.LoginRequired;
 import com.wz.modules.common.utils.CommonResponse;
@@ -28,15 +29,15 @@ public class AppDeviceBoxInfoController {
     @GetMapping("/getAllProjectsDeviceBoxInfos")
     @LoginRequired
     @ApiOperation(value = "该账户下,所有展会的电箱节点")
-    public CommonResponse getAllProjectsDeviceBoxInfos(boolean showBoxOnline) {
-        return appDeviceBoxService.getAllProjectsDeviceBoxInfos(showBoxOnline);
+    public CommonResponse getAllProjectsDeviceBoxInfos(DeviceBoxStatus deviceBoxStatus) {
+        return appDeviceBoxService.getAllProjectsDeviceBoxInfos(deviceBoxStatus);
     }
 
     @GetMapping("/getProjectDeviceBoxInfos")
     @LoginRequired
     @ApiOperation(value = "单一展会下所有电箱节点")
-    public CommonResponse getProjectDeviceBoxInfos(String projectId, boolean showBoxOnline) {
-        return appDeviceBoxService.getProjectDeviceBoxInfos(projectId, showBoxOnline);
+    public CommonResponse getProjectDeviceBoxInfos(String projectId) {
+        return appDeviceBoxService.getProjectDeviceBoxInfos(projectId);
     }
 
     @GetMapping("/getDeviceBoxInfo")
