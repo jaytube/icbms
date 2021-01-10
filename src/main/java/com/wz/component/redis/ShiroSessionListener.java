@@ -19,7 +19,7 @@ public class ShiroSessionListener extends SessionListenerAdapter {
     private static final Logger logger = LoggerFactory.getLogger(ShiroSessionListener.class);
 
     @Autowired
-    private CachingShiroSessionDao sessionDao;
+    private CachingShiroSessionDao cachingShiroSessionDao;
 
     @Override
     public void onStart(Session session) {
@@ -29,14 +29,14 @@ public class ShiroSessionListener extends SessionListenerAdapter {
 
     @Override
     public void onStop(Session session) {
-        sessionDao.delete(session);
+        cachingShiroSessionDao.delete(session);
         // 会话被停止时触发
         logger.info("ShiroSessionListener session {} 被销毁", session.getId());
     }
 
     @Override
     public void onExpiration(Session session) {
-        sessionDao.delete(session);
+        cachingShiroSessionDao.delete(session);
         //会话过期时触发
         logger.info("ShiroSessionListener session {} 过期", session.getId());
     }

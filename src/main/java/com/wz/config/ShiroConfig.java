@@ -1,8 +1,7 @@
 package com.wz.config;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
+import com.wz.component.redis.CachingShiroSessionDao;
+import com.wz.component.shiro.MyRealm;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
@@ -14,12 +13,13 @@ import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreato
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.wz.component.redis.CachingShiroSessionDao;
-import com.wz.component.shiro.MyRealm;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * 类ShiroConfig的功能描述:
  * Shiro配置
+ *
  * @auther hxy
  * @date 2017-11-15 21:50:12
  */
@@ -27,16 +27,16 @@ import com.wz.component.shiro.MyRealm;
 public class ShiroConfig {
 
     @Bean("sessionManager")
-    public SessionManager sessionManager(CachingShiroSessionDao sessionDAO){
-        sessionDAO.setPrefix("shiro-session:");
+    public SessionManager sessionManager(CachingShiroSessionDao cachingShiroSessionDao) {
+        cachingShiroSessionDao.setPrefix("icbms-shiro-session:");
         //注意中央缓存有效时间要比本地缓存有效时间长
-        sessionDAO.setSeconds(1800);
+        cachingShiroSessionDao.setSeconds(1800);
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
         //设置session过期时间为1小时(单位：毫秒)，默认为30分钟
         sessionManager.setGlobalSessionTimeout(60 * 60 * 1000);
         sessionManager.setSessionIdUrlRewritingEnabled(false);
         sessionManager.setSessionValidationSchedulerEnabled(true);
-        sessionManager.setSessionDAO(sessionDAO);
+        sessionManager.setSessionDAO(cachingShiroSessionDao);
         return sessionManager;
     }
 
@@ -73,18 +73,18 @@ public class ShiroConfig {
         filterMap.put("/statics/**", "anon");
         filterMap.put("/swagger/**", "anon");
         filterMap.put("/favicon.ico", "anon");
-		filterMap.put("/swagger-ui.html", "anon");
-		filterMap.put("/migration/**", "anon");
-		filterMap.put("/doc.html", "anon");
-		filterMap.put("/redis/**", "anon");
+        filterMap.put("/swagger-ui.html", "anon");
+        filterMap.put("/migration/**", "anon");
+        filterMap.put("/doc.html", "anon");
+        filterMap.put("/redis/**", "anon");
 
-		
-		filterMap.put("/swagger-resources/**", "anon");
-		filterMap.put("/v2/api-docs", "anon");
-		filterMap.put("/configuration/ui", "anon");
-		filterMap.put("/configuration/security", "anon");
-		
-		filterMap.put("/webjars/**", "anon");
+
+        filterMap.put("/swagger-resources/**", "anon");
+        filterMap.put("/v2/api-docs", "anon");
+        filterMap.put("/configuration/ui", "anon");
+        filterMap.put("/configuration/security", "anon");
+
+        filterMap.put("/webjars/**", "anon");
         filterMap.put("/", "anon");
         filterMap.put("/**", "authc");
         shiroFilter.setFilterChainDefinitionMap(filterMap);
@@ -94,6 +94,7 @@ public class ShiroConfig {
 
     /**
      * 保证实现了Shiro内部lifecycle函数的bean执行
+     *
      * @return
      */
     @Bean("lifecycleBeanPostProcessor")
@@ -103,6 +104,7 @@ public class ShiroConfig {
 
     /**
      * AOP式方法级权限检查
+     *
      * @return
      */
     @Bean

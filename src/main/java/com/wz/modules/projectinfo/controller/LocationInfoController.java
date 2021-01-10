@@ -1,5 +1,6 @@
 package com.wz.modules.projectinfo.controller;
 
+import com.wz.front.util.FileUtils;
 import com.wz.modules.common.annotation.SysLog;
 import com.wz.modules.common.controller.BaseController;
 import com.wz.modules.common.utils.FileUtil;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -38,7 +38,7 @@ public class LocationInfoController extends BaseController {
     private LocationInfoService locationInfoService;
 
     @Autowired
-    private ServletContext servletContext;
+    private FileUtils fileUtils;
 
     /**
      * 信息
@@ -119,7 +119,7 @@ public class LocationInfoController extends BaseController {
         String pictureId = UUID.randomUUID().toString();
         String pictureName = pictureId + "." + suffix;
         try {
-            String fileSavePath = this.getFileUploadPath();
+            String fileSavePath = fileUtils.getFileUploadPath();
             File tmpFile = new File(fileSavePath);
             if (!tmpFile.exists()) {
                 tmpFile.mkdir();
@@ -131,44 +131,17 @@ public class LocationInfoController extends BaseController {
         }
     }
 
-    public String getFileUploadPath() {
-        // 如果没有写文件上传路径,保存到临时目录
-        String realPath = servletContext.getRealPath(File.separator);
-        if (isWinOs()) {
-            return realPath + "\\icbmsUploadFiles\\";
-        } else {
-            return realPath + "/icbmsUploadFiles/";
-        }
-
-//		if (isWinOs()) {
-//			return System.getProperty("java.io.tmpdir") + "icbmsUpload\\";
-//		} else {
-//			return System.getProperty("java.io.tmpdir") + "/icbmsUpload/";
-//		}
-    }
-
-    public Boolean isWinOs() {
-        String os = System.getProperty("os.name");
-        if (os.toLowerCase().startsWith("win")) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     @RequestMapping("/viewImg/{fileName:.+}")
-    public void renderSfCheckPicture(@PathVariable("fileName") String fileName, HttpServletRequest request,
-                                     HttpServletResponse response) {
+    public void renderSfCheckPicture(@PathVariable("fileName") String fileName, HttpServletRequest request, HttpServletResponse response) {
         if (StringUtils.isEmpty(fileName)) {
             return;
         }
-        String fileUploadPath = this.getFileUploadPath();
+        String fileUploadPath = fileUtils.getFileUploadPath();
         String path = fileUploadPath + fileName;
         try {
             byte[] bytes = FileUtil.toByteArray(path);
             response.getOutputStream().write(bytes);
         } catch (Exception e) {
-
         }
     }
 }

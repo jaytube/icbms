@@ -19,7 +19,9 @@ public class ProjectInfoDto {
 
     private int alarmTotal = 0;
 
-    private String projectIcon;
+    private int imageHeight;
+
+    private int imageWidth;
 
     public int getBoxTotal() {
         return boxTotal;
@@ -53,12 +55,20 @@ public class ProjectInfoDto {
         this.alarmTotal = alarmTotal;
     }
 
-    public String getProjectIcon() {
-        return projectIcon;
+    public int getImageHeight() {
+        return imageHeight;
     }
 
-    public void setProjectIcon(String projectIcon) {
-        this.projectIcon = projectIcon;
+    public void setImageHeight(int imageHeight) {
+        this.imageHeight = imageHeight;
+    }
+
+    public int getImageWidth() {
+        return imageWidth;
+    }
+
+    public void setImageWidth(int imageWidth) {
+        this.imageWidth = imageWidth;
     }
 
     public ProjectInfoEntity getProject() {

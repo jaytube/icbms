@@ -31,12 +31,6 @@ import java.util.Map;
 public class AppProjectController extends BaseController {
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
-    private ProjectInfoService projectInfoService;
-
-    @Autowired
     private AppProjectInfoService appProjectInfoService;
 
     @GetMapping("/list")

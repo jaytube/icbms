@@ -6,6 +6,7 @@ import com.wz.front.dto.ProjectBoxStatusCntDto;
 import com.wz.front.dto.ProjectInfoDto;
 import com.wz.front.service.AppProjectInfoService;
 import com.wz.front.service.CurrentUser;
+import com.wz.front.util.FileUtils;
 import com.wz.modules.common.utils.RedisUtil;
 import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
 import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
@@ -15,12 +16,17 @@ import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
 import com.wz.modules.projectinfo.service.ProjectInfoService;
 import com.wz.modules.sys.entity.UserEntity;
 import com.wz.modules.sys.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +38,7 @@ import java.util.Map;
  * @Desc: AppProjectInfoServiceImpl
  */
 @Service
+@Slf4j
 public class AppProjectInfoServiceImpl implements AppProjectInfoService {
 
     @Autowired
@@ -54,6 +61,9 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
 
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private FileUtils fileUtils;
 
     private static final String REDIS_GATEWAYADDRESS = "0";
 
@@ -186,9 +196,29 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
             dto.setSwitchLeaveTotal(projectBoxInfoCnt.getSwitchLeaveTotal());
             dto.setProject(entity);
             dto.setAlarmTotal(MapUtils.getIntValue(totalMap, projectId, 0));
+            setImageSize(entity, dto);
             projectInfoDtos.add(dto);
         }
         return projectInfoDtos;
+    }
+
+    private void setImageSize(ProjectInfoEntity entity, ProjectInfoDto dto) {
+        String fileName = entity.getFileName();
+        if (StringUtils.isBlank(fileName)) {
+            return;
+        }
+        String fileUploadPath = fileUtils.getFileUploadPath();
+        File image = new File(fileUploadPath + fileName);
+        if (!image.exists()) {
+            return;
+        }
+        try {
+            BufferedImage imageBuf = ImageIO.read(image);
+            dto.setImageHeight(imageBuf.getHeight());
+            dto.setImageWidth(imageBuf.getWidth());
+        } catch (IOException e) {
+            log.error("获取展会图片宽高异常：", e);
+        }
     }
 
 }
