@@ -9,6 +9,7 @@ import com.wz.modules.common.exception.MyException;
 import com.wz.modules.common.utils.ShiroUtils;
 import com.wz.modules.sys.entity.UserEntity;
 import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
  * @date 2017-10-16 14:16:47
  */
 @Component
+@Slf4j
 public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     private JwtUtils jwtUtils;
@@ -51,8 +53,10 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
         if (DeviceUtils.checkDeviceType(request) != DeviceType.MOBILE_APP) {
             boolean login = ShiroUtils.isLogin();
             if (login) {
+                log.info("AuthorizationInterceptor Shiro is Login");
                 return true;
             }
+            log.info("AuthorizationInterceptor Shiro is not Login");
             throw new MyException("凭证失效，请重新登录");
         }
 
@@ -82,7 +86,7 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
 
         //设置userId到request里，后续根据userId，获取用户信息
         request.setAttribute(CURRENT_USER, claims.getSubject());
-
+        log.info("AuthorizationInterceptor jwt is Login");
         return true;
     }
 }

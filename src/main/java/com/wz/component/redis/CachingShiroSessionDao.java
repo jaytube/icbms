@@ -1,6 +1,7 @@
 package com.wz.component.redis;
 
 
+import com.wz.modules.common.utils.RedisUtil;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.session.mgt.ValidatingSession;
@@ -10,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.wz.modules.common.utils.RedisUtil;
 
 import java.io.Serializable;
 
@@ -58,6 +57,7 @@ public class CachingShiroSessionDao extends CachingSessionDAO {
                 cache(session, session.getId());
             }
         }
+        logger.info("CachingShiroSessionDao readSession " + sessionId);
         return session;
     }
 
@@ -73,7 +73,7 @@ public class CachingShiroSessionDao extends CachingSessionDAO {
         try {
             String key = prefix + sessionId;
             session = (Session) redisUtil.getObject(key);
-            //logger.info("sessionId {} name {} 被读取", sessionId, session.getClass().getName());
+            logger.info("CachingShiroSessionDao doReadSession " + sessionId);
         } catch (Exception e) {
             logger.warn("读取Session失败", e);
         }
@@ -93,10 +93,11 @@ public class CachingShiroSessionDao extends CachingSessionDAO {
         try {
             // session由Redis缓存失效决定，这里只是简单标识
             session.setTimeout(seconds);
-            redisUtil.setObject(prefix + sessionId,session,seconds);
-            logger.info("sessionId {} name {} 被创建", sessionId, session.getClass().getName());
+            redisUtil.setObject(prefix + sessionId, session, seconds);
+            logger.info("sessionId {} name {} doCreate被创建", sessionId, session.getClass().getName());
         } catch (Exception e) {
-            logger.warn("创建Session失败", e);
+            logger.warn("创建Session失败 doCreate" + session.getClass().getName());
+            logger.warn("创建Session失败 doCreate", e);
         }
         return sessionId;
     }

@@ -9,6 +9,7 @@ import com.wz.modules.common.utils.Result;
 import com.wz.modules.sys.entity.UserEntity;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -30,6 +31,7 @@ import java.util.Map;
 @Controller
 @Api(tags = "APP登录")
 @RequestMapping("/app")
+@Slf4j
 public class AppLoginController {
 
     @Autowired
@@ -49,6 +51,7 @@ public class AppLoginController {
     public Result login(UserEntity userEntity) {
         //用户登录
         String userId = userApiService.login(userEntity);
+        log.info("/app/login start==>" + userEntity.getLoginName());
 
         //生成token
         String token = jwtUtils.generateToken(userId);
@@ -56,7 +59,7 @@ public class AppLoginController {
         Map<String, Object> map = new HashMap<>();
         map.put("token", token);
         map.put("expire", jwtUtils.getExpire());
-
+        log.info("/app/login success==>" + userEntity.getLoginName());
         return Result.ok(map);
     }
 

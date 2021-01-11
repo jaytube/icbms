@@ -9,6 +9,7 @@ import com.wz.modules.common.utils.ShiroUtils;
 import com.wz.modules.common.utils.UserUtils;
 
 import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import java.io.IOException;
 @CrossOrigin
 @Controller
 @Api(tags = "登录控制接口")
+@Slf4j
 public class LoginController extends BaseController {
 
     @Autowired
@@ -85,6 +87,7 @@ public class LoginController extends BaseController {
         if(!captcha.equalsIgnoreCase(kaptcha)){
             return Result.error("验证码不正确");
         }*/
+        log.info("/login/login start==>" + username);
         try{
             Subject subject = ShiroUtils.getSubject();
             UsernamePasswordToken token = new UsernamePasswordToken(username, password);
@@ -99,7 +102,7 @@ public class LoginController extends BaseController {
         }catch (AuthenticationException e) {
             return Result.error("账户验证失败");
         }
-
+        log.info("/login/login start==>" + username);
         return Result.ok();
     }
 
