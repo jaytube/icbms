@@ -57,7 +57,6 @@ public class CachingShiroSessionDao extends CachingSessionDAO {
                 cache(session, session.getId());
             }
         }
-        logger.info("CachingShiroSessionDao readSession " + sessionId);
         return session;
     }
 
@@ -73,7 +72,6 @@ public class CachingShiroSessionDao extends CachingSessionDAO {
         try {
             String key = prefix + sessionId;
             session = (Session) redisUtil.getObject(key);
-            logger.info("CachingShiroSessionDao doReadSession " + sessionId);
         } catch (Exception e) {
             logger.warn("读取Session失败", e);
         }

@@ -18,7 +18,7 @@ public class FileUtils {
 
     public String getFileUploadPath() {
         // 如果没有写文件上传路径,保存到临时目录
-        String realPath = System.getProperty("java.io.tmpDir");
+        String realPath = System.getProperty("java.io.tmpdir");
 //        String realPath = servletContext.getRealPath(File.separator);
         if (isWinOs()) {
             return realPath + "\\icbmsFiles\\";
