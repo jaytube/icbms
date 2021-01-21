@@ -8,14 +8,18 @@ import com.wz.modules.common.utils.CommonResponse;
 import com.wz.modules.common.utils.DateUtils;
 import com.wz.modules.devicelog.dao.DeviceAlarmInfoLogDao;
 import com.wz.modules.devicelog.dao.DeviceElectricityLogDao;
+import com.wz.modules.devicelog.entity.DeviceAlarmInfoLogEntity;
 import com.wz.modules.devicelog.entity.DeviceAlarmStatEntity;
 import com.wz.modules.devicelog.entity.DeviceElecStatEntity;
 import com.wz.modules.devicelog.service.DeviceAlarmInfoLogService;
 import com.wz.modules.devicelog.service.DeviceElectricityLogService;
+import com.wz.modules.kk.entity.PageInfo;
 import com.wz.modules.kk.service.KkService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -38,6 +42,8 @@ import static com.wz.modules.common.utils.DateUtils.DATE_PATTERN;
 @RequestMapping("/app/dashboard")
 @Api(tags = "AppDashboard APP端")
 public class AppDashboardController {
+
+    private final static Logger logger = LoggerFactory.getLogger(AppDashboardController.class);
 
     @Autowired
     private AppDashboardService appDashboardService;
@@ -111,6 +117,26 @@ public class AppDashboardController {
     public CommonResponse getAlarmsStat(String projectId, String startDate) {
         List<DeviceAlarmStatEntity> result = deviceAlarmInfoLogService.doStatDeviceAlarm(projectId, startDate);
         return CommonResponse.success(result);
+    }
+
+    @GetMapping("/getAlarmsPageByDevice")
+    @LoginRequired
+    @ApiOperation(value = "获取电箱告警列表-某个电箱")
+    public CommonResponse getAlarmsPageByDevice(String projectId, String deviceBoxId, String startTime, String endTime, String pageSize, String page, String alarmLevel) {
+        logger.info("================>获取告警数据: startTime:" + startTime + ", endTime:" + endTime);
+        PageInfo<DeviceAlarmInfoLogEntity> pageInfo = deviceAlarmInfoLogService.queryAppPage(startTime, endTime, page, pageSize, projectId, deviceBoxId, alarmLevel);
+        logger.info("================>获取告警返回数据：pageInfo:" + pageInfo.getDataList().size());
+        return CommonResponse.success(pageInfo);
+    }
+
+    @GetMapping("/getAlarmsPageByProject")
+    @LoginRequired
+    @ApiOperation(value = "获取电箱告警列表-某个电箱")
+    public CommonResponse getAlarmsPageByProject(String projectId, String startTime, String endTime, String pageSize, String page, String alarmLevel) {
+        logger.info("================>获取告警数据: startTime:" + startTime + ", endTime:" + endTime);
+        PageInfo<DeviceAlarmInfoLogEntity> pageInfo = deviceAlarmInfoLogService.queryAppPage(startTime, endTime, page, pageSize, projectId, null, alarmLevel);
+        logger.info("================>获取告警返回数据：pageInfo:" + pageInfo.getDataList().size());
+        return CommonResponse.success(pageInfo);
     }
 
     @GetMapping("/getElecStat")
