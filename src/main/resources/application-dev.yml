@@ -29,7 +29,12 @@ spring:
                 wall:
                     config:
                         multi-statement-allow: true
-                        
+    rest:
+        maxTotal: 200
+        maxPerRoute: 100
+        socketTimeout: 10000
+        connectTimeout: 5000
+        connectionRequestTimeout: 1000
     redis:
         database: 0
         hostName: 119.96.233.75

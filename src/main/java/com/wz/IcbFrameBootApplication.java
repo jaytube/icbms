@@ -8,8 +8,10 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.retry.annotation.EnableRetry;
 
 @SpringBootApplication
+@EnableRetry
 @EnableAutoConfiguration(exclude={SecurityAutoConfiguration.class})
 @ServletComponentScan 
 @ComponentScan({"com.wz.modules.activiti.org.activiti", "com.wz"})
