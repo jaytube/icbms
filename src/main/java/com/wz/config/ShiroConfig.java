@@ -60,6 +60,7 @@ public class ShiroConfig {
         filterMap.put("/druid/**", "anon");
         filterMap.put("/webSocketServer/**", "anon");
         filterMap.put("/app/**", "anon");
+        filterMap.put("/locationinfo/viewImg/**", "anon");
         filterMap.put("/login/login", "anon");
         filterMap.put("/app/login", "anon");
         filterMap.put("/**/*.css", "anon");

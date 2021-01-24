@@ -1,6 +1,7 @@
 package com.wz.modules.projectinfo.controller;
 
 import com.wz.front.util.FileUtils;
+import com.wz.modules.app.annotation.LoginRequired;
 import com.wz.modules.common.annotation.SysLog;
 import com.wz.modules.common.controller.BaseController;
 import com.wz.modules.common.utils.FileUtil;
@@ -32,7 +33,7 @@ import java.util.UUID;
 @CrossOrigin
 @RestController
 @Api(tags = "位置基础信息接口")
-@RequestMapping("locationinfo")
+@RequestMapping("/locationinfo")
 public class LocationInfoController extends BaseController {
     @Autowired
     private LocationInfoService locationInfoService;
@@ -132,6 +133,7 @@ public class LocationInfoController extends BaseController {
     }
 
     @RequestMapping("/viewImg/{fileName:.+}")
+    @LoginRequired
     public void renderSfCheckPicture(@PathVariable("fileName") String fileName, HttpServletRequest request, HttpServletResponse response) {
         if (StringUtils.isEmpty(fileName)) {
             return;
