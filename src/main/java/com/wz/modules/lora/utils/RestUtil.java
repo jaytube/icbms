@@ -15,6 +15,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -135,6 +136,18 @@ public class RestUtil {
         log.info("【doDeleteWithToken】【请求URL】：{}", url);
         HttpHeaders requestHeaders = createHeader();
         HttpEntity<Map> requestEntity = new HttpEntity<>(null, requestHeaders);
+        ResponseEntity<Map> exchange = restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, Map.class);
+        Map response = exchange.getBody();
+        log.info("【doDeleteWithToken】【请求响应】：{}", response);
+        return response(url, null, exchange);
+    }
+
+    @Retryable(value = RestClientException.class, maxAttempts = 2,
+            backoff = @Backoff(delay = 5000L, multiplier = 2))
+    public CommonResponse<Map> doDeleteWithToken(String url, List<Map> body) {
+        log.info("【doDeleteWithToken】【请求URL】：{}", url);
+        HttpHeaders requestHeaders = createHeader();
+        HttpEntity<List> requestEntity = new HttpEntity<>(body, requestHeaders);
         ResponseEntity<Map> exchange = restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, Map.class);
         Map response = exchange.getBody();
         log.info("【doDeleteWithToken】【请求响应】：{}", response);

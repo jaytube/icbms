@@ -44,4 +44,6 @@ public interface LoRaCommandService {
     CommonResponse<List<DeviceInfoDto>> getDevices(String deviceKey);
 
     CommonResponse deleteDevice(String deviceSn);
+
+    CommonResponse<Map> deleteDevices(List<Integer> deviceIds);
 }

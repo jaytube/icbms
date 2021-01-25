@@ -9,6 +9,8 @@ import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @Author: Cherry
  * @Date: 2021/1/23
@@ -107,6 +109,12 @@ public class LoRaCommandController {
     @ResponseBody
     public CommonResponse deleteDevice(String deviceSn) {
         return loRaCommandService.deleteDevice(deviceSn);
+    }
+
+    @PostMapping("/deleteDevices")
+    @ResponseBody
+    public CommonResponse deleteDevices(@RequestBody List<Integer> deviceIds) {
+        return loRaCommandService.deleteDevices(deviceIds);
     }
 
     @GetMapping("/test")

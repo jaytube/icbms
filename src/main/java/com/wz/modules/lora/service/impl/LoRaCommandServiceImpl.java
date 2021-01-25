@@ -11,6 +11,7 @@ import com.wz.modules.lora.service.LoRaCommandService;
 import com.wz.modules.lora.utils.Base64Util;
 import com.wz.modules.lora.utils.RestUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -232,7 +233,11 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
 
     @Override
     public CommonResponse<List<DeviceInfoDto>> getDevices(String deviceKey) {
-        CommonResponse<Map> response = restUtil.doGetWithToken(DEVICE_IP + "/api-sdm/SdmDevice?page=1&limit=99&keyWord=" + deviceKey);
+        String uri = "/api-sdm/SdmDevice?page=1&limit=99";
+        if (StringUtils.isNotBlank(deviceKey)) {
+            uri += "&keyWord=" + deviceKey;
+        }
+        CommonResponse<Map> response = restUtil.doGetWithToken(DEVICE_IP + uri + deviceKey);
         if (response.getCode() != 200) {
             return CommonResponse.faild(response.getMsg(), null);
         }
@@ -247,6 +252,20 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
     @Override
     public CommonResponse deleteDevice(String deviceSn) {
         return restUtil.doDeleteWithToken(DEVICE_IP + "/api-sdm/SdmDevice/" + deviceSn);
+    }
+
+    @Override
+    public CommonResponse<Map> deleteDevices(List<Integer> deviceIds) {
+        if (CollectionUtils.isEmpty(deviceIds)) {
+            return CommonResponse.error("deviceIds 为空。");
+        }
+        List<Map> body = deviceIds.stream().map(id -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", id);
+            map.put("isDel", 1);
+            return map;
+        }).collect(Collectors.toList());
+        return restUtil.doDeleteWithToken(DEVICE_IP + "/api-sdm/SdmDevice/batchDel", body);
     }
 
     private GateWayInfoDto convertGateWay(Map<String, Object> map) {
