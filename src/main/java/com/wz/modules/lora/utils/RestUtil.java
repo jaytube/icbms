@@ -105,9 +105,9 @@ public class RestUtil {
 
     @Retryable(value = RestClientException.class, maxAttempts = 2,
             backoff = @Backoff(delay = 5000L, multiplier = 2))
-    public CommonResponse<Map> doGetWithToken(String url) {
+    public CommonResponse<Map> doGetWithToken(String gatewayIp, String url) {
         log.info("【doGetWithToken】【请求URL】：{}", url);
-        HttpHeaders requestHeaders = createHeader();
+        HttpHeaders requestHeaders = createHeader(gatewayIp);
         HttpEntity<String> requestEntity = new HttpEntity<String>(null, requestHeaders);
         ResponseEntity<Map> exchange = restTemplate.exchange(url, HttpMethod.GET, requestEntity, Map.class);
         Map response = exchange.getBody();
@@ -128,10 +128,10 @@ public class RestUtil {
 
     @Retryable(value = RestClientException.class, maxAttempts = 2,
             backoff = @Backoff(delay = 5000L, multiplier = 2))
-    public CommonResponse<Map> doPostWithToken(String url, Map<String, Object> params) {
+    public CommonResponse<Map> doPostWithToken(String gatewayIp, String url, Map<String, Object> params) {
         log.info("【doPostWithToken】【请求URL】：{}", url);
         log.info("【doPostWithToken】【请求入参】：{}", params);
-        HttpHeaders requestHeaders = createHeader();
+        HttpHeaders requestHeaders = createHeader(gatewayIp);
         HttpEntity<Map> requestEntity = new HttpEntity<>(params, requestHeaders);
         ResponseEntity<Map> exchange = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
         Map response = exchange.getBody();
@@ -141,9 +141,9 @@ public class RestUtil {
 
     @Retryable(value = RestClientException.class, maxAttempts = 2,
             backoff = @Backoff(delay = 5000L, multiplier = 2))
-    public CommonResponse<Map> doDeleteWithToken(String url) {
+    public CommonResponse<Map> doDeleteWithToken(String gatewayIp, String url) {
         log.info("【doDeleteWithToken】【请求URL】：{}", url);
-        HttpHeaders requestHeaders = createHeader();
+        HttpHeaders requestHeaders = createHeader(gatewayIp);
         HttpEntity<Map> requestEntity = new HttpEntity<>(null, requestHeaders);
         ResponseEntity<Map> exchange = restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, Map.class);
         Map response = exchange.getBody();
@@ -153,9 +153,9 @@ public class RestUtil {
 
     @Retryable(value = RestClientException.class, maxAttempts = 2,
             backoff = @Backoff(delay = 5000L, multiplier = 2))
-    public CommonResponse<Map> doDeleteWithToken(String url, List<Map> body) {
+    public CommonResponse<Map> doDeleteWithToken(String gatewayIp, String url, List<Map> body) {
         log.info("【doDeleteWithToken】【请求URL】：{}", url);
-        HttpHeaders requestHeaders = createHeader();
+        HttpHeaders requestHeaders = createHeader(gatewayIp);
         HttpEntity<List> requestEntity = new HttpEntity<>(body, requestHeaders);
         ResponseEntity<Map> exchange = restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, Map.class);
         Map response = exchange.getBody();
@@ -178,11 +178,11 @@ public class RestUtil {
         }
     }
 
-    private HttpHeaders createHeader() {
+    private HttpHeaders createHeader(String gatewayIp) {
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("Content-Type", HTTP_HEADER_CONTENT_TYPE);
-        requestHeaders.add("Authorization", loRaCommandService.getRedisToken());
-        requestHeaders.add("Tenant", loRaCommandService.getDbInstanceFromRedis("cluing"));
+        requestHeaders.add("Authorization", loRaCommandService.getRedisToken(gatewayIp));
+        requestHeaders.add("Tenant", loRaCommandService.getDbInstanceFromRedis(gatewayIp, "cluing"));
         return requestHeaders;
     }
 

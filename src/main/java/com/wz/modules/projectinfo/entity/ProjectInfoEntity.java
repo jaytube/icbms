@@ -4,7 +4,6 @@ import com.wz.modules.common.entity.BaseEntity;
 import com.wz.modules.common.utils.DateUtils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -51,6 +50,16 @@ public class ProjectInfoEntity extends BaseEntity implements Serializable {
 
     // 文件名称
     private String fileName;
+
+    /**
+     * 场馆ID
+     */
+    private int gymId;
+
+    /**
+     * 场馆名称
+     */
+    private String gymName;
 
     /**
      * 设置：id主键

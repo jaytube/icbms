@@ -12,16 +12,20 @@ import com.wz.modules.deviceinfo.entity.DeviceSwitchInfoEntity;
 import com.wz.modules.devicelog.dao.DeviceAlarmInfoLogDao;
 import com.wz.modules.devicelog.entity.DeviceAlarmInfoLogEntity;
 import com.wz.modules.kk.service.KkService;
+import com.wz.modules.lora.dao.GatewayDeviceMapDao;
+import com.wz.modules.lora.dao.GatewayInfoDao;
+import com.wz.modules.lora.dto.AddDeviceDto;
+import com.wz.modules.lora.dto.DeviceInfoDto;
+import com.wz.modules.lora.entity.GatewayDeviceMap;
+import com.wz.modules.lora.entity.GatewayInfo;
+import com.wz.modules.lora.service.LoRaCommandService;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +51,15 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
 
     @Autowired
     private DeviceAlarmInfoLogDao deviceAlarmInfoLogDao;
+
+    @Autowired
+    private LoRaCommandService loRaCommandService;
+
+    @Autowired
+    private GatewayDeviceMapDao gatewayDeviceMapDao;
+
+    @Autowired
+    private GatewayInfoDao gatewayInfoDao;
 
     @Override
     public CommonResponse getAllProjectsDeviceBoxInfos(DeviceBoxStatus deviceBoxStatus) {
@@ -87,6 +100,50 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
         List<DeviceSwitchInfoEntity> switchList = kkService.getBoxChannelsRealData(deviceBoxMac, projectId);
         device.setSwitchList(switchList);
         return CommonResponse.success(device);
+    }
+
+    @Override
+    public CommonResponse deleteDevice(String projectId, String deviceSn) {
+        GatewayDeviceMap device = gatewayDeviceMapDao.findDevice(projectId, deviceSn);
+        GatewayInfo gatewayInfo = gatewayInfoDao.findById(device.getGatewayId());
+        return loRaCommandService.deleteDevices(gatewayInfo.getIpAddress(), Arrays.asList(device.getDeviceId()));
+    }
+
+    @Override
+    public CommonResponse deleteBatch(List<String> deviceSns) {
+        List<GatewayDeviceMap> devicesBySns = gatewayDeviceMapDao.findDevicesBySns(deviceSns);
+        if (CollectionUtils.isEmpty(devicesBySns)) {
+            return CommonResponse.success("");
+        }
+        GatewayDeviceMap gatewayDeviceMap = devicesBySns.get(0);
+        GatewayInfo gatewayInfo = gatewayInfoDao.findById(gatewayDeviceMap.getGatewayId());
+        List<Integer> ids = devicesBySns.stream().map(devicesBySn -> devicesBySn.getDeviceId()).collect(Collectors.toList());
+        CommonResponse<Map> mapCommonResponse = loRaCommandService.deleteDevices(gatewayInfo.getIpAddress(), ids);
+        gatewayDeviceMapDao.deleteBatch(deviceSns);
+        return CommonResponse.success(deviceSns);
+    }
+
+    @Override
+    public CommonResponse addDevice(GatewayDeviceMap map) {
+        int gatewayId = map.getGatewayId();
+        GatewayInfo gatewayInfo = gatewayInfoDao.findById(gatewayId);
+        DeviceBoxInfoEntity deviceBoxInfoEntity = deviceBoxInfoDao.queryByMac(map.getDeviceSn(), map.getProjectId());
+        AddDeviceDto addDeviceDto = new AddDeviceDto();
+        addDeviceDto.setApplicationId(gatewayInfo.getApplicationId());
+        addDeviceDto.setDeviceSn(map.getDeviceSn());
+        addDeviceDto.setGatewayId(gatewayId);
+        addDeviceDto.setName("RCMII" + deviceBoxInfoEntity.getDeviceBoxName());
+        addDeviceDto.setTemplateId(0);
+        addDeviceDto.setToLora(1);
+        addDeviceDto.setType("S08");
+        addDeviceDto.setTypeName("RCMII");
+        String ipAddress = gatewayInfo.getIpAddress();
+        CommonResponse commonResponse = loRaCommandService.addDevice(ipAddress, addDeviceDto);
+        CommonResponse<List<DeviceInfoDto>> devices = loRaCommandService.getDevices(ipAddress, map.getDeviceSn());
+        DeviceInfoDto deviceInfoDto = devices.getData().get(0);
+        map.setDeviceId(deviceInfoDto.getId());
+        gatewayDeviceMapDao.save(map);
+        return CommonResponse.success(map);
     }
 
     private List<DeviceBoxInfoEntity> loadBoxesRecentStatus(String projectId, List<DeviceBoxInfoEntity> boxList, Map<String, String> redisTerminalStatus) {

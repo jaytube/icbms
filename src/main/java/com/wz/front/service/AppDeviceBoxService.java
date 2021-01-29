@@ -2,6 +2,9 @@ package com.wz.front.service;
 
 import com.wz.front.enums.DeviceBoxStatus;
 import com.wz.modules.common.utils.CommonResponse;
+import com.wz.modules.lora.entity.GatewayDeviceMap;
+
+import java.util.List;
 
 /**
  * @Author: Cherry
@@ -15,5 +18,11 @@ public interface AppDeviceBoxService {
     CommonResponse getProjectDeviceBoxInfos(String projectId);
 
     CommonResponse getDeviceBoxInfo(String projectId, String deviceBoxMac);
+
+    CommonResponse deleteDevice(String projectId, String deviceSn);
+
+    CommonResponse deleteBatch(List<String> deviceSns);
+
+    CommonResponse addDevice(GatewayDeviceMap map);
 
 }

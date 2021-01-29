@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wz.modules.lora.dao.GymMasterDao">
+
+    <!--根据id获取用户相关信息-->
+    <select id="findAll" resultType="com.wz.modules.lora.entity.GymMaster">
+		select * from gym_master;
+	</select>
+
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wz.modules.lora.dao.GatewayDeviceMapDao">
+
+    <!--根据id获取用户相关信息-->
+    <select id="findDeviceSns" resultType="String">
+		select device_sn from gateway_device_map where gym_id = #{gymId} AND project_id = #{projectId} AND gateway_id = #{gatewayId};
+	</select>
+
+    <select id="findDevices" resultType="com.wz.modules.lora.entity.GatewayDeviceMap">
+        select * from gateway_device_map where gym_id = #{gymId} AND project_id = #{projectId}
+    </select>
+
+    <select id="findDevice" resultType="com.wz.modules.lora.entity.GatewayDeviceMap">
+        select * from gateway_device_map where project_id = #{projectId} AND device_id = #{deviceSn}
+    </select>
+
+    <select id="findDevicesBySns" resultType="com.wz.modules.lora.entity.GatewayDeviceMap">
+        select * from gateway_device_map where device_sn in
+        <foreach item="deviceSns" collection="array" open="("
+                 separator="," close=")">
+            #{deviceSn}
+        </foreach>
+    </select>
+
+    <insert id="save" parameterType="com.wz.modules.lora.entity.GatewayDeviceMap">
+        insert into gateway_device_map (gateway_id,device_sn,device_id,project_id,gym_id) values (#{gatewayId},#{deviceSn},#{deviceId},#{projectId},#{gymId});
+    </insert>
+
+    <delete id="deleteProject">
+		delete from gateway_device_map where project_id = #{value}
+	</delete>
+
+    <delete id="deleteGateway">
+		delete from gateway_device_map where gateway_id = #{value}
+	</delete>
+
+    <delete id="deleteBatch">
+        delete from gateway_device_map where device_sn in
+        <foreach item="deviceSns" collection="array" open="("
+                 separator="," close=")">
+            #{deviceSn}
+        </foreach>
+    </delete>
+
+</mapper>

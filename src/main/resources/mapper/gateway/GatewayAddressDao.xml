@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wz.modules.lora.dao.GatewayAddressDao">
+
+    <!--根据id获取用户相关信息-->
+    <select id="findAll" resultType="com.wz.modules.lora.entity.GatewayAddress">
+		select id as id,name as name,ip_address as ipAddress from gateway_address;
+	</select>
+
+    <insert id="insert" parameterType="com.wz.modules.lora.entity.GatewayAddress">
+        insert into gateway_address (name,ip_address) values (#{name},#{ipAddress});
+    </insert>
+
+</mapper>

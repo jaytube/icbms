@@ -5,6 +5,7 @@ import com.wz.modules.lora.dto.AddDeviceDto;
 import com.wz.modules.lora.dto.DeviceInfoDto;
 import com.wz.modules.lora.dto.GateWayInfoDto;
 import com.wz.modules.lora.dto.TerminalTypeDto;
+import com.wz.modules.lora.entity.GatewayInfo;
 import com.wz.modules.lora.enums.LoRaCommand;
 
 import java.util.List;
@@ -17,33 +18,33 @@ import java.util.Map;
  */
 public interface LoRaCommandService {
 
-    CommonResponse<Map> startRoundRobin();
+    CommonResponse<Map> startRoundRobin(String gatewayIp);
 
-    CommonResponse<Map> stopRoundRobin();
+    CommonResponse<Map> stopRoundRobin(String gatewayIp);
 
-    CommonResponse<Map> executeCmd(LoRaCommand command, String deviceId);
+    CommonResponse<Map> executeCmd(String gatewayIp, LoRaCommand command, String deviceId);
 
-    CommonResponse<String> getToken();
+    CommonResponse<String> getToken(String gatewayIp);
 
-    String getRedisToken();
+    String getRedisToken(String gatewayIp);
 
-    CommonResponse<String> getDbInstance(String code);
+    CommonResponse<String> getDbInstance(String gatewayIp, String code);
 
-    String getDbInstanceFromRedis(String code);
+    String getDbInstanceFromRedis(String gatewayIp, String code);
 
-    CommonResponse<List<GateWayInfoDto>> getGatewayList();
+    CommonResponse<List<GatewayInfo>> getGatewayList(String gatewayIp);
 
-    CommonResponse<GateWayInfoDto> getGateWayById(String gateWayId);
+    CommonResponse<GatewayInfo> getGateWayById(String gatewayIp, String gateWayId);
 
-    CommonResponse<List<TerminalTypeDto>> getTerminalTypes();
+    CommonResponse<List<TerminalTypeDto>> getTerminalTypes(String gatewayIp);
 
-    CommonResponse<List<TerminalTypeDto>> getTerminalByType(String type);
+    CommonResponse<List<TerminalTypeDto>> getTerminalByType(String gatewayIp, String type);
 
-    CommonResponse addDevice(AddDeviceDto addDeviceDto);
+    CommonResponse addDevice(String gatewayIp, AddDeviceDto addDeviceDto);
 
-    CommonResponse<List<DeviceInfoDto>> getDevices(String deviceKey);
+    CommonResponse<List<DeviceInfoDto>> getDevices(String gatewayIp, String deviceKey);
 
-    CommonResponse deleteDevice(String deviceSn);
+    CommonResponse deleteDevice(String gatewayIp, String deviceSn);
 
-    CommonResponse<Map> deleteDevices(List<Integer> deviceIds);
+    CommonResponse<Map> deleteDevices(String gatewayIp, List<Integer> deviceIds);
 }
