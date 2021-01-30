@@ -1,5 +1,6 @@
 package com.wz.front.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.wz.front.enums.DeviceBoxStatus;
 import com.wz.front.service.AppDeviceBoxService;
 import com.wz.front.service.AppProjectInfoService;
@@ -110,8 +111,8 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
     }
 
     @Override
-    public CommonResponse deleteBatch(List<String> deviceSns) {
-        List<GatewayDeviceMap> devicesBySns = gatewayDeviceMapDao.findDevicesBySns(deviceSns);
+    public CommonResponse deleteBatch(List<String> deviceIds) {
+        List<GatewayDeviceMap> devicesBySns = gatewayDeviceMapDao.findDevicesBySns(deviceIds);
         if (CollectionUtils.isEmpty(devicesBySns)) {
             return CommonResponse.success("");
         }
@@ -119,31 +120,48 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
         GatewayInfo gatewayInfo = gatewayInfoDao.findById(gatewayDeviceMap.getGatewayId());
         List<Integer> ids = devicesBySns.stream().map(devicesBySn -> devicesBySn.getDeviceId()).collect(Collectors.toList());
         CommonResponse<Map> mapCommonResponse = loRaCommandService.deleteDevices(gatewayInfo.getIpAddress(), ids);
-        gatewayDeviceMapDao.deleteBatch(deviceSns);
-        return CommonResponse.success(deviceSns);
+        gatewayDeviceMapDao.deleteBatch(deviceIds);
+        return CommonResponse.success(deviceIds);
     }
 
     @Override
-    public CommonResponse addDevice(GatewayDeviceMap map) {
+    public CommonResponse addDevice(GatewayDeviceMap map, DeviceBoxInfoEntity entity) {
         int gatewayId = map.getGatewayId();
         GatewayInfo gatewayInfo = gatewayInfoDao.findById(gatewayId);
-        DeviceBoxInfoEntity deviceBoxInfoEntity = deviceBoxInfoDao.queryByMac(map.getDeviceSn(), map.getProjectId());
         AddDeviceDto addDeviceDto = new AddDeviceDto();
         addDeviceDto.setApplicationId(gatewayInfo.getApplicationId());
         addDeviceDto.setDeviceSn(map.getDeviceSn());
         addDeviceDto.setGatewayId(gatewayId);
-        addDeviceDto.setName("RCMII" + deviceBoxInfoEntity.getDeviceBoxName());
+        addDeviceDto.setName("RCMII" + entity.getDeviceBoxName());
         addDeviceDto.setTemplateId(0);
         addDeviceDto.setToLora(1);
         addDeviceDto.setType("S08");
         addDeviceDto.setTypeName("RCMII");
         String ipAddress = gatewayInfo.getIpAddress();
         CommonResponse commonResponse = loRaCommandService.addDevice(ipAddress, addDeviceDto);
-        CommonResponse<List<DeviceInfoDto>> devices = loRaCommandService.getDevices(ipAddress, map.getDeviceSn());
-        DeviceInfoDto deviceInfoDto = devices.getData().get(0);
-        map.setDeviceId(deviceInfoDto.getId());
-        gatewayDeviceMapDao.save(map);
-        return CommonResponse.success(map);
+        CommonResponse<List<DeviceInfoDto>> devices = loRaCommandService.getDevices(ipAddress, null);
+        log.info("@@@@@@@@@1" + JSON.toJSONString(devices));
+        DeviceInfoDto deviceInfo = null;
+        List<DeviceInfoDto> devicesData = devices.getData();
+        for (DeviceInfoDto deviceInfoDto : devicesData) {
+            log.info("@@@@@@@@@3" + deviceInfoDto.getDeviceSn());
+            log.info("@@@@@@@@@4" + map.getDeviceSn().toLowerCase());
+            if (org.apache.commons.lang.StringUtils.equals(deviceInfoDto.getDeviceSn(), map.getDeviceSn().toLowerCase())) {
+
+                deviceInfo = deviceInfoDto;
+                break;
+            }
+        }
+        List<DeviceInfoDto> collect = devicesData.stream().filter(device -> device.getDeviceSn().equals(map.getDeviceSn().toLowerCase())).collect(Collectors.toList());
+        log.info("@@@@@@@@@2" + JSON.toJSONString(deviceInfo));
+        if (deviceInfo != null) {
+            map.setDeviceId(deviceInfo.getId());
+            map.setDeviceSn(deviceInfo.getDeviceSn());
+            map.setDeviceInfoId(entity.getId());
+            gatewayDeviceMapDao.save(map);
+            return CommonResponse.success(map);
+        }
+        return CommonResponse.faild("添加设备失败", map);
     }
 
     private List<DeviceBoxInfoEntity> loadBoxesRecentStatus(String projectId, List<DeviceBoxInfoEntity> boxList, Map<String, String> redisTerminalStatus) {

@@ -14,4 +14,6 @@ import java.util.List;
 public interface GymMasterDao {
 
     List<GymMaster> findAll();
+
+    GymMaster findById(int id);
 }

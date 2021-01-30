@@ -47,8 +47,7 @@ public class AppRefDataController {
     @LoginRequired
     @ApiOperation(value = "初始化网关信息")
     public CommonResponse initGatewayInfos() {
-        appRefDataService.initGatewayInfos();
-        return CommonResponse.success("初始化网关信息成功");
+        return appRefDataService.initGatewayInfos();
     }
 
 }

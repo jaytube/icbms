@@ -6,6 +6,8 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.wz.front.service.AppDeviceBoxService;
+import com.wz.front.util.DeviceType;
+import com.wz.front.util.DeviceUtils;
 import com.wz.modules.app.entity.ServerMessage;
 import com.wz.modules.app.entity.SwitchBoxInfo;
 import com.wz.modules.common.controller.BaseController;
@@ -22,7 +24,12 @@ import com.wz.modules.devicelog.service.DeviceSwitchInfoLogService;
 import com.wz.modules.kk.entity.PageInfo;
 import com.wz.modules.kk.service.KkService;
 import com.wz.modules.lora.dao.GatewayDeviceMapDao;
+import com.wz.modules.lora.dao.GatewayInfoDao;
+import com.wz.modules.lora.dao.GymMasterDao;
+import com.wz.modules.lora.dto.DeviceBindInfoDto;
 import com.wz.modules.lora.entity.GatewayDeviceMap;
+import com.wz.modules.lora.entity.GatewayInfo;
+import com.wz.modules.lora.entity.GymMaster;
 import com.wz.modules.projectinfo.entity.LocationInfoEntity;
 import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
 import com.wz.modules.projectinfo.service.LocationInfoService;
@@ -101,6 +108,12 @@ public class DashboardController extends BaseController {
 
     @Autowired
     private GatewayDeviceMapDao gatewayDeviceMapDao;
+
+    @Autowired
+    private GatewayInfoDao gatewayInfoDao;
+
+    @Autowired
+    private GymMasterDao gymMasterDao;
 
     @Autowired
     private AppDeviceBoxService appDeviceBoxService;
@@ -564,7 +577,11 @@ public class DashboardController extends BaseController {
 
     @ApiOperation(value = "根据电箱二维码获取电箱详情")
     @RequestMapping(value = "getQrInfo", method = RequestMethod.GET)
-    public String getQrInfo(Model model, String deviceBoxMac, String devEUI) throws Exception {
+    public Object getQrInfo(HttpServletRequest request, Model model, String deviceBoxMac, String devEUI) throws Exception {
+        DeviceType deviceType = DeviceUtils.checkDeviceType(request);
+        if (deviceType == DeviceType.MOBILE_APP) {
+            return "redirect:/app/dashbaord/getDeviceInfo?deviceBoxMac=" + deviceBoxMac + "&devEUI=" + devEUI;
+        }
         String qrresult = "";
         String temp = deviceBoxMac;
         Map<String, Object> params = new HashMap<String, Object>();
@@ -597,6 +614,51 @@ public class DashboardController extends BaseController {
         return "dashboard/qr";
     }
 
+    @ApiOperation(value = "获取电箱详情")
+    @RequestMapping(value = "getDeviceInfo", method = RequestMethod.GET)
+    @ResponseBody
+    public DeviceBindInfoDto getDeviceInfo(String deviceBoxMac, String devEUI) {
+        String temp = deviceBoxMac;
+        Map<String, Object> params = new HashMap<String, Object>();
+        if (!StringUtils.isBlank(temp) && temp.indexOf("qrresult") != -1) {
+            deviceBoxMac = temp.substring(0, temp.indexOf("qrresult="));
+        }
+        params.put("deviceBoxMac", deviceBoxMac);
+        params.put("page", "1");
+        params.put("limit", "1");
+        params.put("sidx", "create_time");
+        params.put("order", "desc");
+        Query query = new Query(params);
+        List<DeviceBoxInfoEntity> deviceBoxInfoList = deviceBoxInfoService.queryList(query);
+        DeviceBindInfoDto deviceBindInfoDto = new DeviceBindInfoDto();
+        deviceBindInfoDto.setDeviceBoxNum(deviceBoxMac);
+        deviceBindInfoDto.setDeviceBoxSn(devEUI);
+        if (deviceBoxInfoList.size() > 0) {
+            DeviceBoxInfoEntity boxInfoEntity = deviceBoxInfoList.get(0);
+            ProjectInfoEntity project = projectInfoService.queryObject(boxInfoEntity.getProjectId());
+            GatewayDeviceMap device = gatewayDeviceMapDao.findDevice(project.getId(), devEUI);
+            GatewayInfo gatewayInfo = gatewayInfoDao.findById(device.getGatewayId());
+            GymMaster gymMaster = gymMasterDao.findById(device.getGymId());
+            if (device == null) {
+                deviceBindInfoDto.setNew(true);
+                return deviceBindInfoDto;
+            }
+            deviceBindInfoDto.setNew(false);
+            deviceBindInfoDto.setDeviceBoxId(boxInfoEntity.getId());
+            deviceBindInfoDto.setGymId(device.getGymId());
+            deviceBindInfoDto.setGymName(gymMaster.getName());
+            deviceBindInfoDto.setProjectId(project.getId());
+            deviceBindInfoDto.setProjectName(project.getProjectName());
+            deviceBindInfoDto.setStandNo(boxInfoEntity.getStandNo());
+            deviceBindInfoDto.setGatewayId(gatewayInfo.getGatewayId());
+            deviceBindInfoDto.setGatewayName(gatewayInfo.getName());
+            deviceBindInfoDto.setGatewayIp(gatewayInfo.getIpAddress());
+        } else {
+            deviceBindInfoDto.setNew(true);
+        }
+        return deviceBindInfoDto;
+    }
+
     @ApiOperation(value = "查询电箱历史数据")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "deviceBoxId", value = "电箱ID", required = true, dataType = "String", paramType = "query"),
@@ -614,6 +676,7 @@ public class DashboardController extends BaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "projectId", value = "项目ID", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "deviceBoxId", value = "电箱ID", required = false, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "deviceBoxSn", value = "电箱SN号", required = false, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "deviceBoxMac", value = "电箱MAC地址", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "thirdLocation", value = "三级位置", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "controlFlag", value = "是否受控[0:否 1:是]", required = true, dataType = "String", paramType = "query"),
@@ -627,7 +690,7 @@ public class DashboardController extends BaseController {
     })
     @RequestMapping(value = "postQrInfo", method = RequestMethod.POST)
     @ResponseBody
-    public Result postQrInfo(String projectId, String deviceBoxId, String deviceBoxMac, String thirdLocation,
+    public Result postQrInfo(String projectId, String deviceBoxId, String deviceBoxSn, String deviceBoxMac, String thirdLocation,
                              String controlFlag, String remark, String boxCapacity, String secBoxGateway, String standNo, String userId, int gymId, int gatewayId)
             throws Exception {
         if (StringUtils.isBlank(projectId)) {
@@ -676,17 +739,33 @@ public class DashboardController extends BaseController {
         result.add(map);
         if (map != null && map.size() > 0) {
             UserEntity user = this.userService.queryObject(userId);
-            deviceBoxInfoService.saveBoxLocBatch(result, projectId, user);
-            GatewayDeviceMap device = gatewayDeviceMapDao.findDevice(projectId, deviceBoxId);
+            DeviceBoxInfoEntity deviceBoxInfoEntity;
+            if (StringUtils.isNotBlank(deviceBoxId)) {
+                deviceBoxInfoEntity = deviceBoxInfoService.queryObject(deviceBoxId);
+                if (deviceBoxInfoEntity != null) {
+                    List<DeviceBoxInfoEntity> saveResult = deviceBoxInfoService.saveBoxLocBatch(result, projectId, user);
+                    deviceBoxInfoEntity = saveResult.get(0);
+                }
+            } else {
+                List<DeviceBoxInfoEntity> saveResult = deviceBoxInfoService.saveBoxLocBatch(result, projectId, user);
+                deviceBoxInfoEntity = saveResult.get(0);
+            }
+            GatewayDeviceMap device = gatewayDeviceMapDao.findDevice(projectId, deviceBoxInfoEntity.getId());
             if (device != null) {
                 return Result.error("该设备已绑定网关，如需修改，请先移除该设备再添加");
             }
             GatewayDeviceMap gatewayDeviceMap = new GatewayDeviceMap();
-            gatewayDeviceMap.setDeviceSn(deviceBoxId);
+            gatewayDeviceMap.setDeviceSn(deviceBoxSn.toLowerCase());
+            gatewayDeviceMap.setDeviceInfoId(deviceBoxInfoEntity.getId());
             gatewayDeviceMap.setGymId(gymId);
             gatewayDeviceMap.setGatewayId(gatewayId);
             gatewayDeviceMap.setProjectId(projectId);
-            appDeviceBoxService.addDevice(gatewayDeviceMap);
+            CommonResponse commonResponse = appDeviceBoxService.addDevice(gatewayDeviceMap, deviceBoxInfoEntity);
+            if (commonResponse.getCode() == 200) {
+                return Result.ok("添加成功");
+            } else {
+                return Result.error("添加设备失败");
+            }
         }
         return Result.ok();
     }

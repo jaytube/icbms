@@ -2,6 +2,7 @@ package com.wz.modules.lora.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.wz.modules.common.utils.CommonResponse;
+import com.wz.modules.common.utils.RedisUtil;
 import com.wz.modules.lora.dto.AddDeviceDto;
 import com.wz.modules.lora.dto.DeviceInfoDto;
 import com.wz.modules.lora.dto.TerminalTypeDto;
@@ -15,12 +16,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.wz.modules.lora.utils.Base64Util.hexStringToBytes;
@@ -39,7 +38,7 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
     private RestUtil restUtil;
 
     @Autowired
-    private StringRedisTemplate redisTemplate;
+    private RedisUtil redisUtil;
 
     private static final String START_ROUND_ROBIN_URI = ":9900/api-sdm/v1/pUI";
 
@@ -96,8 +95,11 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
         String bearer_token = null;
         if (token_type != null && access_token != null && expires_in != null) {
             bearer_token = Objects.toString(token_type) + " " + Objects.toString(access_token);
-            redisTemplate.opsForValue().set("BEARER_TOKEN", bearer_token);
-            redisTemplate.expire("BEARER_TOKEN", Long.parseLong(Objects.toString(expires_in)), TimeUnit.SECONDS);
+            try {
+                redisUtil.setString("BEARER_TOKEN", bearer_token, Integer.valueOf(Objects.toString(expires_in)));
+            } catch (Exception e) {
+                log.error("SET BEARER_TOKEN TO REDIS", e);
+            }
         }
 
         if (StringUtils.isNotBlank(bearer_token)) {
@@ -110,12 +112,18 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
 
     @Override
     public String getRedisToken(String gatewayIp) {
-        Object bearer_token = redisTemplate.opsForValue().get("BEARER_TOKEN");
-        if (bearer_token == null) {
-            getToken(gatewayIp);
-            bearer_token = redisTemplate.opsForValue().get("BEARER_TOKEN");
+        String bearer_token = null;
+        try {
+            bearer_token = redisUtil.getString("BEARER_TOKEN");
+            if (bearer_token == null) {
+                getToken(gatewayIp);
+                bearer_token = redisUtil.getString("BEARER_TOKEN");
+            }
+            return bearer_token;
+        } catch (Exception e) {
+            log.error("GET BEARER_TOKEN FROM REDIS", e);
         }
-        return Objects.toString(bearer_token);
+        return bearer_token;
     }
 
     @Override
@@ -141,13 +149,20 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
 
     @Override
     public String getDbInstanceFromRedis(String gatewayIp, String code) {
-        Object db_instance_tenant = redisTemplate.opsForValue().get("DB_INSTANCE_TENANT");
-        if (db_instance_tenant != null) {
-            return Objects.toString(db_instance_tenant);
-        }
-        CommonResponse<String> dbInstance = getDbInstance(gatewayIp, code);
-        if (dbInstance.getCode() == 200) {
-            return dbInstance.getData();
+        String db_instance_tenant = null;
+        try {
+            db_instance_tenant = redisUtil.getString("DB_INSTANCE_TENANT" + gatewayIp);
+            if (db_instance_tenant != null) {
+                return db_instance_tenant;
+            }
+            CommonResponse<String> dbInstance = getDbInstance(gatewayIp, code);
+            if (dbInstance.getCode() == 200) {
+                db_instance_tenant = dbInstance.getData();
+                redisUtil.setString("DB_INSTANCE_TENANT" + gatewayIp, db_instance_tenant);
+                return db_instance_tenant;
+            }
+        } catch (Exception e) {
+            log.error("GET DB_INSTANCE_TENANT FROM REDIS", e);
         }
         return null;
     }
@@ -244,7 +259,7 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
         if (StringUtils.isNotBlank(deviceKey)) {
             uri += "&keyWord=" + deviceKey;
         }
-        CommonResponse<Map> response = restUtil.doGetWithToken(gatewayIp, gatewayIp + DEVICE_IP_URI + uri + deviceKey);
+        CommonResponse<Map> response = restUtil.doGetWithToken(gatewayIp, gatewayIp + DEVICE_IP_URI + uri);
         if (response.getCode() != 200) {
             return CommonResponse.faild(response.getMsg(), null);
         }

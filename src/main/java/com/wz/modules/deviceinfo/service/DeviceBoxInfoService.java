@@ -51,7 +51,7 @@ public interface DeviceBoxInfoService {
 	List<DboxLocLinkEntity> queryLinkListByBoxId(Map<String, String> paramsMap);
 
 	// 批量导入位置和电箱
-	void saveBoxLocBatch(List<Map<String, String>> result, String projectId, UserEntity currentUser);
+	List<DeviceBoxInfoEntity> saveBoxLocBatch(List<Map<String, String>> result, String projectId, UserEntity currentUser);
 
 	DeviceBoxInfoEntity queryByMac(String deviceMac, String projectId);
 

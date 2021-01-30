@@ -1,9 +1,6 @@
 package com.wz.modules.deviceinfo.service.impl;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -190,7 +187,8 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
 	}
 
 	@Override
-	public void saveBoxLocBatch(List<Map<String, String>> result, String projectId, UserEntity currentUser) {
+	public List<DeviceBoxInfoEntity> saveBoxLocBatch(List<Map<String, String>> result, String projectId, UserEntity currentUser) {
+		List<DeviceBoxInfoEntity> results = new ArrayList<>();
 		Map<String, String> paramMap = new HashMap<String, String>();
 		for (Map<String, String> map : result) {
 			String firstLocId = "", secLocId = "", thirdLocId = "", forthLocId = "", fifthLocId = "";
@@ -409,6 +407,7 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
 						tmpDeviceBox.setControlFlag(controlFlag);
 						tmpDeviceBox.setBoxCapacity(boxCapacity);
 						tmpDeviceBox.setProjectId(projectId);
+						results.add(tmpDeviceBox);
 						deviceBoxInfoDao.update(tmpDeviceBox);
 					} else {
 						// 电箱不存在 新增电箱
@@ -438,7 +437,7 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
 						dboxLoc.setCreateId(null == currentUser ? null : currentUser.getId());
 						dboxLoc.setCreateTime(new Date());
 						deviceBoxInfoDao.saveBoxLocLink(dboxLoc);
-
+						results.add(deviceBoxInfo);
 						// 设置终端对应的项目
 						String str = deviceMac;
 						if (str != null && !"".equals(str) && str.length() > 6) {
@@ -452,6 +451,7 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
 				}
 			}
 		}
+		return results;
 	}
 
 	public DeviceBoxInfoEntity queryByMac(String deviceMac, String projectId) {

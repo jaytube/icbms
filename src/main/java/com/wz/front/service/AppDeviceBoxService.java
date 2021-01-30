@@ -2,6 +2,7 @@ package com.wz.front.service;
 
 import com.wz.front.enums.DeviceBoxStatus;
 import com.wz.modules.common.utils.CommonResponse;
+import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
 import com.wz.modules.lora.entity.GatewayDeviceMap;
 
 import java.util.List;
@@ -23,6 +24,6 @@ public interface AppDeviceBoxService {
 
     CommonResponse deleteBatch(List<String> deviceSns);
 
-    CommonResponse addDevice(GatewayDeviceMap map);
+    CommonResponse addDevice(GatewayDeviceMap map, DeviceBoxInfoEntity entity);
 
 }

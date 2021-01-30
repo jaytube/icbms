@@ -2,6 +2,7 @@ package com.wz.modules.lora.dao;
 
 import com.wz.modules.lora.entity.GatewayDeviceMap;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -17,15 +18,15 @@ public interface GatewayDeviceMapDao {
 
     List<GatewayDeviceMap> findDevices(int gymId, String projectId);
 
-    List<GatewayDeviceMap> findDevicesBySns(List<String> deviceSns);
+    List<GatewayDeviceMap> findDevicesBySns(List<String> deviceInfoIds);
 
-    GatewayDeviceMap findDevice(String projectId, String deviceSn);
+    GatewayDeviceMap findDevice(@Param("projectId") String projectId, @Param("deviceSn") String deviceSn);
 
     void save(GatewayDeviceMap map);
 
-    void deleteProject(String projectId);
+    void deleteProject(@Param("projectId") String projectId);
 
-    void deleteGateway(String gatewayId);
+    void deleteGateway(@Param("gatewayId") String gatewayId);
 
     void deleteBatch(List<String> deviceSns);
 }

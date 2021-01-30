@@ -13,19 +13,19 @@
     </select>
 
     <select id="findDevice" resultType="com.wz.modules.lora.entity.GatewayDeviceMap">
-        select * from gateway_device_map where project_id = #{projectId} AND device_id = #{deviceSn}
+        select * from gateway_device_map where project_id = #{projectId} AND device_info_id = #{deviceSn}
     </select>
 
     <select id="findDevicesBySns" resultType="com.wz.modules.lora.entity.GatewayDeviceMap">
-        select * from gateway_device_map where device_sn in
-        <foreach item="deviceSns" collection="array" open="("
+        select * from gateway_device_map where device_info_id in
+        <foreach item="deviceSn" collection="list" open="("
                  separator="," close=")">
             #{deviceSn}
         </foreach>
     </select>
 
     <insert id="save" parameterType="com.wz.modules.lora.entity.GatewayDeviceMap">
-        insert into gateway_device_map (gateway_id,device_sn,device_id,project_id,gym_id) values (#{gatewayId},#{deviceSn},#{deviceId},#{projectId},#{gymId});
+        insert into gateway_device_map (gateway_id,device_sn,device_id,project_id,gym_id,device_info_id) values (#{gatewayId},#{deviceSn},#{deviceId},#{projectId},#{gymId},#{deviceInfoId});
     </insert>
 
     <delete id="deleteProject">
@@ -37,8 +37,8 @@
 	</delete>
 
     <delete id="deleteBatch">
-        delete from gateway_device_map where device_sn in
-        <foreach item="deviceSns" collection="array" open="("
+        delete from gateway_device_map where device_info_id in
+        <foreach item="deviceSn" collection="list" open="("
                  separator="," close=")">
             #{deviceSn}
         </foreach>

@@ -20,6 +20,8 @@ public class GatewayDeviceMap {
 
     private int deviceId;
 
+    private String deviceInfoId;
+
     private String projectId;
 
     private int gymId;

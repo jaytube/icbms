@@ -68,7 +68,9 @@ public class AppRefDataServiceImpl implements AppRefDataService {
             allGateWays.addAll(gatewayInfos);
         }
         List<GatewayInfo> infoList = allGateWays.stream().filter(gatewayInfo -> !map.containsKey(gatewayInfo.getIpAddress())).collect(Collectors.toList());
-        gatewayInfoDao.batchInsert(infoList);
+        if (infoList.size() > 0) {
+            gatewayInfoDao.batchInsert(infoList);
+        }
         return CommonResponse.success("初始化成功" + infoList.size() + "个网关");
     }
 }
