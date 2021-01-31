@@ -1,5 +1,6 @@
 package com.wz.modules.app.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -8,6 +9,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.wz.front.service.AppDeviceBoxService;
 import com.wz.front.util.DeviceType;
 import com.wz.front.util.DeviceUtils;
+import com.wz.modules.app.dto.DevicePlainInfoDto;
 import com.wz.modules.app.entity.ServerMessage;
 import com.wz.modules.app.entity.SwitchBoxInfo;
 import com.wz.modules.common.controller.BaseController;
@@ -48,6 +50,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -117,6 +120,9 @@ public class DashboardController extends BaseController {
 
     @Autowired
     private AppDeviceBoxService appDeviceBoxService;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     /**
      * 警告分页
@@ -762,6 +768,8 @@ public class DashboardController extends BaseController {
             gatewayDeviceMap.setProjectId(projectId);
             CommonResponse commonResponse = appDeviceBoxService.addDevice(gatewayDeviceMap, deviceBoxInfoEntity);
             if (commonResponse.getCode() == 200) {
+                DevicePlainInfoDto dto = new DevicePlainInfoDto(deviceBoxMac, deviceBoxSn, gatewayId, projectId);
+                redisTemplate.opsForHash().put("DEVICE_INFO", deviceBoxMac, JSON.toJSONString(dto));
                 return Result.ok("添加成功");
             } else {
                 return Result.error("添加设备失败");
