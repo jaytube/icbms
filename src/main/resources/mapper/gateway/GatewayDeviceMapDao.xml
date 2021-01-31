@@ -13,7 +13,7 @@
     </select>
 
     <select id="findDevice" resultType="com.wz.modules.lora.entity.GatewayDeviceMap">
-        select * from gateway_device_map where project_id = #{projectId} AND device_info_id = #{deviceSn}
+        select * from gateway_device_map where project_id = #{projectId} AND device_info_id = #{deviceInfoId}
     </select>
 
     <select id="findDevicesBySns" resultType="com.wz.modules.lora.entity.GatewayDeviceMap">
@@ -25,7 +25,7 @@
     </select>
 
     <insert id="save" parameterType="com.wz.modules.lora.entity.GatewayDeviceMap">
-        insert into gateway_device_map (gateway_id,device_sn,device_id,project_id,gym_id,device_info_id) values (#{gatewayId},#{deviceSn},#{deviceId},#{projectId},#{gymId},#{deviceInfoId});
+        insert into gateway_device_map (gateway_id,device_sn,device_id,project_id,gym_id,device_info_id,device_box_num) values (#{gatewayId},#{deviceSn},#{deviceId},#{projectId},#{gymId},#{deviceInfoId},#{deviceBoxNum});
     </insert>
 
     <delete id="deleteProject">

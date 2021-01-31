@@ -9,7 +9,7 @@
 	</select>
 
     <select id="findById" resultType="com.wz.modules.lora.entity.GymMaster">
-		select * from gateway_info where id = #{id};
+		select * from gym_master where id = #{id};
 	</select>
 
 </mapper>

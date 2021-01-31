@@ -1,6 +1,5 @@
 package com.wz.front.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.wz.front.enums.DeviceBoxStatus;
 import com.wz.front.service.AppDeviceBoxService;
 import com.wz.front.service.AppProjectInfoService;
@@ -104,8 +103,8 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
     }
 
     @Override
-    public CommonResponse deleteDevice(String projectId, String deviceSn) {
-        GatewayDeviceMap device = gatewayDeviceMapDao.findDevice(projectId, deviceSn);
+    public CommonResponse deleteDevice(String projectId, String deviceInfoId) {
+        GatewayDeviceMap device = gatewayDeviceMapDao.findDevice(projectId, deviceInfoId);
         GatewayInfo gatewayInfo = gatewayInfoDao.findById(device.getGatewayId());
         return loRaCommandService.deleteDevices(gatewayInfo.getIpAddress(), Arrays.asList(device.getDeviceId()));
     }
@@ -140,20 +139,16 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
         String ipAddress = gatewayInfo.getIpAddress();
         CommonResponse commonResponse = loRaCommandService.addDevice(ipAddress, addDeviceDto);
         CommonResponse<List<DeviceInfoDto>> devices = loRaCommandService.getDevices(ipAddress, null);
-        log.info("@@@@@@@@@1" + JSON.toJSONString(devices));
         DeviceInfoDto deviceInfo = null;
         List<DeviceInfoDto> devicesData = devices.getData();
-        for (DeviceInfoDto deviceInfoDto : devicesData) {
-            log.info("@@@@@@@@@3" + deviceInfoDto.getDeviceSn());
-            log.info("@@@@@@@@@4" + map.getDeviceSn().toLowerCase());
-            if (org.apache.commons.lang.StringUtils.equals(deviceInfoDto.getDeviceSn(), map.getDeviceSn().toLowerCase())) {
-
-                deviceInfo = deviceInfoDto;
-                break;
+        if (CollectionUtils.isNotEmpty(devicesData)) {
+            for (DeviceInfoDto deviceInfoDto : devicesData) {
+                if (org.apache.commons.lang.StringUtils.equals(deviceInfoDto.getDeviceSn(), map.getDeviceSn().toLowerCase())) {
+                    deviceInfo = deviceInfoDto;
+                    break;
+                }
             }
         }
-        List<DeviceInfoDto> collect = devicesData.stream().filter(device -> device.getDeviceSn().equals(map.getDeviceSn().toLowerCase())).collect(Collectors.toList());
-        log.info("@@@@@@@@@2" + JSON.toJSONString(deviceInfo));
         if (deviceInfo != null) {
             map.setDeviceId(deviceInfo.getId());
             map.setDeviceSn(deviceInfo.getDeviceSn());

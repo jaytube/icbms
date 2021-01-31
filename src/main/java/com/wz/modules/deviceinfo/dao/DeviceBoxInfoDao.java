@@ -55,6 +55,8 @@ public interface DeviceBoxInfoDao extends BaseDao<DeviceBoxInfoEntity> {
 
 	DeviceBoxInfoEntity queryProjectMac(@Param("projectId") String projectId, @Param("deviceMac") String deviceMac);
 
+	DeviceBoxInfoEntity queryByBoxNum(@Param("deviceBoxNum")String deviceBoxNum);
+
 	DeviceBoxInfoEntity queryProjectDeviceBox(@Param("projectId") String projectId,
 			@Param("deviceMac") String deviceMac);
 

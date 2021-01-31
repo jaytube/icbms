@@ -13,6 +13,7 @@ import com.wz.modules.app.entity.SwitchBoxInfo;
 import com.wz.modules.common.controller.BaseController;
 import com.wz.modules.common.jiguang.JiguangPush;
 import com.wz.modules.common.utils.*;
+import com.wz.modules.deviceinfo.dao.DeviceBoxInfoDao;
 import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
 import com.wz.modules.deviceinfo.entity.DeviceSwitchInfoEntity;
 import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
@@ -87,6 +88,9 @@ public class DashboardController extends BaseController {
 
     @Autowired
     private DeviceBoxInfoService deviceBoxInfoService;
+
+    @Autowired
+    private DeviceBoxInfoDao deviceBoxInfoDao;
 
     @Autowired
     private LocationInfoService locationInfoService;
@@ -599,13 +603,8 @@ public class DashboardController extends BaseController {
 
         if (deviceBoxInfoList.size() > 0) {
             ProjectInfoEntity project = projectInfoService.queryObject(deviceBoxInfoList.get(0).getProjectId());
-            GatewayDeviceMap device = gatewayDeviceMapDao.findDevice(project.getId(), devEUI);
-            if (device != null) {
-                model.addAttribute("gatewayInfo", device);
-            }
             model.addAttribute("projectName", project.getProjectName());
             model.addAttribute("deviceBox", deviceBoxInfoList.get(0));
-
         }
 
         if (!StringUtils.isBlank(qrresult)) {
@@ -629,14 +628,13 @@ public class DashboardController extends BaseController {
         params.put("sidx", "create_time");
         params.put("order", "desc");
         Query query = new Query(params);
-        List<DeviceBoxInfoEntity> deviceBoxInfoList = deviceBoxInfoService.queryList(query);
+        DeviceBoxInfoEntity boxInfoEntity = deviceBoxInfoDao.queryByBoxNum(deviceBoxMac);
         DeviceBindInfoDto deviceBindInfoDto = new DeviceBindInfoDto();
         deviceBindInfoDto.setDeviceBoxNum(deviceBoxMac);
         deviceBindInfoDto.setDeviceBoxSn(devEUI);
-        if (deviceBoxInfoList.size() > 0) {
-            DeviceBoxInfoEntity boxInfoEntity = deviceBoxInfoList.get(0);
+        if (boxInfoEntity != null) {
             ProjectInfoEntity project = projectInfoService.queryObject(boxInfoEntity.getProjectId());
-            GatewayDeviceMap device = gatewayDeviceMapDao.findDevice(project.getId(), devEUI);
+            GatewayDeviceMap device = gatewayDeviceMapDao.findDevice(project.getId(), boxInfoEntity.getId());
             GatewayInfo gatewayInfo = gatewayInfoDao.findById(device.getGatewayId());
             GymMaster gymMaster = gymMasterDao.findById(device.getGymId());
             if (device == null) {
@@ -758,6 +756,7 @@ public class DashboardController extends BaseController {
             gatewayDeviceMap.setDeviceSn(deviceBoxSn.toLowerCase());
             gatewayDeviceMap.setDeviceInfoId(deviceBoxInfoEntity.getId());
             gatewayDeviceMap.setGymId(gymId);
+            gatewayDeviceMap.setDeviceBoxNum(deviceBoxMac);
             gatewayDeviceMap.setGatewayId(gatewayId);
             gatewayDeviceMap.setProjectId(projectId);
             CommonResponse commonResponse = appDeviceBoxService.addDevice(gatewayDeviceMap, deviceBoxInfoEntity);

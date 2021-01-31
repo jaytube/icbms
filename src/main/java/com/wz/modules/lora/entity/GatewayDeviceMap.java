@@ -24,5 +24,7 @@ public class GatewayDeviceMap {
 
     private String projectId;
 
+    private String deviceBoxNum;
+
     private int gymId;
 }

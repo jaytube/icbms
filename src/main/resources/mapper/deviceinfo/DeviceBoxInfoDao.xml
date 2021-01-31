@@ -166,6 +166,31 @@
 		where d.device_box_num = #{deviceMac} and
 		d.project_id = #{projectId}
 	</select>
+
+	<select id="queryByBoxNum"
+			resultType="com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity">
+		select
+		d.id,
+		d.project_id,
+		d.device_box_num,
+		d.device_box_pass,
+		d.device_box_name,
+		d.create_time,
+		d.update_time,
+		d.create_id,
+		d.update_id,
+		d.remark,
+		d.online,
+		d.fx,
+		d.fy,
+		d.sec_box_gateway,
+		d.stand_no,
+		d.control_flag,
+		d.box_capacity,
+		d.placed_flag
+		from device_box_info d
+		where d.device_box_num = #{deviceBoxNum}
+	</select>
 	
 	<select id="queryProjectDeviceBox"
 		resultType="com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity">

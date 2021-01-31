@@ -20,7 +20,7 @@ public interface GatewayDeviceMapDao {
 
     List<GatewayDeviceMap> findDevicesBySns(List<String> deviceInfoIds);
 
-    GatewayDeviceMap findDevice(@Param("projectId") String projectId, @Param("deviceSn") String deviceSn);
+    GatewayDeviceMap findDevice(@Param("projectId") String projectId, @Param("deviceInfoId") String deviceInfoId);
 
     void save(GatewayDeviceMap map);
 
