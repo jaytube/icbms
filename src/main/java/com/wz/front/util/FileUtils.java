@@ -21,9 +21,9 @@ public class FileUtils {
         String realPath = System.getProperty("java.io.tmpdir");
 //        String realPath = servletContext.getRealPath(File.separator);
         if (isWinOs()) {
-            return realPath + "\\icbmsFiles\\";
+            return realPath + "\\icbmsUpload\\";
         } else {
-            return realPath + "/icbmsFiles/";
+            return realPath + "/icbmsUpload/";
         }
     }
 

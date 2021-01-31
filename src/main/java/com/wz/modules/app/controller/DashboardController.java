@@ -688,7 +688,7 @@ public class DashboardController extends BaseController {
     })
     @RequestMapping(value = "postQrInfo", method = RequestMethod.POST)
     @ResponseBody
-    public Result postQrInfo(String projectId, String deviceBoxId, String deviceBoxSn, String deviceBoxMac, String thirdLocation,
+    public Result postQrInfo(HttpServletRequest request, String projectId, String deviceBoxId, String deviceBoxSn, String deviceBoxMac, String thirdLocation,
                              String controlFlag, String remark, String boxCapacity, String secBoxGateway, String standNo, String userId, int gymId, int gatewayId)
             throws Exception {
         if (StringUtils.isBlank(projectId)) {
@@ -748,22 +748,25 @@ public class DashboardController extends BaseController {
                 List<DeviceBoxInfoEntity> saveResult = deviceBoxInfoService.saveBoxLocBatch(result, projectId, user);
                 deviceBoxInfoEntity = saveResult.get(0);
             }
-            GatewayDeviceMap device = gatewayDeviceMapDao.findDevice(projectId, deviceBoxInfoEntity.getId());
-            if (device != null) {
-                return Result.error("该设备已绑定网关，如需修改，请先移除该设备再添加");
-            }
-            GatewayDeviceMap gatewayDeviceMap = new GatewayDeviceMap();
-            gatewayDeviceMap.setDeviceSn(deviceBoxSn.toLowerCase());
-            gatewayDeviceMap.setDeviceInfoId(deviceBoxInfoEntity.getId());
-            gatewayDeviceMap.setGymId(gymId);
-            gatewayDeviceMap.setDeviceBoxNum(deviceBoxMac);
-            gatewayDeviceMap.setGatewayId(gatewayId);
-            gatewayDeviceMap.setProjectId(projectId);
-            CommonResponse commonResponse = appDeviceBoxService.addDevice(gatewayDeviceMap, deviceBoxInfoEntity);
-            if (commonResponse.getCode() == 200) {
-                return Result.ok("添加成功");
-            } else {
-                return Result.error("添加设备失败");
+            DeviceType deviceType = DeviceUtils.checkDeviceType(request);
+            if (deviceType == DeviceType.MOBILE_APP) {
+                GatewayDeviceMap device = gatewayDeviceMapDao.findDevice(projectId, deviceBoxInfoEntity.getId());
+                if (device != null) {
+                    return Result.error("该设备已绑定网关，如需修改，请先移除该设备再添加");
+                }
+                GatewayDeviceMap gatewayDeviceMap = new GatewayDeviceMap();
+                gatewayDeviceMap.setDeviceSn(deviceBoxSn.toLowerCase());
+                gatewayDeviceMap.setDeviceInfoId(deviceBoxInfoEntity.getId());
+                gatewayDeviceMap.setGymId(gymId);
+                gatewayDeviceMap.setDeviceBoxNum(deviceBoxMac);
+                gatewayDeviceMap.setGatewayId(gatewayId);
+                gatewayDeviceMap.setProjectId(projectId);
+                CommonResponse commonResponse = appDeviceBoxService.addDevice(gatewayDeviceMap, deviceBoxInfoEntity);
+                if (commonResponse.getCode() == 200) {
+                    return Result.ok("添加成功");
+                } else {
+                    return Result.error("添加设备失败");
+                }
             }
         }
         return Result.ok();
