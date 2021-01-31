@@ -25,6 +25,7 @@ import com.wz.modules.projectinfo.service.ProjectInfoService;
 import com.wz.modules.sys.entity.UserEntity;
 import com.wz.modules.sys.service.UserService;
 import com.wz.socket.cinterface.ClientRequestCmdSend;
+import io.swagger.models.auth.In;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
@@ -397,8 +398,13 @@ public class KkServiceImpl implements KkService {
 	public void processDeviceBoxOnline(List<DeviceBoxInfoEntity> deviceBoxList) {
 		Map<String, String> tmpMap = redisUtil.hgetAll(0, "TERMINAL_STATUS");
 		for (DeviceBoxInfoEntity box : deviceBoxList) {
-			int length = box.getDeviceBoxNum().length();
-			String key = Integer.parseInt(box.getDeviceBoxNum().substring(length - 5)) + "";
+			boolean startWithLY = box.getDeviceBoxNum().startsWith("LY");
+			String key = "";
+			if(startWithLY) {
+				key = Integer.parseInt(box.getDeviceBoxNum().substring(11)) + "";
+			} else {
+				key = Integer.parseInt(box.getDeviceBoxNum().substring(10)) + "";
+			}
 			if (tmpMap.containsKey(key)) {
 				JSONObject jsonObj = JSONObject.fromObject(tmpMap.get(key));
 				box.setOnline(jsonObj.getString("status"));
