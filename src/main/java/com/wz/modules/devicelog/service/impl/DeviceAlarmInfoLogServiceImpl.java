@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wz.socket.utils.CommUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -173,7 +174,7 @@ public class DeviceAlarmInfoLogServiceImpl implements DeviceAlarmInfoLogService 
 
 	public void doSetNewestDeviceAlarm(DeviceBoxInfoEntity box) {
 		List<DeviceAlarmInfoLogEntity> alarmList = new ArrayList<DeviceAlarmInfoLogEntity>();
-		String field = Integer.parseInt(box.getDeviceBoxNum().substring(10)) + "_";
+		String field = CommUtils.getDeviceBoxAddress(box.getDeviceBoxNum()) + "_";
 		Map<String, String> result = redisUtil.fuzzyGet(0, "ALARM_DATA", field);
 		for (String k : result.keySet()) {
 			String resultJson = result.get(k);

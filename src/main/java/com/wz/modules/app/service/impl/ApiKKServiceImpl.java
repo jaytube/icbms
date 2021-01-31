@@ -12,6 +12,7 @@ import com.wz.modules.kk.entity.DeviceAlarm;
 import com.wz.modules.kk.entity.LineUpper;
 import com.wz.modules.kk.entity.PageInfo;
 import com.wz.socket.cinterface.ClientRequestCmdSend;
+import com.wz.socket.utils.CommUtils;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class ApiKKServiceImpl implements ApiKKService {
         }
         DeviceBoxInfoEntity deviceBox = this.deviceBoxInfoService.queryByMac(deviceBoxMac, projectId);
         if (null != deviceBox) {
-            String deviceBoxAddress = Integer.parseInt(deviceBox.getDeviceBoxNum().substring(10)) + "";
+            String deviceBoxAddress = CommUtils.getDeviceBoxAddress(deviceBox.getDeviceBoxNum());
             String resultJson = redisUtil.hget(0, "TERMINAL_STATUS", deviceBoxAddress);
             JSONObject dataObj = JSONObject.fromObject(resultJson);
             String gatewayAddress = dataObj.getString("gatewayId");
@@ -65,7 +66,7 @@ public class ApiKKServiceImpl implements ApiKKService {
         List<DeviceSwitchInfoEntity> switchList = new ArrayList<DeviceSwitchInfoEntity>();
         DeviceBoxInfoEntity deviceBox = this.deviceBoxInfoService.queryByMac(deviceBoxMac, projectId);
         if (null != deviceBox) {
-            String field = Integer.parseInt(deviceBox.getDeviceBoxNum().substring(10)) + "_";
+            String field = CommUtils.getDeviceBoxAddress(deviceBox.getDeviceBoxNum()) + "_";
             Map<String, String> result = redisUtil.fuzzyGet(0, "REAL_DATA", field);
             for (String k : result.keySet()) {
                 String resultJson = result.get(k);

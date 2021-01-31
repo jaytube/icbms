@@ -19,6 +19,7 @@ import com.wz.modules.lora.dto.DeviceInfoDto;
 import com.wz.modules.lora.entity.GatewayDeviceMap;
 import com.wz.modules.lora.entity.GatewayInfo;
 import com.wz.modules.lora.service.LoRaCommandService;
+import com.wz.socket.utils.CommUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
@@ -165,12 +166,12 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
         List<DeviceAlarmInfoLogEntity> latestAlarmList = deviceAlarmInfoLogDao.getLatestAlarmOfDeviceByProjectId(projectId);
         Map<String, DeviceBoxInfoEntity> boxMap = new HashMap<>();
         for (DeviceBoxInfoEntity b : boxList) {
-            boxMap.put(Integer.parseInt(b.getDeviceBoxNum().substring(10)) + "", b);
+            boxMap.put(CommUtils.getDeviceBoxAddress(b.getDeviceBoxNum()), b);
         }
         Map<String, DeviceAlarmInfoLogEntity> alarmInfoMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(latestAlarmList)) {
             latestAlarmList.forEach(latestAlarm -> {
-                String key = Integer.toString(Integer.parseInt(latestAlarm.getDeviceBoxMac().substring(10)));
+                String key = CommUtils.getDeviceBoxAddress(latestAlarm.getDeviceBoxMac());
                 alarmInfoMap.put(key, latestAlarm);
             });
         }
