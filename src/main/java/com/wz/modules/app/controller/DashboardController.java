@@ -51,7 +51,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -124,9 +123,6 @@ public class DashboardController extends BaseController {
 
     @Autowired
     private AppDeviceBoxService appDeviceBoxService;
-
-    @Autowired
-    private StringRedisTemplate redisTemplate;
 
     /**
      * 警告分页
@@ -745,8 +741,8 @@ public class DashboardController extends BaseController {
             UserEntity user = this.userService.queryObject(userId);
             DeviceBoxInfoEntity deviceBoxInfoEntity;
             if (StringUtils.isNotBlank(deviceBoxId)) {
-                deviceBoxInfoEntity = deviceBoxInfoService.queryObject(deviceBoxId);
-                if (deviceBoxInfoEntity != null) {
+                deviceBoxInfoEntity = deviceBoxInfoDao.queryByBoxId(deviceBoxId);
+                if (deviceBoxInfoEntity == null) {
                     List<DeviceBoxInfoEntity> saveResult = deviceBoxInfoService.saveBoxLocBatch(result, projectId, user);
                     deviceBoxInfoEntity = saveResult.get(0);
                 }
@@ -770,7 +766,8 @@ public class DashboardController extends BaseController {
                 CommonResponse commonResponse = appDeviceBoxService.addDevice(gatewayDeviceMap, deviceBoxInfoEntity);
                 if (commonResponse.getCode() == 200) {
                     DevicePlainInfoDto dto = new DevicePlainInfoDto(deviceBoxMac, deviceBoxSn, gatewayId, projectId);
-                    redisTemplate.opsForHash().put("DEVICE_INFO", deviceBoxMac, JSON.toJSONString(dto));
+                    redisUtil.hset(0, "DEVICE_INFO", deviceBoxMac, JSON.toJSONString(dto));
+//                    redisTemplate.opsForHash().put("DEVICE_INFO", deviceBoxMac, JSON.toJSONString(dto));
                     return Result.ok("添加成功");
                 } else {
                     return Result.error("添加设备失败");

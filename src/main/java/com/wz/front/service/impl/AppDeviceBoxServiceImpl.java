@@ -117,7 +117,20 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
         }
         GatewayDeviceMap gatewayDeviceMap = devicesBySns.get(0);
         GatewayInfo gatewayInfo = gatewayInfoDao.findById(gatewayDeviceMap.getGatewayId());
-        List<Integer> ids = devicesBySns.stream().map(devicesBySn -> devicesBySn.getDeviceId()).collect(Collectors.toList());
+        CommonResponse<List<DeviceInfoDto>> devices = loRaCommandService.getDevices(gatewayInfo.getIpAddress(), null);
+        List<DeviceInfoDto> data = devices.getData();
+        if (CollectionUtils.isEmpty(data)) {
+            return CommonResponse.success("");
+        }
+        Map<String, DeviceInfoDto> map = new HashMap<>();
+        data.forEach(deviceInfoDto -> map.put(deviceInfoDto.getDeviceSn(), deviceInfoDto));
+        List<Integer> ids = new ArrayList<>();
+        devicesBySns.forEach(deviceMap -> {
+            String deviceSn = deviceMap.getDeviceSn();
+            if (map.containsKey(deviceSn)) {
+                ids.add(map.get(deviceSn).getId());
+            }
+        });
         CommonResponse<Map> mapCommonResponse = loRaCommandService.deleteDevices(gatewayInfo.getIpAddress(), ids);
         gatewayDeviceMapDao.deleteBatch(deviceIds);
         return CommonResponse.success(deviceIds);
@@ -138,20 +151,9 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
         addDeviceDto.setTypeName("RCMII");
         String ipAddress = gatewayInfo.getIpAddress();
         CommonResponse commonResponse = loRaCommandService.addDevice(ipAddress, addDeviceDto);
-        CommonResponse<List<DeviceInfoDto>> devices = loRaCommandService.getDevices(ipAddress, null);
-        DeviceInfoDto deviceInfo = null;
-        List<DeviceInfoDto> devicesData = devices.getData();
-        if (CollectionUtils.isNotEmpty(devicesData)) {
-            for (DeviceInfoDto deviceInfoDto : devicesData) {
-                if (org.apache.commons.lang.StringUtils.equals(deviceInfoDto.getDeviceSn(), map.getDeviceSn().toLowerCase())) {
-                    deviceInfo = deviceInfoDto;
-                    break;
-                }
-            }
-        }
-        if (deviceInfo != null) {
-            map.setDeviceId(deviceInfo.getId());
-            map.setDeviceSn(deviceInfo.getDeviceSn());
+        if (commonResponse.getCode() == 200) {
+//            map.setDeviceId(deviceInfo.getId());
+            map.setDeviceSn(map.getDeviceSn().toLowerCase());
             map.setDeviceInfoId(entity.getId());
             gatewayDeviceMapDao.save(map);
             return CommonResponse.success(map);
