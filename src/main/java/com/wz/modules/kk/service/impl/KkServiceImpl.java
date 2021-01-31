@@ -397,7 +397,8 @@ public class KkServiceImpl implements KkService {
 	public void processDeviceBoxOnline(List<DeviceBoxInfoEntity> deviceBoxList) {
 		Map<String, String> tmpMap = redisUtil.hgetAll(0, "TERMINAL_STATUS");
 		for (DeviceBoxInfoEntity box : deviceBoxList) {
-			String key = Integer.parseInt(box.getDeviceBoxNum().substring(10)) + "";
+			int length = box.getDeviceBoxNum().length();
+			String key = Integer.parseInt(box.getDeviceBoxNum().substring(length - 5)) + "";
 			if (tmpMap.containsKey(key)) {
 				JSONObject jsonObj = JSONObject.fromObject(tmpMap.get(key));
 				box.setOnline(jsonObj.getString("status"));
