@@ -57,9 +57,9 @@ public class ShiroConfig {
         shiroFilter.setSuccessUrl("/index.html");
         //shiro不拦截资源
         Map<String, String> filterMap = new LinkedHashMap<>();
+        filterMap.put("/app/**", "anon");
         filterMap.put("/druid/**", "anon");
         filterMap.put("/webSocketServer/**", "anon");
-        filterMap.put("/app/**", "anon");
         filterMap.put("/locationinfo/viewImg/**", "anon");
         filterMap.put("/login/login", "anon");
         filterMap.put("/**/*.css", "anon");
