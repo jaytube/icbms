@@ -739,14 +739,8 @@ public class DashboardController extends BaseController {
         result.add(map);
         if (map != null && map.size() > 0) {
             UserEntity user = this.userService.queryObject(userId);
-            DeviceBoxInfoEntity deviceBoxInfoEntity;
-            if (StringUtils.isNotBlank(deviceBoxId)) {
-                deviceBoxInfoEntity = deviceBoxInfoDao.queryByBoxId(deviceBoxId);
-                if (deviceBoxInfoEntity == null) {
-                    List<DeviceBoxInfoEntity> saveResult = deviceBoxInfoService.saveBoxLocBatch(result, projectId, user);
-                    deviceBoxInfoEntity = saveResult.get(0);
-                }
-            } else {
+            DeviceBoxInfoEntity deviceBoxInfoEntity = deviceBoxInfoDao.queryByBoxNum(deviceBoxMac);
+            if (deviceBoxInfoEntity == null) {
                 List<DeviceBoxInfoEntity> saveResult = deviceBoxInfoService.saveBoxLocBatch(result, projectId, user);
                 deviceBoxInfoEntity = saveResult.get(0);
             }
@@ -767,7 +761,6 @@ public class DashboardController extends BaseController {
                 if (commonResponse.getCode() == 200) {
                     DevicePlainInfoDto dto = new DevicePlainInfoDto(deviceBoxMac, deviceBoxSn, gatewayId, projectId);
                     redisUtil.hset(0, "DEVICE_INFO", deviceBoxMac, JSON.toJSONString(dto));
-//                    redisTemplate.opsForHash().put("DEVICE_INFO", deviceBoxMac, JSON.toJSONString(dto));
                     return Result.ok("添加成功");
                 } else {
                     return Result.error("添加设备失败");
