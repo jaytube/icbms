@@ -134,6 +134,9 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
         });
         CommonResponse<Map> mapCommonResponse = loRaCommandService.deleteDevices(gatewayInfo.getIpAddress(), ids);
         gatewayDeviceMapDao.deleteBatch(deviceIds);
+        for (GatewayDeviceMap deviceMap : devicesBySns) {
+            redisUtil.hdel(0, "DEVICE_INFO", deviceMap.getDeviceBoxNum());
+        }
         return CommonResponse.success(deviceIds);
     }
 
