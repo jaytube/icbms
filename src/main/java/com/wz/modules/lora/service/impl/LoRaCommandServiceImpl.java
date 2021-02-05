@@ -96,7 +96,7 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
         if (token_type != null && access_token != null && expires_in != null) {
             bearer_token = Objects.toString(token_type) + " " + Objects.toString(access_token);
             try {
-                redisUtil.setString("BEARER_TOKEN", bearer_token, Integer.valueOf(Objects.toString(expires_in)));
+                redisUtil.setString(gatewayIp, bearer_token, Integer.valueOf(Objects.toString(expires_in)));
             } catch (Exception e) {
                 log.error("SET BEARER_TOKEN TO REDIS", e);
             }
@@ -114,10 +114,10 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
     public String getRedisToken(String gatewayIp) {
         String bearer_token = null;
         try {
-            bearer_token = redisUtil.getString("BEARER_TOKEN");
+            bearer_token = redisUtil.getString(gatewayIp);
             if (bearer_token == null) {
                 getToken(gatewayIp);
-                bearer_token = redisUtil.getString("BEARER_TOKEN");
+                bearer_token = redisUtil.getString(gatewayIp);
             }
             return bearer_token;
         } catch (Exception e) {
