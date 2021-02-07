@@ -11,6 +11,7 @@ import com.wz.modules.projectinfo.entity.DboxLocLinkEntity;
 import com.wz.modules.projectinfo.entity.LocationInfoEntity;
 import com.wz.modules.projectinfo.service.LocationInfoService;
 import com.wz.modules.sys.entity.UserEntity;
+import com.wz.socket.utils.CommUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -398,7 +399,7 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
                         }
 
                         // 根据电箱MAC地址更新电箱信息
-                        tmpDeviceBox.setDeviceBoxName(standNo);
+                        tmpDeviceBox.setDeviceBoxName(CommUtils.getDeviceBoxAddress(deviceMac));
                         tmpDeviceBox.setDeviceBoxNum(deviceMac);
                         tmpDeviceBox.setUpdateId(null == currentUser ? null : currentUser.getId());
                         tmpDeviceBox.setUpdateTime(new Date());
@@ -414,7 +415,7 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
                         // 电箱不存在 新增电箱
                         DeviceBoxInfoEntity deviceBoxInfo = new DeviceBoxInfoEntity();
                         deviceBoxInfo.setId(Utils.uuid());
-                        deviceBoxInfo.setDeviceBoxName(standNo);
+                        deviceBoxInfo.setDeviceBoxName(CommUtils.getDeviceBoxAddress(deviceMac));
                         deviceBoxInfo.setDeviceBoxNum(deviceMac);
                         deviceBoxInfo.setCreateId(null == currentUser ? null : currentUser.getId());
                         deviceBoxInfo.setCreateTime(new Date());
