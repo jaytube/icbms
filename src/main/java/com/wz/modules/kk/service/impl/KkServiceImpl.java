@@ -564,10 +564,7 @@ public class KkServiceImpl implements KkService {
                 for (DeviceBoxInfoEntity deviceBoxInfo : boxList) {
                     String str = deviceBoxInfo.getDeviceBoxNum();
                     if (str != null && !"".equals(str) && str.length() > 6) {
-                        String terminalId = str.substring(str.length() - 6);
-                        while (terminalId.startsWith("0")) {
-                            terminalId = terminalId.substring(1);
-                        }
+                        String terminalId = CommUtils.getDeviceBoxAddress(str);
                         redisUtil.hset(0, "TERMINAL_CONFIG", terminalId, deviceBoxInfo.getProjectId());
                     }
                 }

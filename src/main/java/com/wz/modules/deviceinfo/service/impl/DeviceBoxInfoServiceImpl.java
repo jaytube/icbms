@@ -76,10 +76,7 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
         // 设置终端对应的项目
         String str = deviceBoxInfo.getDeviceBoxNum();
         if (str != null && !"".equals(str) && str.length() > 6) {
-            String terminalId = str.substring(str.length() - 6);
-            while (terminalId.startsWith("0")) {
-                terminalId = terminalId.substring(1);
-            }
+            String terminalId = CommUtils.getDeviceBoxAddress(str);
             redisUtil.hset(0, "TERMINAL_CONFIG", terminalId, deviceBoxInfo.getProjectId());
         }
 
@@ -443,10 +440,7 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
                         // 设置终端对应的项目
                         String str = deviceMac;
                         if (str != null && !"".equals(str) && str.length() > 6) {
-                            String terminalId = str.substring(str.length() - 6);
-                            while (terminalId.startsWith("0")) {
-                                terminalId = terminalId.substring(1);
-                            }
+                            String terminalId = CommUtils.getDeviceBoxAddress(str);
                             redisUtil.hset(0, "TERMINAL_CONFIG", terminalId, projectId);
                         }
                     }
