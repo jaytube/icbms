@@ -589,7 +589,7 @@
         from device_box_info d,device_box_location l
         where 1=1 and d.id = l.device_box_id
         <if test="projectId != null and projectId.trim() != ''">
-            and project_id = #{projectId}
+            and d.project_id = #{projectId}
         </if>
     </select>
 

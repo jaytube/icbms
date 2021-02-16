@@ -3,8 +3,10 @@ package com.wz.front.service.impl;
 import com.wz.front.enums.DeviceBoxStatus;
 import com.wz.front.service.AppDeviceBoxService;
 import com.wz.front.service.AppProjectInfoService;
+import com.wz.modules.app.entity.SwitchBoxInfo;
 import com.wz.modules.common.utils.CommonResponse;
 import com.wz.modules.common.utils.RedisUtil;
+import com.wz.modules.common.utils.Result;
 import com.wz.modules.common.utils.StringUtils;
 import com.wz.modules.deviceinfo.dao.DeviceBoxInfoDao;
 import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
@@ -18,16 +20,21 @@ import com.wz.modules.lora.dto.AddDeviceDto;
 import com.wz.modules.lora.dto.DeviceInfoDto;
 import com.wz.modules.lora.entity.GatewayDeviceMap;
 import com.wz.modules.lora.entity.GatewayInfo;
+import com.wz.modules.lora.enums.LoRaCommand;
 import com.wz.modules.lora.service.LoRaCommandService;
 import com.wz.socket.utils.CommUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.wz.socket.utils.Constant.ALARM_DATA;
+import static com.wz.socket.utils.Constant.REAL_HIS_DATA_STORE_UP_TO_DATE;
 
 /**
  * @Author: Cherry
@@ -133,9 +140,20 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
             }
         });
         CommonResponse<Map> mapCommonResponse = loRaCommandService.deleteDevices(gatewayInfo.getIpAddress(), ids);
-        gatewayDeviceMapDao.deleteBatch(deviceIds);
+        List<String> list = map.keySet().stream().filter(org.apache.commons.lang3.StringUtils::isNotBlank).distinct().collect(Collectors.toList());
+        gatewayDeviceMapDao.deleteBatchBySn(list);
         for (GatewayDeviceMap deviceMap : devicesBySns) {
             redisUtil.hdel(0, "DEVICE_INFO", deviceMap.getDeviceBoxNum());
+            redisUtil.hdel(0, "TERMINAL_STATUS", CommUtils.getDeviceBoxAddress(deviceMap.getDeviceBoxNum()));
+            String key = CommUtils.getDeviceBoxAddress(deviceMap.getDeviceBoxNum()) + "_100";
+            redisUtil.hdel(0, REAL_HIS_DATA_STORE_UP_TO_DATE, key);
+            Map<String, String> alarms = redisUtil.fuzzyGet(0, ALARM_DATA, key);
+            if(MapUtils.isNotEmpty(alarms)) {
+                alarms.entrySet().stream().forEach(t -> {
+                    String k = t.getKey();
+                    redisUtil.hdel(0, ALARM_DATA, k);
+                });
+            }
         }
         return CommonResponse.success(deviceIds);
     }
@@ -160,9 +178,48 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
             map.setDeviceSn(map.getDeviceSn().toLowerCase());
             map.setDeviceInfoId(entity.getId());
             gatewayDeviceMapDao.save(map);
+            String field = CommUtils.getDeviceBoxAddress(entity.getDeviceBoxNum()) + "_100";
+            redisUtil.hset(0, REAL_HIS_DATA_STORE_UP_TO_DATE, field, System.currentTimeMillis()+"");
             return CommonResponse.success(map);
         }
         return CommonResponse.faild("添加设备失败", map);
+    }
+
+    @Override
+    public Result remoteControlSwitches(SwitchBoxInfo boxInfo, LoRaCommand loRaCommand) {
+        List<String> boxList = boxInfo.getBoxList();
+        List<GatewayDeviceMap> gatewayDeviceMapList = gatewayDeviceMapDao.findDevicesByBoxNums(boxList);
+        if(CollectionUtils.isEmpty(gatewayDeviceMapList))
+            return Result.error("无电箱详情信息。");
+        Map<String, List<String>> map = new HashMap<>();
+        for (GatewayDeviceMap gatewayDeviceMap : gatewayDeviceMapList) {
+            String key = "http://10.0.1." + gatewayDeviceMap.getGatewayId();
+            List<String> list = map.getOrDefault(key, null);
+            if(CollectionUtils.isEmpty(list)) {
+                list = new ArrayList<>();
+                list.add(gatewayDeviceMap.getDeviceSn());
+                map.put(key, list);
+            } else {
+                map.get(key).add(gatewayDeviceMap.getDeviceSn());
+            }
+        }
+        List<String> failedResult = new ArrayList<>();
+        for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+            String ip = entry.getKey();
+            List<String> val = entry.getValue();
+            if(CollectionUtils.isNotEmpty(val) && org.apache.commons.lang3.StringUtils.isNotBlank(ip)) {
+                for (String s : val) {
+                    CommonResponse<Map> resp = loRaCommandService.executeCmd(ip, loRaCommand, s);
+                    if(resp.getCode()!=200)
+                        failedResult.add(resp.getMsg());
+                    else
+                        loRaCommandService.executeCmd(ip, LoRaCommand.QUERY_CMD, s);
+                }
+            }
+        }
+        if(CollectionUtils.isNotEmpty(failedResult))
+            return Result.error("电箱合闸失败!");
+        return Result.ok();
     }
 
     private List<DeviceBoxInfoEntity> loadBoxesRecentStatus(String projectId, List<DeviceBoxInfoEntity> boxList, Map<String, String> redisTerminalStatus) {

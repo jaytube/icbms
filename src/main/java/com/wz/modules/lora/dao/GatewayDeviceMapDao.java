@@ -20,6 +20,8 @@ public interface GatewayDeviceMapDao {
 
     List<GatewayDeviceMap> findDevicesBySns(List<String> deviceInfoIds);
 
+    List<GatewayDeviceMap> findDevicesByBoxNums(List<String> deviceBoxNums);
+
     GatewayDeviceMap findDevice(@Param("projectId") String projectId, @Param("deviceInfoId") String deviceInfoId);
 
     void save(GatewayDeviceMap map);
@@ -29,4 +31,6 @@ public interface GatewayDeviceMapDao {
     void deleteGateway(@Param("gatewayId") String gatewayId);
 
     void deleteBatch(List<String> deviceSns);
+
+    void deleteBatchBySn(List<String> deviceSns);
 }

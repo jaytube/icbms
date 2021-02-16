@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wz.modules.deviceinfo.dao.DeviceMacSnMapDao">
+
+    <select id="findById" resultType="com.wz.modules.deviceinfo.entity.DeviceMacSnEntity">
+		select * from device_mac_sn_map where device_mac = #{deviceMac};
+	</select>
+
+    <insert id="batchInsert">
+        INSERT INTO device_mac_sn_map(device_mac,device_sn)
+        VALUES
+        <foreach collection="deviceMacSnEntities" item="device" separator=",">
+            (#{device.deviceMac},#{device.deviceSn})
+        </foreach>
+    </insert>
+
+</mapper>

@@ -5,4 +5,6 @@ public interface MigrationService {
     Boolean migrateUserProjects();
 
     Boolean migrateLocationInfos();
+
+    Boolean loadDeviceMacSnMap();
 }

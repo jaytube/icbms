@@ -23,6 +23,8 @@ public class ProjectInfoDto {
 
     private int imageWidth;
 
+    private String gymName;
+
     public int getBoxTotal() {
         return boxTotal;
     }
@@ -77,5 +79,13 @@ public class ProjectInfoDto {
 
     public void setProject(ProjectInfoEntity project) {
         this.project = project;
+    }
+
+    public String getGymName() {
+        return gymName;
+    }
+
+    public void setGymName(String gymName) {
+        this.gymName = gymName;
     }
 }

@@ -39,4 +39,10 @@ public class MigrationController {
         String realPath = servletContext.getRealPath(File.separator);
         return Result.ok().put("msg", realPath);
     }
+
+    @GetMapping("/loadDevice")
+    public Result loadDevice() {
+        migrationService.loadDeviceMacSnMap();
+        return Result.ok().put("msg", "load devices success!");
+    }
 }

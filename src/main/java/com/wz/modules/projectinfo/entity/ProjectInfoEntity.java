@@ -209,4 +209,20 @@ public class ProjectInfoEntity extends BaseEntity implements Serializable {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
+
+    public int getGymId() {
+        return gymId;
+    }
+
+    public void setGymId(int gymId) {
+        this.gymId = gymId;
+    }
+
+    public String getGymName() {
+        return gymName;
+    }
+
+    public void setGymName(String gymName) {
+        this.gymName = gymName;
+    }
 }

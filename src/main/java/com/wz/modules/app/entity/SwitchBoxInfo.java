@@ -15,6 +15,9 @@ public class SwitchBoxInfo {
 	@ApiModelProperty(value = "用户ID", name = "userId", required = true)
 	private String userId;
 
+	@ApiModelProperty(value = "新老设备", name = "version", required = false)
+	private Integer version = 0;
+
 	public List<String> getBoxList() {
 		return boxList;
 	}
@@ -39,4 +42,11 @@ public class SwitchBoxInfo {
 		this.userId = userId;
 	}
 
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
 }

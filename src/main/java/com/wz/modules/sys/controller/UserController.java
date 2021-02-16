@@ -65,7 +65,7 @@ public class UserController extends BaseController {
 	 * 列表
 	 */
 	@RequestMapping("/list")
-	@RequiresPermissions("sys:user:list")
+	//@RequiresPermissions("sys:user:list")
 	@SysLog("查看系统用户列表")
 	@DataAuth(tableAlias = "s")
 	public Result list(@RequestParam Map<String, Object> params) {
@@ -81,7 +81,7 @@ public class UserController extends BaseController {
 	 * 信息
 	 */
 	@RequestMapping("/info/{id}")
-	@RequiresPermissions("sys:user:info")
+	//@RequiresPermissions("sys:user:info")
 	@SysLog("查看系统用户信息")
 	public Result info(@PathVariable("id") String id) {
 		UserEntity user = userService.queryObject(id);
@@ -119,7 +119,7 @@ public class UserController extends BaseController {
 	 * 保存
 	 */
 	@RequestMapping("/save")
-	@RequiresPermissions("sys:user:update")
+	//@RequiresPermissions("sys:user:update")
 	@SysLog("新增系统用户")
 	public Result save(@RequestBody UserEntity user) {
 		userService.save(user);
@@ -130,7 +130,7 @@ public class UserController extends BaseController {
 	 * 修改
 	 */
 	@RequestMapping(value = "/update")
-	@RequiresPermissions("sys:user:update")
+	//@RequiresPermissions("sys:user:update")
 	@SysLog("修改系统用户")
 	public Result update(@RequestBody UserEntity user) {
 		user.setPassWord(null);
@@ -167,7 +167,7 @@ public class UserController extends BaseController {
 	 * 禁用、
 	 */
 	@RequestMapping("/delete")
-	@RequiresPermissions("sys:user:delete")
+	//@RequiresPermissions("sys:user:delete")
 	@SysLog("禁用系统用户")
 	public Result delete(@RequestBody String[] ids) {
 		userService.updateBatchStatus(ids, Constant.ABLE_STATUS.NO.getValue());
@@ -178,7 +178,7 @@ public class UserController extends BaseController {
 	 * 启用、
 	 */
 	@RequestMapping("/enabled")
-	@RequiresPermissions("sys:user:enabled")
+	//@RequiresPermissions("sys:user:enabled")
 	@SysLog("启用系统用户")
 	public Result enabled(@RequestBody String[] ids) {
 		userService.updateBatchStatus(ids, Constant.ABLE_STATUS.YES.getValue());
@@ -189,7 +189,7 @@ public class UserController extends BaseController {
 	 * 重置密码
 	 */
 	@RequestMapping("/reset")
-	@RequiresPermissions("sys:user:reset")
+	//@RequiresPermissions("sys:user:reset")
 	@SysLog("重置密码")
 	public Result reset(@RequestBody String[] ids) {
 		userService.resetPassWord(ids);

@@ -16,7 +16,9 @@ import com.wz.modules.common.controller.BaseController;
 import com.wz.modules.common.jiguang.JiguangPush;
 import com.wz.modules.common.utils.*;
 import com.wz.modules.deviceinfo.dao.DeviceBoxInfoDao;
+import com.wz.modules.deviceinfo.dao.DeviceMacSnMapDao;
 import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
+import com.wz.modules.deviceinfo.entity.DeviceMacSnEntity;
 import com.wz.modules.deviceinfo.entity.DeviceSwitchInfoEntity;
 import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
 import com.wz.modules.devicelog.entity.*;
@@ -33,6 +35,8 @@ import com.wz.modules.lora.dto.DeviceBindInfoDto;
 import com.wz.modules.lora.entity.GatewayDeviceMap;
 import com.wz.modules.lora.entity.GatewayInfo;
 import com.wz.modules.lora.entity.GymMaster;
+import com.wz.modules.lora.enums.LoRaCommand;
+import com.wz.modules.lora.service.LoRaCommandService;
 import com.wz.modules.projectinfo.entity.LocationInfoEntity;
 import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
 import com.wz.modules.projectinfo.service.LocationInfoService;
@@ -47,6 +51,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONObject;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,6 +128,9 @@ public class DashboardController extends BaseController {
 
     @Autowired
     private AppDeviceBoxService appDeviceBoxService;
+
+    @Autowired
+    private DeviceMacSnMapDao deviceMacSnMapDao;
 
     /**
      * 警告分页
@@ -376,15 +384,18 @@ public class DashboardController extends BaseController {
         if (!StringUtils.isBlank(message)) {
             return Result.error(message);
         }
-
-        new Thread(new Runnable() {
-            public void run() {
-                for (String boxNum : boxInfo.getBoxList()) {
-                    kkService.setCmdSwitch(boxInfo.getProjectId(), boxNum, "0", "open");
+        if(boxInfo != null && boxInfo.getVersion() != null && boxInfo.getVersion() == 1) {
+            return appDeviceBoxService.remoteControlSwitches(boxInfo, LoRaCommand.OPEN_CMD);
+        } else {
+            new Thread(new Runnable() {
+                public void run() {
+                    for (String boxNum : boxInfo.getBoxList()) {
+                        kkService.setCmdSwitch(boxInfo.getProjectId(), boxNum, "0", "open");
+                    }
                 }
-            }
-        }).start();
-        return Result.ok();
+            }).start();
+            return Result.ok();
+        }
     }
 
     @ApiOperation(value = "设置电箱关")
@@ -395,15 +406,18 @@ public class DashboardController extends BaseController {
         if (!StringUtils.isBlank(message)) {
             return Result.error(message);
         }
-
-        new Thread(new Runnable() {
-            public void run() {
-                for (String boxNum : boxInfo.getBoxList()) {
-                    kkService.setCmdSwitch(boxInfo.getProjectId(), boxNum, "0", "close");
+        if(boxInfo != null && boxInfo.getVersion() != null && boxInfo.getVersion() == 1) {
+            return appDeviceBoxService.remoteControlSwitches(boxInfo, LoRaCommand.CLOSE_CMD);
+        } else {
+            new Thread(new Runnable() {
+                public void run() {
+                    for (String boxNum : boxInfo.getBoxList()) {
+                        kkService.setCmdSwitch(boxInfo.getProjectId(), boxNum, "0", "close");
+                    }
                 }
-            }
-        }).start();
-        return Result.ok();
+            }).start();
+            return Result.ok();
+        }
     }
 
     public String doValidateProjectRoles(SwitchBoxInfo boxInfo) {
@@ -533,7 +547,7 @@ public class DashboardController extends BaseController {
                 DeviceBoxInfoEntity deviceBoxInfo = deviceBoxInfoService.queryObject(deviceBoxId);
                 deviceBoxInfo.setAlarmLogId(alarm.getId());
                 deviceBoxInfoService.update(deviceBoxInfo);
-                if ("4".equals(alarm.getAlarmLevel())) {
+                if ("3".equals(alarm.getAlarmLevel())) {
                     messagingTemplate.convertAndSend("/topic/subscribeTest", new ServerMessage(jsonObject.toString()));
                     ProjectInfoEntity project = this.projectInfoService.queryObject(deviceBoxInfo.getProjectId());
                     String projectInfo = "{id:" + project.getId() + ", projectName:" + project.getProjectName() + "}";
@@ -699,6 +713,14 @@ public class DashboardController extends BaseController {
 
         if (StringUtils.isBlank(deviceBoxMac)) {
             return Result.error("电箱MAC地址为空");
+        }
+
+        if(StringUtils.isBlank(deviceBoxSn)) {
+            DeviceMacSnEntity macSnEntity = deviceMacSnMapDao.findById(deviceBoxMac);
+            if(macSnEntity == null || StringUtils.isBlank(macSnEntity.getDeviceSn()))
+                return Result.error("找不到电箱MAC对应的电箱SN");
+
+            deviceBoxSn = macSnEntity.getDeviceSn();
         }
 
         if (StringUtils.isBlank(thirdLocation)) {

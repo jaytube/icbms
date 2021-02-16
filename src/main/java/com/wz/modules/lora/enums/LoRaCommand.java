@@ -14,11 +14,11 @@ public enum LoRaCommand {
     /**
      * 合闸指令
      */
-    CLOSE_CMD("000003EE00001E", "合闸指令"),
+    OPEN_CMD("000010EE020002040000FF00", "合闸指令"),
     /**
      * 分闸指令
      */
-    OPEN_CMD("000003EE00001E", "分闸指令");
+    CLOSE_CMD("000010EE0200020400000000", "分闸指令");
 
     LoRaCommand(String cmd, String desc) {
         this.cmd = cmd;

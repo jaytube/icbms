@@ -9,6 +9,7 @@ import com.wz.modules.projectinfo.service.ProjectInfoService;
 import com.wz.modules.sys.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +39,7 @@ public class AppProjectController extends BaseController {
         List<ProjectInfoDto> projectList = appProjectInfoService.listProjects();
         Map<String, Object> result = new HashMap<>();
         result.put("projectList", projectList);
-        result.put("gymName", "世博展览馆");
+        result.put("gymName", "龙阳馆");
         return CommonResponse.success(result);
     }
 

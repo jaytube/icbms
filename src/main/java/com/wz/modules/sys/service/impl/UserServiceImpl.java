@@ -139,9 +139,9 @@ public class UserServiceImpl implements UserService {
         // 根据部门,查询所属机构
         if (!StringUtils.isEmpty(user.getBaid())) {
             OrganEntity organ = organService.queryObject(user.getBaid());
-            if (!Constant.OrganType.DEPART.getValue().equals(organ.getType())) {
+            /*if (!Constant.OrganType.DEPART.getValue().equals(organ.getType())) {
                 throw new MyException("只能选择用户所属部门,请重新选择部门");
-            }
+            }*/
             String bapid = findBapid(user.getBaid());
             user.setBapid(bapid);
         }
