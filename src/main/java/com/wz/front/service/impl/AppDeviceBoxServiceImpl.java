@@ -33,8 +33,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.wz.socket.utils.Constant.ALARM_DATA;
-import static com.wz.socket.utils.Constant.REAL_HIS_DATA_STORE_UP_TO_DATE;
+import static com.wz.socket.utils.Constant.*;
 
 /**
  * @Author: Cherry
@@ -78,7 +77,7 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
         List<DeviceBoxInfoEntity> deviceBoxInfoList = deviceBoxInfoDao.findDeviceBoxsInfoByProjectIds(userProjectIds);
         Map<String, List<DeviceBoxInfoEntity>> deviceBoxInfoMap = sort(deviceBoxInfoList);
         Map<String, List<DeviceBoxInfoEntity>> filterMap = new HashMap<>();
-        Map<String, String> redisTerminalStatus = redisUtil.hgetAll(0, "TERMINAL_STATUS");
+        Map<String, String> redisTerminalStatus = redisUtil.hgetAll(0, TERMINAL_STATUS);
         for (Map.Entry<String, List<DeviceBoxInfoEntity>> entry : deviceBoxInfoMap.entrySet()) {
             String projectId = entry.getKey();
             List<DeviceBoxInfoEntity> boxList = entry.getValue();
@@ -96,7 +95,7 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
 
     @Override
     public CommonResponse getProjectDeviceBoxInfos(String projectId) {
-        Map<String, String> redisTerminalStatus = redisUtil.hgetAll(0, "TERMINAL_STATUS");
+        Map<String, String> redisTerminalStatus = redisUtil.hgetAll(0, TERMINAL_STATUS);
         List<DeviceBoxInfoEntity> deviceBoxInfoEntityList = deviceBoxInfoDao.findDeviceBoxsInfoByProjectId(projectId);
         List<DeviceBoxInfoEntity> deviceBoxInfoList = loadBoxesRecentStatus(projectId, deviceBoxInfoEntityList, redisTerminalStatus);
         return CommonResponse.success(deviceBoxInfoList);
@@ -144,7 +143,10 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
         gatewayDeviceMapDao.deleteBatchBySn(list);
         for (GatewayDeviceMap deviceMap : devicesBySns) {
             redisUtil.hdel(0, "DEVICE_INFO", deviceMap.getDeviceBoxNum());
-            redisUtil.hdel(0, "TERMINAL_STATUS", CommUtils.getDeviceBoxAddress(deviceMap.getDeviceBoxNum()));
+            String statusKey = CommUtils.getDeviceBoxAddress(deviceMap.getDeviceBoxNum());
+            if(deviceMap.getDeviceBoxNum().startsWith("LY"))
+                statusKey += "_LY";
+            redisUtil.hdel(0, TERMINAL_STATUS, statusKey);
             String key = CommUtils.getDeviceBoxAddress(deviceMap.getDeviceBoxNum()) + "_100";
             redisUtil.hdel(0, REAL_HIS_DATA_STORE_UP_TO_DATE, key);
             Map<String, String> alarms = redisUtil.fuzzyGet(0, ALARM_DATA, key);
@@ -226,7 +228,10 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
         List<DeviceAlarmInfoLogEntity> latestAlarmList = deviceAlarmInfoLogDao.getLatestAlarmOfDeviceByProjectId(projectId);
         Map<String, DeviceBoxInfoEntity> boxMap = new HashMap<>();
         for (DeviceBoxInfoEntity b : boxList) {
-            boxMap.put(CommUtils.getDeviceBoxAddress(b.getDeviceBoxNum()), b);
+            String key = CommUtils.getDeviceBoxAddress(b.getDeviceBoxNum());
+            if(b.getDeviceBoxNum().startsWith("LY"))
+                key += "_LY";
+            boxMap.put(key, b);
         }
         Map<String, DeviceAlarmInfoLogEntity> alarmInfoMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(latestAlarmList)) {

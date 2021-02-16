@@ -37,6 +37,7 @@ public class Constant {
 	public static final String SUCCESS_STATUS = "0";
 	//标识失败状态
 	public static final String FAIL_STATUS = "1";
-	
+
+	public static final String TERMINAL_STATUS= "TERMINAL_STATUS";
 	
 }

@@ -41,6 +41,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.wz.socket.utils.Constant.TERMINAL_STATUS;
+
 @Service("kkService")
 public class KkServiceImpl implements KkService {
     private final static Logger logger = LoggerFactory.getLogger(KkServiceImpl.class);
@@ -77,7 +79,10 @@ public class KkServiceImpl implements KkService {
         DeviceBoxInfoEntity deviceBox = this.deviceBoxInfoService.queryProjectMac(projectId, deviceBoxMac);
         if (null != deviceBox) {
             String deviceBoxAddress = CommUtils.getDeviceBoxAddress(deviceBox.getDeviceBoxNum());
-            String resultJson = redisUtil.hget(0, "TERMINAL_STATUS", deviceBoxAddress);
+            if(deviceBox.getDeviceBoxNum().startsWith("LY")) {
+                deviceBoxAddress += "_LY";
+            }
+            String resultJson = redisUtil.hget(0, TERMINAL_STATUS, deviceBoxAddress);
             JSONObject dataObj = JSONObject.fromObject(resultJson);
             String gatewayAddress = dataObj.getString("gatewayId");
             String[] switchIds = switchAddStrs.split(",");
@@ -368,9 +373,12 @@ public class KkServiceImpl implements KkService {
     }
 
     public void processDeviceBoxOnline(List<DeviceBoxInfoEntity> deviceBoxList) {
-        Map<String, String> tmpMap = redisUtil.hgetAll(0, "TERMINAL_STATUS");
+        Map<String, String> tmpMap = redisUtil.hgetAll(0, TERMINAL_STATUS);
         for (DeviceBoxInfoEntity box : deviceBoxList) {
             String key = CommUtils.getDeviceBoxAddress(box.getDeviceBoxNum());
+            if(box.getDeviceBoxNum().startsWith("LY")) {
+                key += "_LY";
+            }
             if (tmpMap.containsKey(key)) {
                 JSONObject jsonObj = JSONObject.fromObject(tmpMap.get(key));
                 box.setOnline(jsonObj.getString("status"));
@@ -405,13 +413,16 @@ public class KkServiceImpl implements KkService {
         List<DeviceBoxInfoEntity> boxList = this.deviceBoxInfoService.findDeviceBoxsInfoByProjectId(projectId);
         Map<String, DeviceBoxInfoEntity> boxMap = new HashMap<String, DeviceBoxInfoEntity>();
         for (DeviceBoxInfoEntity b : boxList) {
-            boxMap.put(CommUtils.getDeviceBoxAddress(b.getDeviceBoxNum()), b);
+            String key = CommUtils.getDeviceBoxAddress(b.getDeviceBoxNum());
+            if(b.getDeviceBoxNum().startsWith("LY"))
+                key += "_LY";
+            boxMap.put(key, b);
         }
 
         Map<String, Integer> result = new HashMap<String, Integer>();
         int onlineNums = 0;
         String gateWayAddress = "0";
-        Map<String, String> tmp = redisUtil.hgetAll(Integer.parseInt(gateWayAddress), "TERMINAL_STATUS");
+        Map<String, String> tmp = redisUtil.hgetAll(Integer.parseInt(gateWayAddress), TERMINAL_STATUS);
         Map<String, String> tmpResult = new HashMap<String, String>();
         tmpResult.putAll(tmp);
         for (Map.Entry<String, String> tmpEntry : tmpResult.entrySet()) {
@@ -430,12 +441,15 @@ public class KkServiceImpl implements KkService {
         List<DeviceAlarmInfoLogEntity> latestAlarmList = deviceAlarmInfoLogDao.getLatestAlarmOfDeviceByProjectId(projectId);
         Map<String, DeviceBoxInfoEntity> boxMap = new HashMap<>();
         for (DeviceBoxInfoEntity b : boxList) {
-            boxMap.put(CommUtils.getDeviceBoxAddress(b.getDeviceBoxNum()), b);
+            String key = CommUtils.getDeviceBoxAddress(b.getDeviceBoxNum());
+            if(b.getDeviceBoxNum().startsWith("LY"))
+                key += "_LY";
+            boxMap.put(key, b);
         }
         Map<String, DeviceAlarmInfoLogEntity> alarmInfoMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(latestAlarmList))
             alarmInfoMap = latestAlarmList.stream().collect(Collectors.toMap(t -> CommUtils.getDeviceBoxAddress(t.getDeviceBoxMac()), t -> t));
-        Map<String, String> tmp = redisUtil.hgetAll(0, "TERMINAL_STATUS");
+        Map<String, String> tmp = redisUtil.hgetAll(0, TERMINAL_STATUS);
         Map<String, String> tmpResult = new HashMap<>();
         tmpResult.putAll(tmp);
         int onlineCnt = 0;
@@ -464,13 +478,16 @@ public class KkServiceImpl implements KkService {
     public Map<String, Integer> statDeviceBoxOnline(List<DeviceBoxInfoEntity> boxList) {
         Map<String, DeviceBoxInfoEntity> boxMap = new HashMap<String, DeviceBoxInfoEntity>();
         for (DeviceBoxInfoEntity b : boxList) {
-            boxMap.put(CommUtils.getDeviceBoxAddress(b.getDeviceBoxNum()), b);
+            String key = CommUtils.getDeviceBoxAddress(b.getDeviceBoxNum());
+            if(b.getDeviceBoxNum().startsWith("LY"))
+                key += "_LY";
+            boxMap.put(key, b);
         }
 
         Map<String, Integer> result = new HashMap<String, Integer>();
         int onlineNums = 0;
         String gateWayAddress = "0";
-        Map<String, String> tmp = redisUtil.hgetAll(Integer.parseInt(gateWayAddress), "TERMINAL_STATUS");
+        Map<String, String> tmp = redisUtil.hgetAll(Integer.parseInt(gateWayAddress), TERMINAL_STATUS);
         Map<String, String> tmpResult = new HashMap<String, String>();
         tmpResult.putAll(tmp);
         for (Map.Entry<String, String> tmpEntry : tmpResult.entrySet()) {
@@ -487,7 +504,10 @@ public class KkServiceImpl implements KkService {
     public Map<String, Integer> statDeviceBoxOnline(List<DeviceBoxInfoEntity> boxList, Map<String, String> redisStatus) {
         Map<String, DeviceBoxInfoEntity> boxMap = new HashMap<String, DeviceBoxInfoEntity>();
         for (DeviceBoxInfoEntity b : boxList) {
-            boxMap.put(CommUtils.getDeviceBoxAddress(b.getDeviceBoxNum()), b);
+            String key = CommUtils.getDeviceBoxAddress(b.getDeviceBoxNum());
+            if(b.getDeviceBoxNum().startsWith("LY"))
+                key += "_LY";
+            boxMap.put(key, b);
         }
 
         Map<String, Integer> result = new HashMap<String, Integer>();

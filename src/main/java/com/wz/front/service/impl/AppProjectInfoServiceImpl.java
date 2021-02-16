@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.wz.socket.utils.Constant.TERMINAL_STATUS;
+
 /**
  * @Author: Cherry
  * @Date: 2020/12/19
@@ -147,7 +149,7 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
             projectMap.get(projectId).add(entity);
         }
         Map<String, ProjectBoxInfoCntDto> all = new HashMap<>();
-        Map<String, String> redisStatus = redisUtil.hgetAll(Integer.parseInt(REDIS_GATEWAYADDRESS), "TERMINAL_STATUS");
+        Map<String, String> redisStatus = redisUtil.hgetAll(Integer.parseInt(REDIS_GATEWAYADDRESS), TERMINAL_STATUS);
         for (Map.Entry<String, List<DeviceBoxInfoEntity>> entry : projectMap.entrySet()) {
             ProjectBoxInfoCntDto resultMap = new ProjectBoxInfoCntDto();
             Map<String, Integer> onlineMaps = this.kkService.statDeviceBoxOnline(entry.getValue(), redisStatus);

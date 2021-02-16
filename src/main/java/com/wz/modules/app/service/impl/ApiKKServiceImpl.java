@@ -25,6 +25,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.wz.socket.utils.Constant.TERMINAL_STATUS;
+
 @Service("kKApiService")
 public class ApiKKServiceImpl implements ApiKKService {
     @Autowired
@@ -45,7 +47,9 @@ public class ApiKKServiceImpl implements ApiKKService {
         DeviceBoxInfoEntity deviceBox = this.deviceBoxInfoService.queryByMac(deviceBoxMac, projectId);
         if (null != deviceBox) {
             String deviceBoxAddress = CommUtils.getDeviceBoxAddress(deviceBox.getDeviceBoxNum());
-            String resultJson = redisUtil.hget(0, "TERMINAL_STATUS", deviceBoxAddress);
+            if(deviceBox.getDeviceBoxNum().startsWith("LY"))
+                deviceBoxAddress += "_LY";
+            String resultJson = redisUtil.hget(0, TERMINAL_STATUS, deviceBoxAddress);
             JSONObject dataObj = JSONObject.fromObject(resultJson);
             String gatewayAddress = dataObj.getString("gatewayId");
             String[] switchIds = switchAddStrs.split(",");
