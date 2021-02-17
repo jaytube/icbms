@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -77,6 +78,8 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
         String str = deviceBoxInfo.getDeviceBoxNum();
         if (str != null && !"".equals(str) && str.length() > 6) {
             String terminalId = CommUtils.getDeviceBoxAddress(str);
+            if(str.startsWith("LY"))
+                terminalId += "_LY";
             redisUtil.hset(0, "TERMINAL_CONFIG", terminalId, deviceBoxInfo.getProjectId());
         }
 
@@ -128,6 +131,7 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
     }
 
     @Override
+    @Transactional
     public int deleteBatch(String[] ids, String type) {
         deviceBoxInfoDao.deleteBoxLocLinkBatch(ids);
         try {
@@ -186,6 +190,7 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
     }
 
     @Override
+    @Transactional
     public List<DeviceBoxInfoEntity> saveBoxLocBatch(List<Map<String, String>> result, String projectId, UserEntity currentUser) {
         List<DeviceBoxInfoEntity> results = new ArrayList<>();
         Map<String, String> paramMap = new HashMap<String, String>();
@@ -441,6 +446,8 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
                         String str = deviceMac;
                         if (str != null && !"".equals(str) && str.length() > 6) {
                             String terminalId = CommUtils.getDeviceBoxAddress(str);
+                            if(str.startsWith("LY"))
+                                terminalId += "_LY";
                             redisUtil.hset(0, "TERMINAL_CONFIG", terminalId, projectId);
                         }
                     }

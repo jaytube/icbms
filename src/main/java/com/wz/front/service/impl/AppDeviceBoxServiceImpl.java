@@ -4,6 +4,7 @@ import com.wz.front.enums.DeviceBoxStatus;
 import com.wz.front.service.AppDeviceBoxService;
 import com.wz.front.service.AppProjectInfoService;
 import com.wz.modules.app.entity.SwitchBoxInfo;
+import com.wz.modules.common.exception.MyException;
 import com.wz.modules.common.utils.CommonResponse;
 import com.wz.modules.common.utils.RedisUtil;
 import com.wz.modules.common.utils.Result;
@@ -29,6 +30,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -117,6 +119,7 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
     }
 
     @Override
+    @Transactional
     public CommonResponse deleteBatch(List<String> deviceIds) {
         List<GatewayDeviceMap> devicesBySns = gatewayDeviceMapDao.findDevicesBySns(deviceIds);
         if (CollectionUtils.isEmpty(devicesBySns)) {
@@ -139,6 +142,9 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
             }
         });
         CommonResponse<Map> mapCommonResponse = loRaCommandService.deleteDevices(gatewayInfo.getIpAddress(), ids);
+        if(mapCommonResponse.getCode() != 200)
+            throw new MyException("delete device error");
+
         List<String> list = map.keySet().stream().filter(org.apache.commons.lang3.StringUtils::isNotBlank).distinct().collect(Collectors.toList());
         gatewayDeviceMapDao.deleteBatchBySn(list);
         for (GatewayDeviceMap deviceMap : devicesBySns) {

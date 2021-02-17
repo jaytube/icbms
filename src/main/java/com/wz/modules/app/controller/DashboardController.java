@@ -1,6 +1,5 @@
 package com.wz.modules.app.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -9,7 +8,6 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.wz.front.service.AppDeviceBoxService;
 import com.wz.front.util.DeviceType;
 import com.wz.front.util.DeviceUtils;
-import com.wz.modules.app.dto.DevicePlainInfoDto;
 import com.wz.modules.app.entity.ServerMessage;
 import com.wz.modules.app.entity.SwitchBoxInfo;
 import com.wz.modules.common.controller.BaseController;
@@ -21,6 +19,7 @@ import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
 import com.wz.modules.deviceinfo.entity.DeviceMacSnEntity;
 import com.wz.modules.deviceinfo.entity.DeviceSwitchInfoEntity;
 import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
+import com.wz.modules.deviceinfo.service.DeviceOperationService;
 import com.wz.modules.devicelog.entity.*;
 import com.wz.modules.devicelog.service.DeviceAlarmFlowService;
 import com.wz.modules.devicelog.service.DeviceAlarmInfoLogService;
@@ -36,7 +35,6 @@ import com.wz.modules.lora.entity.GatewayDeviceMap;
 import com.wz.modules.lora.entity.GatewayInfo;
 import com.wz.modules.lora.entity.GymMaster;
 import com.wz.modules.lora.enums.LoRaCommand;
-import com.wz.modules.lora.service.LoRaCommandService;
 import com.wz.modules.projectinfo.entity.LocationInfoEntity;
 import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
 import com.wz.modules.projectinfo.service.LocationInfoService;
@@ -51,7 +49,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONObject;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,6 +92,9 @@ public class DashboardController extends BaseController {
 
     @Autowired
     private DeviceBoxInfoService deviceBoxInfoService;
+
+    @Autowired
+    private DeviceOperationService deviceOperationService;
 
     @Autowired
     private DeviceBoxInfoDao deviceBoxInfoDao;
@@ -488,8 +488,7 @@ public class DashboardController extends BaseController {
     @ResponseBody
     public Result deviceBoxDelete(@RequestBody String[] ids) {
         try {
-            deviceBoxInfoService.deleteBatch(ids, "app");
-            appDeviceBoxService.deleteBatch(Arrays.asList(ids));
+            deviceOperationService.deleteDevices(ids);
             return Result.ok();
         } catch (Exception e) {
             return Result.error();
@@ -665,7 +664,7 @@ public class DashboardController extends BaseController {
             deviceBindInfoDto.setProjectName(project.getProjectName());
             deviceBindInfoDto.setStandNo(boxInfoEntity.getStandNo());
             deviceBindInfoDto.setGatewayId(gatewayInfo.getGatewayId());
-            deviceBindInfoDto.setGatewayName(gatewayInfo.getName());
+            deviceBindInfoDto.setGatewayName(gatewayInfo.getGymName());
             deviceBindInfoDto.setGatewayIp(gatewayInfo.getIpAddress());
         } else {
             deviceBindInfoDto.setNew(true);
@@ -759,37 +758,7 @@ public class DashboardController extends BaseController {
         map.put("controlFlag", controlFlag);
         map.put("deviceBoxId", deviceBoxId);
         result.add(map);
-        if (map != null && map.size() > 0) {
-            UserEntity user = this.userService.queryObject(userId);
-            DeviceBoxInfoEntity deviceBoxInfoEntity = deviceBoxInfoDao.queryByBoxNum(deviceBoxMac);
-            if (deviceBoxInfoEntity == null) {
-                List<DeviceBoxInfoEntity> saveResult = deviceBoxInfoService.saveBoxLocBatch(result, projectId, user);
-                deviceBoxInfoEntity = saveResult.get(0);
-            }
-            DeviceType deviceType = DeviceUtils.checkDeviceType(request);
-            if (deviceType == DeviceType.MOBILE_APP) {
-                GatewayDeviceMap device = gatewayDeviceMapDao.findDevice(projectId, deviceBoxInfoEntity.getId());
-                if (device != null) {
-                    return Result.error("该设备已绑定网关，如需修改，请先移除该设备再添加");
-                }
-                GatewayDeviceMap gatewayDeviceMap = new GatewayDeviceMap();
-                gatewayDeviceMap.setDeviceSn(deviceBoxSn.toLowerCase());
-                gatewayDeviceMap.setDeviceInfoId(deviceBoxInfoEntity.getId());
-                gatewayDeviceMap.setGymId(gymId);
-                gatewayDeviceMap.setDeviceBoxNum(deviceBoxMac);
-                gatewayDeviceMap.setGatewayId(gatewayId);
-                gatewayDeviceMap.setProjectId(projectId);
-                CommonResponse commonResponse = appDeviceBoxService.addDevice(gatewayDeviceMap, deviceBoxInfoEntity);
-                if (commonResponse.getCode() == 200) {
-                    DevicePlainInfoDto dto = new DevicePlainInfoDto(deviceBoxMac, deviceBoxSn, gatewayId, projectId);
-                    redisUtil.hset(0, "DEVICE_INFO", deviceBoxMac, JSON.toJSONString(dto));
-                    return Result.ok("添加成功");
-                } else {
-                    return Result.error("添加设备失败");
-                }
-            }
-        }
-        return Result.ok();
+        return deviceOperationService.addDevice(result, userId, deviceBoxMac, projectId, request, deviceBoxSn, gymId, gatewayId);
     }
 
     @ApiOperation(value = "更新收电箱标记")

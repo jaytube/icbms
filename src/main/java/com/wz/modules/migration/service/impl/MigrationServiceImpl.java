@@ -92,7 +92,7 @@ public class MigrationServiceImpl implements MigrationService {
         wb = readExcel(filePath);
         if(wb != null){
             sheet = wb.getSheetAt(0);
-            int rownum = 958;
+            int rownum = sheet.getPhysicalNumberOfRows();
             row = sheet.getRow(0);
             int colnum = row.getPhysicalNumberOfCells();
             for (int i = 1; i<rownum; i++) {

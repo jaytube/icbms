@@ -8,6 +8,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -149,6 +150,12 @@ public class RestUtil {
         Map response = exchange.getBody();
         log.info("【doDeleteWithToken】【请求响应】：{}", response);
         return response(url, null, exchange);
+    }
+
+    @Recover
+    public CommonResponse<Map> recover(RestClientException e) {
+        log.info("access recover method...");
+        return CommonResponse.faild(e.getMessage(), null);
     }
 
     @Retryable(value = RestClientException.class, maxAttempts = 2,

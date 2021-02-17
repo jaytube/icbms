@@ -1,6 +1,7 @@
 package com.wz.modules.lora.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.wz.modules.common.exception.MyException;
 import com.wz.modules.common.utils.CommonResponse;
 import com.wz.modules.common.utils.RedisUtil;
 import com.wz.modules.lora.dto.AddDeviceDto;
@@ -95,11 +96,6 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
         String bearer_token = null;
         if (token_type != null && access_token != null && expires_in != null) {
             bearer_token = Objects.toString(token_type) + " " + Objects.toString(access_token);
-            try {
-                redisUtil.setString(gatewayIp, bearer_token, Integer.valueOf(Objects.toString(expires_in)));
-            } catch (Exception e) {
-                log.error("SET BEARER_TOKEN TO REDIS", e);
-            }
         }
 
         if (StringUtils.isNotBlank(bearer_token)) {
@@ -112,18 +108,12 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
 
     @Override
     public String getRedisToken(String gatewayIp) {
-        String bearer_token = null;
-        try {
-            bearer_token = redisUtil.getString(gatewayIp);
-            if (bearer_token == null) {
-                getToken(gatewayIp);
-                bearer_token = redisUtil.getString(gatewayIp);
-            }
-            return bearer_token;
-        } catch (Exception e) {
-            log.error("GET BEARER_TOKEN FROM REDIS", e);
+        CommonResponse<String> tokenResp = getToken(gatewayIp);
+        if(tokenResp.getCode() != 200) {
+            throw new MyException("can't access token from gateway ip: " + gatewayIp);
         }
-        return bearer_token;
+
+        return tokenResp.getData();
     }
 
     @Override

@@ -34,4 +34,6 @@ public class GatewayInfo implements Serializable {
     private int updateUserId;
     private int isDel;
     private String ipAddress;
+    private String type;
+    private String gymName;
 }
