@@ -123,7 +123,7 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
     public CommonResponse deleteBatch(List<String> deviceIds) {
         List<GatewayDeviceMap> devicesBySns = gatewayDeviceMapDao.findDevicesBySns(deviceIds);
         if (CollectionUtils.isEmpty(devicesBySns)) {
-            return CommonResponse.success("");
+            return CommonResponse.error("未找到要删除的设备...");
         }
         GatewayDeviceMap gatewayDeviceMap = devicesBySns.get(0);
         GatewayInfo gatewayInfo = gatewayInfoDao.findById(gatewayDeviceMap.getGatewayId());
@@ -145,7 +145,7 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
         if(mapCommonResponse.getCode() != 200)
             throw new MyException("delete device error");
 
-        List<String> list = map.keySet().stream().filter(org.apache.commons.lang3.StringUtils::isNotBlank).distinct().collect(Collectors.toList());
+        List<String> list = devicesBySns.stream().filter(Objects::nonNull).map(t -> t.getDeviceSn()).distinct().collect(Collectors.toList());
         gatewayDeviceMapDao.deleteBatchBySn(list);
         for (GatewayDeviceMap deviceMap : devicesBySns) {
             redisUtil.hdel(0, "DEVICE_INFO", deviceMap.getDeviceBoxNum());
