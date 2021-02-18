@@ -7,6 +7,10 @@
 		select * from device_mac_sn_map where device_mac = #{deviceMac};
 	</select>
 
+    <select id="findAll" resultType="com.wz.modules.deviceinfo.entity.DeviceMacSnEntity">
+        select * from device_mac_sn_map;
+    </select>
+
     <insert id="batchInsert">
         INSERT INTO device_mac_sn_map(device_mac,device_sn)
         VALUES

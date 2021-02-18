@@ -240,7 +240,14 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
         params.put("type", addDeviceDto.getType());
         params.put("toLora", addDeviceDto.getToLora());
         params.put("typeName", addDeviceDto.getTypeName());
-        return restUtil.doPostWithToken(gatewayIp, gatewayIp + DEVICE_IP_URI + "/api-sdm/SdmDevice", params);
+        CommonResponse<Map> response = restUtil.doPostWithToken(gatewayIp, gatewayIp + DEVICE_IP_URI + "/api-sdm/SdmDevice", params);
+        Map result = response.getData();
+        String code = (String) MapUtils.getObject(result, "resp_code");
+        String msg = (String) MapUtils.getObject(result, "resp_msg");
+        if("1".equalsIgnoreCase(code))
+            return CommonResponse.faild(msg);
+
+        return response;
     }
 
     @Override
@@ -263,7 +270,14 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
 
     @Override
     public CommonResponse deleteDevice(String gatewayIp, String deviceSn) {
-        return restUtil.doDeleteWithToken(gatewayIp, gatewayIp + DEVICE_IP_URI + "/api-sdm/SdmDevice/" + deviceSn);
+        CommonResponse<Map> response = restUtil.doDeleteWithToken(gatewayIp, gatewayIp + DEVICE_IP_URI + "/api-sdm/SdmDevice/" + deviceSn);
+        Map result = response.getData();
+        String code = (String) MapUtils.getObject(result, "resp_code");
+        String msg = (String) MapUtils.getObject(result, "resp_msg");
+        if("1".equalsIgnoreCase(code))
+            return CommonResponse.faild(msg);
+
+        return response;
     }
 
     @Override
@@ -277,7 +291,14 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
             map.put("isDel", 1);
             return map;
         }).collect(Collectors.toList());
-        return restUtil.doDeleteWithToken(gatewayIp, gatewayIp + DEVICE_IP_URI + "/api-sdm/SdmDevice/batchDel", body);
+        CommonResponse<Map> response = restUtil.doDeleteWithToken(gatewayIp, gatewayIp + DEVICE_IP_URI + "/api-sdm/SdmDevice/batchDel", body);
+        Map result = response.getData();
+        String code = (String) MapUtils.getObject(result, "resp_code");
+        String msg = (String) MapUtils.getObject(result, "resp_msg");
+        if("1".equalsIgnoreCase(code))
+            return CommonResponse.faild(msg);
+
+        return response;
     }
 
     private GatewayInfo convertGateWay(String gatewayIp, Map<String, Object> map) {

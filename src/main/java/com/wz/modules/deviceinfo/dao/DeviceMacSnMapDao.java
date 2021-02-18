@@ -11,5 +11,7 @@ public interface DeviceMacSnMapDao {
 
     DeviceMacSnEntity findById(String deviceMac);
 
+    List<DeviceMacSnEntity> findAll();
+
     void batchInsert(@Param("deviceMacSnEntities")List<DeviceMacSnEntity> deviceMacSnEntities);
 }

@@ -546,7 +546,7 @@ public class DashboardController extends BaseController {
                 DeviceBoxInfoEntity deviceBoxInfo = deviceBoxInfoService.queryObject(deviceBoxId);
                 deviceBoxInfo.setAlarmLogId(alarm.getId());
                 deviceBoxInfoService.update(deviceBoxInfo);
-                if ("3".equals(alarm.getAlarmLevel())) {
+                if ("4".equals(alarm.getAlarmLevel())) {
                     messagingTemplate.convertAndSend("/topic/subscribeTest", new ServerMessage(jsonObject.toString()));
                     ProjectInfoEntity project = this.projectInfoService.queryObject(deviceBoxInfo.getProjectId());
                     String projectInfo = "{id:" + project.getId() + ", projectName:" + project.getProjectName() + "}";

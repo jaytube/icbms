@@ -143,7 +143,7 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
         });
         CommonResponse<Map> mapCommonResponse = loRaCommandService.deleteDevices(gatewayInfo.getIpAddress(), ids);
         if(mapCommonResponse.getCode() != 200)
-            throw new MyException("delete device error");
+            throw new MyException("删除设备失败!");
 
         List<String> list = devicesBySns.stream().filter(Objects::nonNull).map(t -> t.getDeviceSn()).distinct().collect(Collectors.toList());
         gatewayDeviceMapDao.deleteBatchBySn(list);
