@@ -2,6 +2,8 @@ package com.wz.config;
 
 import com.wz.component.redis.CachingShiroSessionDao;
 import com.wz.component.shiro.MyRealm;
+import org.apache.shiro.cache.CacheManager;
+import org.apache.shiro.cache.MemoryConstrainedCacheManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
@@ -10,10 +12,12 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.cache.Cache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,11 +44,19 @@ public class ShiroConfig {
         return sessionManager;
     }
 
+    @Bean("cacheManager")
+    public CacheManager cacheManager(){
+        MemoryConstrainedCacheManager cacheManager = new MemoryConstrainedCacheManager();
+        return cacheManager;
+    }
+
+
     @Bean("securityManager")
-    public SecurityManager securityManager(MyRealm myRealm, SessionManager sessionManager) {
+    public SecurityManager securityManager(MyRealm myRealm, SessionManager sessionManager, CacheManager cacheManager) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(myRealm);
         securityManager.setSessionManager(sessionManager);
+        securityManager.setCacheManager(cacheManager);
         return securityManager;
     }
 

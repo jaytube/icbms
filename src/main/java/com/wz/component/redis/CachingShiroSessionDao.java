@@ -88,6 +88,7 @@ public class CachingShiroSessionDao extends CachingSessionDAO {
         // 创建一个Id并设置给Session
         Serializable sessionId = this.generateSessionId(session);
         assignSessionId(session, sessionId);
+        //cache(session, sessionId);
         try {
             // session由Redis缓存失效决定，这里只是简单标识
             session.setTimeout(seconds);
