@@ -704,7 +704,7 @@ public class DashboardController extends BaseController {
     @RequestMapping(value = "postQrInfo", method = RequestMethod.POST)
     @ResponseBody
     public Result postQrInfo(HttpServletRequest request, String projectId, String deviceBoxId, String deviceBoxSn, String deviceBoxMac, String thirdLocation,
-                             String controlFlag, String remark, String boxCapacity, String secBoxGateway, String standNo, String userId, int gymId, int gatewayId)
+                             String controlFlag, String remark, String boxCapacity, String secBoxGateway, String standNo, String userId, Integer gymId, Integer gatewayId)
             throws Exception {
         if (StringUtils.isBlank(projectId)) {
             return Result.error("项目id为空");
@@ -746,7 +746,12 @@ public class DashboardController extends BaseController {
         Map<String, String> map = new LinkedHashMap<>();
         String forthLoc = standNo + "(" + deviceBoxMac + ")";
         map.put("firstLoc", "根目录");
-        map.put("secLoc", "世博展览馆");
+        if(gymId != null) {
+            GymMaster gym = gymMasterDao.findById(gymId);
+            map.put("secLoc", gym.getName());
+        } else {
+            map.put("secLoc", "世博展览馆");
+        }
         map.put("thirdLoc", thirdLocation);
         map.put("forthLoc", forthLoc);
         map.put("fifthLoc", null);
