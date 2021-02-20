@@ -194,11 +194,11 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
                 dto.setBoxTotal(0);
                 dto.setSwitchOnlineTotal(0);
                 dto.setSwitchLeaveTotal(0);
-                dto.setProject(entity);
+            } else {
+                dto.setBoxTotal(projectBoxInfoCnt.getBoxTotal());
+                dto.setSwitchOnlineTotal(projectBoxInfoCnt.getSwitchOnlineTotal());
+                dto.setSwitchLeaveTotal(projectBoxInfoCnt.getSwitchLeaveTotal());
             }
-            dto.setBoxTotal(projectBoxInfoCnt.getBoxTotal());
-            dto.setSwitchOnlineTotal(projectBoxInfoCnt.getSwitchOnlineTotal());
-            dto.setSwitchLeaveTotal(projectBoxInfoCnt.getSwitchLeaveTotal());
             dto.setProject(entity);
             dto.setAlarmTotal(MapUtils.getIntValue(totalMap, projectId, 0));
             setImageSize(entity, dto);

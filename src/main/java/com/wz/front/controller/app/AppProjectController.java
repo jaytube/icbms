@@ -39,7 +39,8 @@ public class AppProjectController extends BaseController {
         List<ProjectInfoDto> projectList = appProjectInfoService.listProjects();
         Map<String, Object> result = new HashMap<>();
         result.put("projectList", projectList);
-        result.put("gymName", "龙阳馆");
+        if(CollectionUtils.isNotEmpty(projectList))
+            result.put("gymName", projectList.get(0).getGymName());
         return CommonResponse.success(result);
     }
 
