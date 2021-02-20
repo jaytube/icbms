@@ -191,7 +191,10 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
             String projectId = entity.getId();
             ProjectBoxInfoCntDto projectBoxInfoCnt = projectBoxInfoCntDtoMap.get(projectId);
             if (projectBoxInfoCnt == null) {
-                continue;
+                dto.setBoxTotal(0);
+                dto.setSwitchOnlineTotal(0);
+                dto.setSwitchLeaveTotal(0);
+                dto.setProject(entity);
             }
             dto.setBoxTotal(projectBoxInfoCnt.getBoxTotal());
             dto.setSwitchOnlineTotal(projectBoxInfoCnt.getSwitchOnlineTotal());
