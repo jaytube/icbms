@@ -38,6 +38,8 @@ public interface DeviceBoxInfoService {
 
 	List<DeviceBoxInfoEntity> findDeviceBoxsInfoByProjectId(String projectId);
 
+	List<DeviceBoxInfoEntity> findDeviceBoxInfosByProjectId(String projectId);
+
 	List<DeviceBoxInfoEntity> findDeviceBoxsInfoByProjectIds(String[] projectIds);
 
 	List<DeviceBoxInfoEntity> findDeviceBoxsInfoByUserId(String userId);

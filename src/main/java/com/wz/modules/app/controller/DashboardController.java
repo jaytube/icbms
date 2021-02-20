@@ -252,6 +252,23 @@ public class DashboardController extends BaseController {
         return boxInfoList;
     }
 
+    @ApiOperation(value = "查询项目中电箱上线下限信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "projectId", value = "项目ID", required = true, dataType = "String", paramType = "query")})
+    @RequestMapping(value = "getAllBoxInfo", method = RequestMethod.GET)
+    @ResponseBody
+    public List<DeviceBoxInfoEntity> getAllBoxInfo(String projectId) {
+        List<DeviceBoxInfoEntity> boxInfoList = deviceBoxInfoService.findDeviceBoxInfosByProjectId(projectId);
+        if(CollectionUtils.isNotEmpty(boxInfoList)) {
+            try {
+                this.kkService.processDeviceBoxOnline(boxInfoList);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return boxInfoList;
+    }
+
     @RequestMapping(value = "getBoxInfosLike", method = RequestMethod.GET)
     @ResponseBody
     public List<DeviceBoxInfoEntity> getBoxInfosLike(String projectId, String deviceBoxNum) {
