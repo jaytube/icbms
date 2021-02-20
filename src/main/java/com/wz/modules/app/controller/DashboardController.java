@@ -252,7 +252,7 @@ public class DashboardController extends BaseController {
         return boxInfoList;
     }
 
-    @ApiOperation(value = "查询项目中电箱上线下限信息")
+    @ApiOperation(value = "查询项目中电箱上线下线信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "projectId", value = "项目ID", required = true, dataType = "String", paramType = "query")})
     @RequestMapping(value = "getAllBoxInfo", method = RequestMethod.GET)
