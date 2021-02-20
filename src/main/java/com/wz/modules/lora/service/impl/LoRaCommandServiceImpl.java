@@ -242,9 +242,9 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
         params.put("typeName", addDeviceDto.getTypeName());
         CommonResponse<Map> response = restUtil.doPostWithToken(gatewayIp, gatewayIp + DEVICE_IP_URI + "/api-sdm/SdmDevice", params);
         Map result = response.getData();
-        String code = (String) MapUtils.getObject(result, "resp_code");
+        Integer code = (Integer) MapUtils.getObject(result, "resp_code");
         String msg = (String) MapUtils.getObject(result, "resp_msg");
-        if("1".equalsIgnoreCase(code))
+        if(1 == code)
             return CommonResponse.faild(msg);
 
         return response;
@@ -252,7 +252,7 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
 
     @Override
     public CommonResponse<List<DeviceInfoDto>> getDevices(String gatewayIp, String deviceKey) {
-        String uri = "/api-sdm/SdmDevice?page=1&limit=99";
+        String uri = "/api-sdm/SdmDevice?page=1&limit=3000";
         if (StringUtils.isNotBlank(deviceKey)) {
             uri += "&keyWord=" + deviceKey;
         }
@@ -272,9 +272,9 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
     public CommonResponse deleteDevice(String gatewayIp, String deviceSn) {
         CommonResponse<Map> response = restUtil.doDeleteWithToken(gatewayIp, gatewayIp + DEVICE_IP_URI + "/api-sdm/SdmDevice/" + deviceSn);
         Map result = response.getData();
-        String code = (String) MapUtils.getObject(result, "resp_code");
+        Integer code = (Integer) MapUtils.getObject(result, "resp_code");
         String msg = (String) MapUtils.getObject(result, "resp_msg");
-        if("1".equalsIgnoreCase(code))
+        if(1 == code)
             return CommonResponse.faild(msg);
 
         return response;
@@ -293,9 +293,9 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
         }).collect(Collectors.toList());
         CommonResponse<Map> response = restUtil.doDeleteWithToken(gatewayIp, gatewayIp + DEVICE_IP_URI + "/api-sdm/SdmDevice/batchDel", body);
         Map result = response.getData();
-        String code = (String) MapUtils.getObject(result, "resp_code");
+        Integer code = (Integer) MapUtils.getObject(result, "resp_code");
         String msg = (String) MapUtils.getObject(result, "resp_msg");
-        if("1".equalsIgnoreCase(code))
+        if(code == 1)
             return CommonResponse.faild(msg);
 
         return response;

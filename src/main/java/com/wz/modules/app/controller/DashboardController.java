@@ -49,6 +49,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONObject;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -241,10 +242,12 @@ public class DashboardController extends BaseController {
     @ResponseBody
     public List<DeviceBoxInfoEntity> getAllBoxInfos(String projectId) {
         List<DeviceBoxInfoEntity> boxInfoList = deviceBoxInfoService.findDeviceBoxsInfoByProjectId(projectId);
-        try {
-            this.kkService.processDeviceBoxOnline(boxInfoList);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(CollectionUtils.isNotEmpty(boxInfoList)) {
+            try {
+                this.kkService.processDeviceBoxOnline(boxInfoList);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return boxInfoList;
     }
@@ -253,10 +256,12 @@ public class DashboardController extends BaseController {
     @ResponseBody
     public List<DeviceBoxInfoEntity> getBoxInfosLike(String projectId, String deviceBoxNum) {
         List<DeviceBoxInfoEntity> boxInfoList = deviceBoxInfoService.findDeviceBoxsInfoLike(projectId, deviceBoxNum);
-        try {
-            this.kkService.processDeviceBoxOnline(boxInfoList);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(CollectionUtils.isNotEmpty(boxInfoList)) {
+            try {
+                this.kkService.processDeviceBoxOnline(boxInfoList);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return boxInfoList;
     }

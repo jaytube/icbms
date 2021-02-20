@@ -155,13 +155,13 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
             redisUtil.hdel(0, TERMINAL_STATUS, statusKey);
             String key = CommUtils.getDeviceBoxAddress(deviceMap.getDeviceBoxNum()) + "_100";
             redisUtil.hdel(0, REAL_HIS_DATA_STORE_UP_TO_DATE, key);
-            Map<String, String> alarms = redisUtil.fuzzyGet(0, ALARM_DATA, key);
+            /* Map<String, String> alarms = redisUtil.fuzzyGet(0, ALARM_DATA, key);
             if(MapUtils.isNotEmpty(alarms)) {
                 alarms.entrySet().stream().forEach(t -> {
                     String k = t.getKey();
                     redisUtil.hdel(0, ALARM_DATA, k);
                 });
-            }
+            }*/
         }
         return CommonResponse.success(deviceIds);
     }

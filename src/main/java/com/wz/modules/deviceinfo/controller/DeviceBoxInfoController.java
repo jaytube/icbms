@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.wz.modules.deviceinfo.service.DeviceOperationService;
 import io.swagger.annotations.Api;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -55,6 +56,9 @@ public class DeviceBoxInfoController extends BaseController {
 
 	@Autowired
 	private KkService kkService;
+
+	@Autowired
+	private DeviceOperationService deviceOperationService;
 
 	/**
 	 * 列表
@@ -126,7 +130,7 @@ public class DeviceBoxInfoController extends BaseController {
 	@RequiresPermissions("deviceboxinfo:delete")
 	@SysLog("电箱删除")
 	public Result delete(@RequestBody String[] ids) {
-		deviceBoxInfoService.deleteBatch(ids, null);
+		deviceOperationService.deleteDevices(ids);
 		return Result.ok();
 	}
 
