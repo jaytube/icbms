@@ -174,7 +174,7 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
         addDeviceDto.setApplicationId(gatewayInfo.getApplicationId());
         addDeviceDto.setDeviceSn(map.getDeviceSn());
         addDeviceDto.setGatewayId(gatewayId);
-        addDeviceDto.setName("RCMII" + entity.getDeviceBoxName());
+        addDeviceDto.setName("RCMII" + CommUtils.getDeviceBoxAddress(entity.getDeviceBoxNum()));
         addDeviceDto.setTemplateId(0);
         addDeviceDto.setToLora(1);
         addDeviceDto.setType("S08");

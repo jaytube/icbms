@@ -406,7 +406,7 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
                         }
 
                         // 根据电箱MAC地址更新电箱信息
-                        tmpDeviceBox.setDeviceBoxName(CommUtils.getDeviceBoxAddress(deviceMac));
+                        tmpDeviceBox.setDeviceBoxName(standNo);
                         tmpDeviceBox.setDeviceBoxNum(deviceMac);
                         tmpDeviceBox.setUpdateId(null == currentUser ? null : currentUser.getId());
                         tmpDeviceBox.setUpdateTime(new Date());
@@ -422,7 +422,7 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
                         // 电箱不存在 新增电箱
                         DeviceBoxInfoEntity deviceBoxInfo = new DeviceBoxInfoEntity();
                         deviceBoxInfo.setId(Utils.uuid());
-                        deviceBoxInfo.setDeviceBoxName(CommUtils.getDeviceBoxAddress(deviceMac));
+                        deviceBoxInfo.setDeviceBoxName(standNo);
                         deviceBoxInfo.setDeviceBoxNum(deviceMac);
                         deviceBoxInfo.setCreateId(null == currentUser ? null : currentUser.getId());
                         deviceBoxInfo.setCreateTime(new Date());
