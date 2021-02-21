@@ -9,6 +9,7 @@ import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
 import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
 import com.wz.modules.devicelog.dao.DeviceAlarmInfoLogDao;
 import com.wz.modules.kk.service.KkService;
+import com.wz.modules.lora.dto.DeviceBoxInfoDto;
 import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
 import com.wz.modules.projectinfo.entity.ProjectInfoPlainEntity;
 import com.wz.modules.projectinfo.service.ProjectInfoService;
@@ -120,7 +121,7 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
     @Override
     public ProjectBoxInfoCntDto getProjectBoxInfoCnt(String projectId) {
         ProjectBoxInfoCntDto resultMap = new ProjectBoxInfoCntDto();
-        List<DeviceBoxInfoEntity> boxInfoList = deviceBoxInfoService.findDeviceBoxsInfoByProjectId(projectId);
+        List<DeviceBoxInfoDto> boxInfoList = deviceBoxInfoService.findPlainDeviceBoxInfoByProjectId(projectId);
         if (boxInfoList != null && boxInfoList.size() > 0) {
             Map<String, Integer> onlineMaps = this.kkService.statDeviceBoxOnline(projectId);
             resultMap.setBoxTotal(boxInfoList.size());
@@ -139,13 +140,13 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
 
     @Override
     public Map<String, ProjectBoxInfoCntDto> getProjectBoxInfoCntByIds(String[] projectIds) {
-        List<DeviceBoxInfoEntity> allBoxInfoList = deviceBoxInfoService.findDeviceBoxsInfoByProjectIds(projectIds);
+        List<DeviceBoxInfoDto> allBoxInfoList = deviceBoxInfoService.findPlainDeviceBoxInfoByProjectIds(projectIds);
         return getAllProjectBoxInfoCnt(allBoxInfoList);
     }
 
     @Override
     public Map<String, ProjectBoxInfoCntDto> getProjectBoxInfoCntByUserId(String userId) {
-        List<DeviceBoxInfoEntity> allBoxInfoList = deviceBoxInfoService.findDeviceBoxsInfoByUserId(userId);
+        List<DeviceBoxInfoDto> allBoxInfoList = deviceBoxInfoService.findDeviceBoxsPlainInfoByUserId(userId);
         return getAllProjectBoxInfoCnt(allBoxInfoList);
     }
 
@@ -164,12 +165,12 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
         return list;
     }
 
-    private Map<String, ProjectBoxInfoCntDto> getAllProjectBoxInfoCnt(List<DeviceBoxInfoEntity> allBoxInfoList) {
+    private Map<String, ProjectBoxInfoCntDto> getAllProjectBoxInfoCnt(List<DeviceBoxInfoDto> allBoxInfoList) {
         if (CollectionUtils.isEmpty(allBoxInfoList)) {
             return new HashMap<>();
         }
-        Map<String, List<DeviceBoxInfoEntity>> projectMap = new HashMap<>();
-        for (DeviceBoxInfoEntity entity : allBoxInfoList) {
+        Map<String, List<DeviceBoxInfoDto>> projectMap = new HashMap<>();
+        for (DeviceBoxInfoDto entity : allBoxInfoList) {
             String projectId = entity.getProjectId();
             if (projectMap.get(projectId) == null) {
                 projectMap.put(projectId, new ArrayList<>());
@@ -178,10 +179,10 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
         }
         Map<String, ProjectBoxInfoCntDto> all = new HashMap<>();
         Map<String, String> redisStatus = redisUtil.hgetAll(Integer.parseInt(REDIS_GATEWAYADDRESS), TERMINAL_STATUS);
-        for (Map.Entry<String, List<DeviceBoxInfoEntity>> entry : projectMap.entrySet()) {
+        for (Map.Entry<String, List<DeviceBoxInfoDto>> entry : projectMap.entrySet()) {
             ProjectBoxInfoCntDto resultMap = new ProjectBoxInfoCntDto();
-            Map<String, Integer> onlineMaps = this.kkService.statDeviceBoxOnline(entry.getValue(), redisStatus);
-            List<DeviceBoxInfoEntity> boxInfoList = entry.getValue();
+            Map<String, Integer> onlineMaps = this.kkService.statPlainDeviceBoxOnline(entry.getValue(), redisStatus);
+            List<DeviceBoxInfoDto> boxInfoList = entry.getValue();
             resultMap.setBoxTotal(boxInfoList.size());
             try {
                 Integer onlineNums = onlineMaps.get("onlineNums");

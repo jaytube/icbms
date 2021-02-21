@@ -91,4 +91,6 @@ public interface KkService {
 	ProjectBoxStatusCntDto getBoxesRecentStatus(String projectId);
 
 	void processDeviceBoxDtoOnline(List<DeviceBoxInfoDto> deviceBoxList);
+
+	Map<String, Integer> statPlainDeviceBoxOnline(List<DeviceBoxInfoDto> boxList, Map<String, String> redisStatus);
 }

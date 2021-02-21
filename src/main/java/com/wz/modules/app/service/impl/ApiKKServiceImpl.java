@@ -252,4 +252,9 @@ public class ApiKKServiceImpl implements ApiKKService {
 
     }
 
+    @Override
+    public Map<String, Integer> statPlainDeviceBoxOnline(List<DeviceBoxInfoDto> boxList, Map<String, String> redisStatus) {
+        return null;
+    }
+
 }

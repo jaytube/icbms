@@ -170,6 +170,11 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
     }
 
     @Override
+    public List<DeviceBoxInfoDto> findPlainDeviceBoxInfoByProjectIds(String[] projectIds) {
+        return deviceBoxInfoDao.findPlainDeviceBoxsInfoByProjectIds(projectIds);
+    }
+
+    @Override
     public List<DeviceBoxInfoEntity> findDeviceBoxsInfoByProjectIds(String[] projectIds) {
         return deviceBoxInfoDao.findDeviceBoxsInfoByProjectIds(projectIds);
     }
@@ -177,6 +182,11 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
     @Override
     public List<DeviceBoxInfoEntity> findDeviceBoxsInfoByUserId(String userId) {
         return deviceBoxInfoDao.findDeviceBoxsInfoByUserId(userId);
+    }
+
+    @Override
+    public List<DeviceBoxInfoDto> findDeviceBoxsPlainInfoByUserId(String userId) {
+        return deviceBoxInfoDao.findDeviceBoxsPlainInfoByUserId(userId);
     }
 
     @Override

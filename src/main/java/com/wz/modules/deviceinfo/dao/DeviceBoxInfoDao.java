@@ -29,7 +29,11 @@ public interface DeviceBoxInfoDao extends BaseDao<DeviceBoxInfoEntity> {
 
 	List<DeviceBoxInfoEntity> findDeviceBoxsInfoByProjectIds(String[] ids);
 
+	List<DeviceBoxInfoDto> findPlainDeviceBoxsInfoByProjectIds(String[] ids);
+
 	List<DeviceBoxInfoEntity> findDeviceBoxsInfoByUserId(@Param("userId") String userId);
+
+	List<DeviceBoxInfoDto> findDeviceBoxsPlainInfoByUserId(@Param("userId") String userId);
 
 	void updateDeviceBoxOnline(String deviceMac, String online);
 

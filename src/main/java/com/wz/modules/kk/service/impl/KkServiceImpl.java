@@ -563,6 +563,30 @@ public class KkServiceImpl implements KkService {
         return result;
     }
 
+    @Override
+    public Map<String, Integer> statPlainDeviceBoxOnline(List<DeviceBoxInfoDto> boxList, Map<String, String> redisStatus) {
+        Map<String, DeviceBoxInfoDto> boxMap = new HashMap<>();
+        for (DeviceBoxInfoDto b : boxList) {
+            String key = CommUtils.getDeviceBoxAddress(b.getDeviceBoxNum());
+            if(b.getDeviceBoxNum().startsWith("LY"))
+                key += "_LY";
+            boxMap.put(key, b);
+        }
+
+        Map<String, Integer> result = new HashMap<String, Integer>();
+        int onlineNums = 0;
+        Map<String, String> tmpResult = new HashMap<String, String>();
+        tmpResult.putAll(redisStatus);
+        for (Map.Entry<String, String> tmpEntry : tmpResult.entrySet()) {
+            JSONObject jsonObj = JSONObject.fromObject(tmpEntry.getValue());
+            if ("0".equals(jsonObj.getString("status")) && boxMap.containsKey(tmpEntry.getKey())) {
+                onlineNums++;
+            }
+        }
+        result.put("onlineNums", onlineNums);
+        return result;
+    }
+
     public void doKkProject() {
         // this.deviceBoxConfigService.updateUse();
         // this.deviceBoxConfigService.updateNotUse();

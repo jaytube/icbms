@@ -67,4 +67,8 @@ public interface DeviceBoxInfoService {
 	int updateBoxPlacedFlag(String projectId, String deviceBoxMac, String placedFlag);
 
 	List<DeviceBoxInfoDto> findPlainDeviceBoxInfoByProjectId(String projectId);
+
+	List<DeviceBoxInfoDto> findDeviceBoxsPlainInfoByUserId(String userId);
+
+	List<DeviceBoxInfoDto> findPlainDeviceBoxInfoByProjectIds(String[] projectId);
 }
