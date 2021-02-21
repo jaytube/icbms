@@ -3,7 +3,7 @@ spring:
         type: com.alibaba.druid.pool.DruidDataSource
         driverClassName: com.mysql.jdbc.Driver
         druid:
-            url: jdbc:mysql://127.0.0.1:3306/icbms_pro?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+            url: jdbc:mysql://119.96.233.75:3306/icbms_pro?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
             username: root
             password: 1qaz!@#$
             initial-size: 10
@@ -37,7 +37,7 @@ spring:
         connectionRequestTimeout: 1000
     redis:
         database: 0
-        hostName: 127.0.0.1 #部署生产的时候换成内网地址192.168.0.37,公网地址119.96.233.75
+        hostName: 119.96.233.75 #部署生产的时候换成内网地址192.168.0.37,公网地址119.96.233.75
         port: 6399
         password: icbms2018
         timeout: 6000  # 连接超时时长（毫秒）
