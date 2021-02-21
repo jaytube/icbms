@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
+import com.wz.modules.projectinfo.entity.ProjectInfoPlainEntity;
 
 /**
  * 项目基础表; InnoDB free: 401408 kB
@@ -35,5 +36,7 @@ public interface ProjectInfoService {
 	List<ProjectInfoEntity> queryListAll();
 
 	List<String> queryRoleIdList(String projectId);
+
+	List<ProjectInfoPlainEntity> queryPlainProjects(String[] ids);
 
 }

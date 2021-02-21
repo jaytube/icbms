@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
+import com.wz.modules.lora.dto.DeviceBoxInfoDto;
 import com.wz.modules.projectinfo.entity.DboxLocLinkEntity;
 import com.wz.modules.sys.entity.UserEntity;
 
@@ -64,4 +65,6 @@ public interface DeviceBoxInfoService {
 	int deleteProjectDeviceBox(String projectId);
 
 	int updateBoxPlacedFlag(String projectId, String deviceBoxMac, String placedFlag);
+
+	List<DeviceBoxInfoDto> findPlainDeviceBoxInfoByProjectId(String projectId);
 }

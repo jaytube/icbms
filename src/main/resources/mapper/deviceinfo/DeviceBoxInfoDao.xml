@@ -41,6 +41,24 @@
         </association>
     </resultMap>
 
+	<resultMap type="com.wz.modules.lora.dto.DeviceBoxInfoDto"
+			   id="devicePlainBoxInfoMap">
+		<result property="id" column="id"/>
+		<result property="projectId" column="project_id"/>
+		<result property="deviceBoxNum" column="device_box_num"/>
+		<result property="deviceBoxName" column="device_box_name"/>
+		<result property="remark" column="remark"/>
+		<result property="online" column="online"/>
+		<result property="fx" column="fx"/>
+		<result property="fy" column="fy"/>
+
+		<result property="secBoxGateway" column="sec_box_gateway"/>
+		<result property="standNo" column="stand_no"/>
+		<result property="boxCapacity" column="box_capacity"/>
+		<result property="controlFlag" column="control_flag"/>
+
+	</resultMap>
+
     <sql id="Base_Column_List">
 		d.id,
 		d.project_id,
@@ -594,6 +612,16 @@
     </select>
 
 	<select id="findDeviceBoxInfoByProjectId" resultMap="deviceBoxInfoMap">
+		select
+		<include refid="Base_Column_List"/>
+		from device_box_info d
+		where 1=1
+		<if test="projectId != null and projectId.trim() != ''">
+			and d.project_id = #{projectId}
+		</if>
+	</select>
+
+	<select id="findPlainDeviceBoxInfoByProjectId" resultMap="devicePlainBoxInfoMap">
 		select
 		<include refid="Base_Column_List"/>
 		from device_box_info d

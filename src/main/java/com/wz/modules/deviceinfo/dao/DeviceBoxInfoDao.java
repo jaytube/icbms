@@ -3,6 +3,7 @@ package com.wz.modules.deviceinfo.dao;
 import java.util.List;
 import java.util.Map;
 
+import com.wz.modules.lora.dto.DeviceBoxInfoDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -78,4 +79,6 @@ public interface DeviceBoxInfoDao extends BaseDao<DeviceBoxInfoEntity> {
 			@Param("placedFlag") String placedFlag);
 
 	List<DeviceBoxInfoEntity> findDeviceBoxInfoByProjectId(@Param("projectId") String projectId);
+
+	List<DeviceBoxInfoDto> findPlainDeviceBoxInfoByProjectId(@Param("projectId") String projectId);
 }

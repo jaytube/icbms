@@ -3,9 +3,11 @@ package com.wz.front.service;
 import com.wz.front.dto.ProjectBoxInfoCntDto;
 import com.wz.front.dto.ProjectBoxStatusCntDto;
 import com.wz.front.dto.ProjectInfoDto;
+import com.wz.front.dto.ProjectInfoPlainDto;
 import com.wz.modules.common.utils.CommonResponse;
 import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
 import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
+import com.wz.modules.projectinfo.entity.ProjectInfoPlainEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -32,5 +34,9 @@ public interface AppProjectInfoService {
     ProjectBoxStatusCntDto getProjectBoxStatusInfoCnt(String projectId);
 
     List<ProjectInfoDto> listProjectsByGymId(int gymId);
+
+    List<ProjectInfoPlainEntity> getUserPlainProjects();
+
+    List<ProjectInfoPlainDto> listPlainProjects();
 
 }

@@ -260,35 +260,16 @@ public class DashboardController extends BaseController {
     @RequestMapping(value = "getAllBoxInfo", method = RequestMethod.GET)
     @ResponseBody
     public List<DeviceBoxInfoDto> getAllBoxInfo(String projectId) {
-        List<DeviceBoxInfoEntity> boxInfoList = deviceBoxInfoService.findDeviceBoxInfosByProjectId(projectId);
+        List<DeviceBoxInfoDto> boxInfoList = deviceBoxInfoService.findPlainDeviceBoxInfoByProjectId(projectId);
         if(CollectionUtils.isNotEmpty(boxInfoList)) {
-            List<DeviceBoxInfoDto> dtoList = boxInfoList.stream().map(d -> {
-                DeviceBoxInfoDto dto = new DeviceBoxInfoDto();
-                dto.setId(d.getId());
-                dto.setBoxCapacity(d.getBoxCapacity());
-                dto.setControlFlag(d.getControlFlag());
-                dto.setDeviceBoxName(d.getDeviceBoxName());
-                dto.setDeviceBoxNum(d.getDeviceBoxNum());
-                dto.setProjectId(d.getProjectId());
-                dto.setProjectName(d.getProjectName());
-                dto.setFx(d.getFx());
-                dto.setFy(d.getFy());
-                dto.setOnline(d.getOnline());
-                dto.setRemark(d.getRemark());
-                dto.setStandNo(d.getStandNo());
-                dto.setSecBoxGateway(d.getSecBoxGateway());
-                return dto;
-            }).collect(Collectors.toList());
             try {
-                this.kkService.processDeviceBoxDtoOnline(dtoList);
+                this.kkService.processDeviceBoxDtoOnline(boxInfoList);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            return dtoList;
         }
 
-        return new ArrayList<>();
+        return boxInfoList;
     }
 
     @RequestMapping(value = "getBoxInfosLike", method = RequestMethod.GET)

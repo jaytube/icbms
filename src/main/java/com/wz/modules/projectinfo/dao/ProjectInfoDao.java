@@ -2,6 +2,7 @@ package com.wz.modules.projectinfo.dao;
 
 import java.util.List;
 
+import com.wz.modules.projectinfo.entity.ProjectInfoPlainEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.wz.modules.common.dao.BaseDao;
@@ -20,5 +21,7 @@ public interface ProjectInfoDao extends BaseDao<ProjectInfoEntity> {
 	public List<ProjectInfoEntity> queryListAll();
 
 	public List<ProjectInfoEntity> queryProjectsByIds(String[] ids);
+
+	public List<ProjectInfoPlainEntity> queryPlainProjectsByIds(String[] ids);
 
 }

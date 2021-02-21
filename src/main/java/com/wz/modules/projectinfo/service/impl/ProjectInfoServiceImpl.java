@@ -7,6 +7,7 @@ import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
 import com.wz.modules.projectinfo.dao.ProjectInfoDao;
 import com.wz.modules.projectinfo.dao.ProjectRoleDao;
 import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
+import com.wz.modules.projectinfo.entity.ProjectInfoPlainEntity;
 import com.wz.modules.projectinfo.service.LocationInfoService;
 import com.wz.modules.projectinfo.service.ProjectInfoService;
 import com.wz.modules.sys.dao.UserDao;
@@ -47,6 +48,11 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
     @Override
     public List<ProjectInfoEntity> queryProjects(String[] ids) {
         return projectInfoDao.queryProjectsByIds(ids);
+    }
+
+    @Override
+    public List<ProjectInfoPlainEntity> queryPlainProjects(String[] ids) {
+        return projectInfoDao.queryPlainProjectsByIds(ids);
     }
 
     @Override

@@ -1,9 +1,6 @@
 package com.wz.front.service.impl;
 
-import com.wz.front.dto.ProjectAlarmTotalDto;
-import com.wz.front.dto.ProjectBoxInfoCntDto;
-import com.wz.front.dto.ProjectBoxStatusCntDto;
-import com.wz.front.dto.ProjectInfoDto;
+import com.wz.front.dto.*;
 import com.wz.front.service.AppProjectInfoService;
 import com.wz.front.service.CurrentUser;
 import com.wz.front.util.FileUtils;
@@ -13,6 +10,7 @@ import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
 import com.wz.modules.devicelog.dao.DeviceAlarmInfoLogDao;
 import com.wz.modules.kk.service.KkService;
 import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
+import com.wz.modules.projectinfo.entity.ProjectInfoPlainEntity;
 import com.wz.modules.projectinfo.service.ProjectInfoService;
 import com.wz.modules.sys.entity.UserEntity;
 import com.wz.modules.sys.service.UserService;
@@ -85,6 +83,19 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
     }
 
     @Override
+    public List<ProjectInfoPlainEntity> getUserPlainProjects() {
+        String currentUser = this.currentUser.getCurrentUser();
+        UserEntity user = userService.queryObject(currentUser);
+        String projectIds = user.getProjectIds();
+        List<ProjectInfoPlainEntity> projectList = new ArrayList<>();
+        if (StringUtils.isNotBlank(projectIds)) {
+            String[] ids = projectIds.split(",");
+            return projectInfoService.queryPlainProjects(ids);
+        }
+        return projectList;
+    }
+
+    @Override
     public String[] getUserProjectIds() {
         String currentUser = this.currentUser.getCurrentUser();
         UserEntity user = userService.queryObject(currentUser);
@@ -99,6 +110,11 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
     @Override
     public List<ProjectInfoDto> listProjects() {
         return convert(getUserProjects());
+    }
+
+    @Override
+    public List<ProjectInfoPlainDto> listPlainProjects() {
+        return convertToPlain(getUserPlainProjects());
     }
 
     @Override
@@ -221,7 +237,67 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
         return projectInfoDtos;
     }
 
+    private List<ProjectInfoPlainDto> convertToPlain(List<ProjectInfoPlainEntity> userProjects) {
+        String currentUser = this.currentUser.getCurrentUser();
+        if (CollectionUtils.isEmpty(userProjects)) {
+            return new ArrayList<>();
+        }
+        List<ProjectInfoPlainDto> projectInfoDtos = new ArrayList<>();
+
+        int size = userProjects.size();
+        String[] ids = new String[size];
+        for (int i = 0; i < size; i++) {
+            ids[i] = userProjects.get(i).getId();
+        }
+        List<ProjectAlarmTotalDto> projectAlarmTotalDtos = this.deviceAlarmInfoLogDao.queryProjectsTotal(ids);
+        Map<String, Integer> totalMap = new HashMap<>();
+        for (ProjectAlarmTotalDto dto : projectAlarmTotalDtos) {
+            totalMap.put(dto.getProjectId(), dto.getAlarmTotal());
+        }
+        Map<String, ProjectBoxInfoCntDto> projectBoxInfoCntDtoMap = getProjectBoxInfoCntByUserId(currentUser);
+        for (ProjectInfoPlainEntity entity : userProjects) {
+            ProjectInfoPlainDto dto = new ProjectInfoPlainDto();
+            String projectId = entity.getId();
+            ProjectBoxInfoCntDto projectBoxInfoCnt = projectBoxInfoCntDtoMap.get(projectId);
+            if (projectBoxInfoCnt == null) {
+                dto.setBoxTotal(0);
+                dto.setSwitchOnlineTotal(0);
+                dto.setSwitchLeaveTotal(0);
+            } else {
+                dto.setBoxTotal(projectBoxInfoCnt.getBoxTotal());
+                dto.setSwitchOnlineTotal(projectBoxInfoCnt.getSwitchOnlineTotal());
+                dto.setSwitchLeaveTotal(projectBoxInfoCnt.getSwitchLeaveTotal());
+            }
+            dto.setProject(entity);
+            dto.setGymName(entity.getGymName());
+            dto.setGymId(entity.getGymId());
+            dto.setAlarmTotal(MapUtils.getIntValue(totalMap, projectId, 0));
+            setImageSize(entity, dto);
+            projectInfoDtos.add(dto);
+        }
+        return projectInfoDtos;
+    }
+
     private void setImageSize(ProjectInfoEntity entity, ProjectInfoDto dto) {
+        String fileName = entity.getFileName();
+        if (StringUtils.isBlank(fileName)) {
+            return;
+        }
+        String fileUploadPath = fileUtils.getFileUploadPath();
+        File image = new File(fileUploadPath + fileName);
+        if (!image.exists()) {
+            return;
+        }
+        try {
+            BufferedImage imageBuf = ImageIO.read(image);
+            dto.setImageHeight(imageBuf.getHeight());
+            dto.setImageWidth(imageBuf.getWidth());
+        } catch (IOException e) {
+            log.error("获取展会图片宽高异常：", e);
+        }
+    }
+
+    private void setImageSize(ProjectInfoPlainEntity entity, ProjectInfoPlainDto dto) {
         String fileName = entity.getFileName();
         if (StringUtils.isBlank(fileName)) {
             return;

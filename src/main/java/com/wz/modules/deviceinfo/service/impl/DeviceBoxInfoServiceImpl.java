@@ -7,6 +7,7 @@ import com.wz.modules.deviceinfo.dao.DeviceBoxInfoDao;
 import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
 import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
 import com.wz.modules.gen.utils.GenUtils;
+import com.wz.modules.lora.dto.DeviceBoxInfoDto;
 import com.wz.modules.projectinfo.entity.DboxLocLinkEntity;
 import com.wz.modules.projectinfo.entity.LocationInfoEntity;
 import com.wz.modules.projectinfo.service.LocationInfoService;
@@ -161,6 +162,11 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
     @Override
     public List<DeviceBoxInfoEntity> findDeviceBoxInfosByProjectId(String projectId) {
         return deviceBoxInfoDao.findDeviceBoxInfoByProjectId(projectId);
+    }
+
+    @Override
+    public List<DeviceBoxInfoDto> findPlainDeviceBoxInfoByProjectId(String projectId) {
+        return deviceBoxInfoDao.findPlainDeviceBoxInfoByProjectId(projectId);
     }
 
     @Override

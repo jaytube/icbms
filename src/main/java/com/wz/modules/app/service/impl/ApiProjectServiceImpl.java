@@ -3,6 +3,7 @@ package com.wz.modules.app.service.impl;
 import com.wz.modules.app.service.ApiProjectService;
 import com.wz.modules.projectinfo.dao.ProjectInfoDao;
 import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
+import com.wz.modules.projectinfo.entity.ProjectInfoPlainEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,6 +69,11 @@ public class ApiProjectServiceImpl implements ApiProjectService {
     @Override
     public List<String> queryRoleIdList(String projectId) {
         // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<ProjectInfoPlainEntity> queryPlainProjects(String[] ids) {
         return null;
     }
 
