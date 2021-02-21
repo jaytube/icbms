@@ -31,6 +31,7 @@ import com.wz.modules.lora.dao.GatewayDeviceMapDao;
 import com.wz.modules.lora.dao.GatewayInfoDao;
 import com.wz.modules.lora.dao.GymMasterDao;
 import com.wz.modules.lora.dto.DeviceBindInfoDto;
+import com.wz.modules.lora.dto.DeviceBoxInfoDto;
 import com.wz.modules.lora.entity.GatewayDeviceMap;
 import com.wz.modules.lora.entity.GatewayInfo;
 import com.wz.modules.lora.entity.GymMaster;
@@ -66,6 +67,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @CrossOrigin
 @Api(value = "APP及面板controller", tags = {"APP及面板操作接口"})
@@ -257,16 +259,36 @@ public class DashboardController extends BaseController {
             @ApiImplicitParam(name = "projectId", value = "项目ID", required = true, dataType = "String", paramType = "query")})
     @RequestMapping(value = "getAllBoxInfo", method = RequestMethod.GET)
     @ResponseBody
-    public List<DeviceBoxInfoEntity> getAllBoxInfo(String projectId) {
+    public List<DeviceBoxInfoDto> getAllBoxInfo(String projectId) {
         List<DeviceBoxInfoEntity> boxInfoList = deviceBoxInfoService.findDeviceBoxInfosByProjectId(projectId);
         if(CollectionUtils.isNotEmpty(boxInfoList)) {
+            List<DeviceBoxInfoDto> dtoList = boxInfoList.stream().map(d -> {
+                DeviceBoxInfoDto dto = new DeviceBoxInfoDto();
+                dto.setId(d.getId());
+                dto.setBoxCapacity(d.getBoxCapacity());
+                dto.setControlFlag(d.getControlFlag());
+                dto.setDeviceBoxName(d.getDeviceBoxName());
+                dto.setDeviceBoxNum(d.getDeviceBoxNum());
+                dto.setProjectId(d.getProjectId());
+                dto.setProjectName(d.getProjectName());
+                dto.setFx(d.getFx());
+                dto.setFy(d.getFy());
+                dto.setOnline(d.getOnline());
+                dto.setRemark(d.getRemark());
+                dto.setStandNo(d.getStandNo());
+                dto.setSecBoxGateway(d.getSecBoxGateway());
+                return dto;
+            }).collect(Collectors.toList());
             try {
-                this.kkService.processDeviceBoxOnline(boxInfoList);
+                this.kkService.processDeviceBoxDtoOnline(dtoList);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            return dtoList;
         }
-        return boxInfoList;
+
+        return new ArrayList<>();
     }
 
     @RequestMapping(value = "getBoxInfosLike", method = RequestMethod.GET)

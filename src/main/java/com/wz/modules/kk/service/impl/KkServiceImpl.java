@@ -20,6 +20,7 @@ import com.wz.modules.kk.entity.DeviceBoxConfigEntity;
 import com.wz.modules.kk.entity.LineUpper;
 import com.wz.modules.kk.entity.PageInfo;
 import com.wz.modules.kk.service.KkService;
+import com.wz.modules.lora.dto.DeviceBoxInfoDto;
 import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
 import com.wz.modules.projectinfo.service.ProjectInfoService;
 import com.wz.modules.sys.entity.UserEntity;
@@ -375,6 +376,44 @@ public class KkServiceImpl implements KkService {
     public void processDeviceBoxOnline(List<DeviceBoxInfoEntity> deviceBoxList) {
         Map<String, String> tmpMap = redisUtil.hgetAll(0, TERMINAL_STATUS);
         for (DeviceBoxInfoEntity box : deviceBoxList) {
+            String key = CommUtils.getDeviceBoxAddress(box.getDeviceBoxNum());
+            if(box.getDeviceBoxNum().startsWith("LY")) {
+                key += "_LY";
+            }
+            if (tmpMap.containsKey(key)) {
+                JSONObject jsonObj = JSONObject.fromObject(tmpMap.get(key));
+                box.setOnline(jsonObj.getString("status"));
+                String gatewayAddress = jsonObj.getString("gatewayId");
+                String tmpStr = redisUtil.hget(0, "GATEWARY_STATUS", gatewayAddress);
+                if (!StringUtils.isEmpty(tmpStr)) {
+                    JSONObject tmpJsonObj = JSONObject.fromObject(tmpStr);
+                    DeviceBoxConfigEntity config = new DeviceBoxConfigEntity();
+                    config.setGatewayAddress(gatewayAddress);
+                    config.setGatewayStatus(tmpJsonObj.getString("status"));
+                }
+            } else {
+                box.setOnline("1");
+            }
+        }
+
+        // for (DeviceBoxInfoEntity box : deviceBoxList) {
+        // if (null != box.getConfig()) {
+        // String field = box.getConfig().getGatewayAddress();
+        // String result = tmpResult.get(field);
+        // if (!StringUtils.isEmpty(result)) {
+        // JSONObject jsonObj = JSONObject.fromObject(result);
+        // box.getConfig().setGatewayStatus(jsonObj.getString("status"));
+        // } else {
+        // box.getConfig().setGatewayStatus("1");
+        // }
+        // }
+        // }
+    }
+
+    @Override
+    public void processDeviceBoxDtoOnline(List<DeviceBoxInfoDto> deviceBoxList) {
+        Map<String, String> tmpMap = redisUtil.hgetAll(0, TERMINAL_STATUS);
+        for (DeviceBoxInfoDto box : deviceBoxList) {
             String key = CommUtils.getDeviceBoxAddress(box.getDeviceBoxNum());
             if(box.getDeviceBoxNum().startsWith("LY")) {
                 key += "_LY";

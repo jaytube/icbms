@@ -10,6 +10,7 @@ import com.wz.modules.devicelog.entity.DeviceElectricityLogEntity;
 import com.wz.modules.kk.entity.DeviceAlarm;
 import com.wz.modules.kk.entity.LineUpper;
 import com.wz.modules.kk.entity.PageInfo;
+import com.wz.modules.lora.dto.DeviceBoxInfoDto;
 
 public interface KkService {
 
@@ -88,4 +89,6 @@ public interface KkService {
 	public void doSynTerminalConfig(String projectId);
 
 	ProjectBoxStatusCntDto getBoxesRecentStatus(String projectId);
+
+	void processDeviceBoxDtoOnline(List<DeviceBoxInfoDto> deviceBoxList);
 }
