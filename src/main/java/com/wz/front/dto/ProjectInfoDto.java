@@ -25,6 +25,8 @@ public class ProjectInfoDto {
 
     private String gymName;
 
+    private int gymId;
+
     public int getBoxTotal() {
         return boxTotal;
     }
@@ -87,5 +89,13 @@ public class ProjectInfoDto {
 
     public void setGymName(String gymName) {
         this.gymName = gymName;
+    }
+
+    public int getGymId() {
+        return gymId;
+    }
+
+    public void setGymId(int gymId) {
+        this.gymId = gymId;
     }
 }
