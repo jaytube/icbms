@@ -212,6 +212,8 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
                 dto.setSwitchLeaveTotal(projectBoxInfoCnt.getSwitchLeaveTotal());
             }
             dto.setProject(entity);
+            dto.setGymName(entity.getGymName());
+            dto.setGymId(entity.getGymId());
             dto.setAlarmTotal(MapUtils.getIntValue(totalMap, projectId, 0));
             setImageSize(entity, dto);
             projectInfoDtos.add(dto);
