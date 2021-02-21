@@ -39,8 +39,10 @@ public class AppProjectController extends BaseController {
         List<ProjectInfoDto> projectList = appProjectInfoService.listProjects();
         Map<String, Object> result = new HashMap<>();
         result.put("projectList", projectList);
-        if(CollectionUtils.isNotEmpty(projectList))
+        if(CollectionUtils.isNotEmpty(projectList)) {
             result.put("gymName", projectList.get(0).getGymName());
+            result.put("gymId", projectList.get(0).getGymId());
+        }
         return CommonResponse.success(result);
     }
 
@@ -51,8 +53,10 @@ public class AppProjectController extends BaseController {
         List<ProjectInfoDto> projectList = appProjectInfoService.listProjectsByGymId(gymId);
         Map<String, Object> result = new HashMap<>();
         result.put("projectList", projectList);
-        if(CollectionUtils.isNotEmpty(projectList))
+        if(CollectionUtils.isNotEmpty(projectList)) {
             result.put("gymName", projectList.get(0).getGymName());
+            result.put("gymId", projectList.get(0).getGymId());
+        }
         return CommonResponse.success(result);
     }
 
