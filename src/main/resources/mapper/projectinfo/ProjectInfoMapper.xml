@@ -43,7 +43,7 @@
 			resultMap="projectInfoMap">
 		select
 		<include refid="Base_Column_List"/>
-        , c.name as gymName
+        , c.name as gymName, c.id as gymId
 		from project_info a left join location_info b ON ( a.id = b.project_id AND b.type = 'EXHIBITION' )
         left join gym_master c on a.gym_id = c.id
 		where a.id in

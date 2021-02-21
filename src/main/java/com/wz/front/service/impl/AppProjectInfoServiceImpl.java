@@ -19,6 +19,7 @@ import com.wz.modules.sys.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.digester3.internal.cglib.core.$LocalVariablesSorter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.wz.socket.utils.Constant.TERMINAL_STATUS;
 
@@ -134,6 +136,16 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
     @Override
     public ProjectBoxStatusCntDto getProjectBoxStatusInfoCnt(String projectId) {
         return null;
+    }
+
+    @Override
+    public List<ProjectInfoDto> listProjectsByGymId(int gymId) {
+        List<ProjectInfoDto> list = convert(getUserProjects());
+        if(CollectionUtils.isEmpty(list))
+            return new ArrayList<>();
+
+        list = list.stream().filter(m -> m.getGymId() == gymId).distinct().collect(Collectors.toList());
+        return list;
     }
 
     private Map<String, ProjectBoxInfoCntDto> getAllProjectBoxInfoCnt(List<DeviceBoxInfoEntity> allBoxInfoList) {

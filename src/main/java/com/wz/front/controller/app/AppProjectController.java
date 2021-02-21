@@ -44,4 +44,16 @@ public class AppProjectController extends BaseController {
         return CommonResponse.success(result);
     }
 
+    @GetMapping("/getByGymId/{gymId}")
+    @LoginRequired
+    @ApiOperation(value = "该账户下该场馆下面的项目")
+    public CommonResponse listByGymId(@PathVariable("gymId") Integer gymId) {
+        List<ProjectInfoDto> projectList = appProjectInfoService.listProjectsByGymId(gymId);
+        Map<String, Object> result = new HashMap<>();
+        result.put("projectList", projectList);
+        if(CollectionUtils.isNotEmpty(projectList))
+            result.put("gymName", projectList.get(0).getGymName());
+        return CommonResponse.success(result);
+    }
+
 }
