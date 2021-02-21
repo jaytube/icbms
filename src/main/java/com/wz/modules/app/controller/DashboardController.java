@@ -756,7 +756,7 @@ public class DashboardController extends BaseController {
             return Result.error("电箱容量为空");
         }
 
-        if (StringUtils.isBlank(secBoxGateway)) {
+        if (gymId == 1 && StringUtils.isBlank(secBoxGateway)) {
             return Result.error("二级网关号为空");
         }
 
