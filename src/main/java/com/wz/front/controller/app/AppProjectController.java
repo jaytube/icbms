@@ -51,7 +51,7 @@ public class AppProjectController extends BaseController {
     @LoginRequired
     @ApiOperation(value = "该账户下该场馆下面的项目")
     public CommonResponse listByGymId(@PathVariable("gymId") Integer gymId) {
-        List<ProjectInfoDto> projectList = appProjectInfoService.listProjectsByGymId(gymId);
+        List<ProjectInfoPlainDto> projectList = appProjectInfoService.listProjectsByGymId(gymId);
         Map<String, Object> result = new HashMap<>();
         result.put("projectList", projectList);
         if(CollectionUtils.isNotEmpty(projectList)) {
