@@ -155,8 +155,8 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
     }
 
     @Override
-    public List<ProjectInfoDto> listProjectsByGymId(int gymId) {
-        List<ProjectInfoDto> list = convert(getUserProjects());
+    public List<ProjectInfoPlainDto> listProjectsByGymId(int gymId) {
+        List<ProjectInfoPlainDto> list = convertToPlain(getUserPlainProjects());
         if(CollectionUtils.isEmpty(list))
             return new ArrayList<>();
 

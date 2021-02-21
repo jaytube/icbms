@@ -1,6 +1,7 @@
 package com.wz.front.controller.app;
 
 import com.wz.front.dto.ProjectInfoDto;
+import com.wz.front.dto.ProjectInfoPlainDto;
 import com.wz.front.service.AppProjectInfoService;
 import com.wz.modules.app.annotation.LoginRequired;
 import com.wz.modules.common.controller.BaseController;
@@ -36,7 +37,7 @@ public class AppProjectController extends BaseController {
     @LoginRequired
     @ApiOperation(value = "该账户下,该场馆所有可见的 设备总数,在线空开,离线空开")
     public CommonResponse list() {
-        List<ProjectInfoDto> projectList = appProjectInfoService.listProjects();
+        List<ProjectInfoPlainDto> projectList = appProjectInfoService.listPlainProjects();
         Map<String, Object> result = new HashMap<>();
         result.put("projectList", projectList);
         if(CollectionUtils.isNotEmpty(projectList)) {

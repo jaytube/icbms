@@ -33,7 +33,7 @@ public interface AppProjectInfoService {
 
     ProjectBoxStatusCntDto getProjectBoxStatusInfoCnt(String projectId);
 
-    List<ProjectInfoDto> listProjectsByGymId(int gymId);
+    List<ProjectInfoPlainDto> listProjectsByGymId(int gymId);
 
     List<ProjectInfoPlainEntity> getUserPlainProjects();
 
