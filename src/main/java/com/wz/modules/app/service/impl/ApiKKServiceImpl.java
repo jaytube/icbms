@@ -11,6 +11,7 @@ import com.wz.modules.kk.biz.KkBizUtil;
 import com.wz.modules.kk.entity.DeviceAlarm;
 import com.wz.modules.kk.entity.LineUpper;
 import com.wz.modules.kk.entity.PageInfo;
+import com.wz.modules.lora.dto.DeviceBoxInfoDto;
 import com.wz.socket.cinterface.ClientRequestCmdSend;
 import com.wz.socket.utils.CommUtils;
 import net.sf.json.JSONArray;
@@ -244,6 +245,11 @@ public class ApiKKServiceImpl implements ApiKKService {
     @Override
     public ProjectBoxStatusCntDto getBoxesRecentStatus(String projectId) {
         return null;
+    }
+
+    @Override
+    public void processDeviceBoxDtoOnline(List<DeviceBoxInfoDto> deviceBoxList) {
+
     }
 
 }
