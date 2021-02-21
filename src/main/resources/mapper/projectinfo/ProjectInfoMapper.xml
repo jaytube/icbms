@@ -18,6 +18,20 @@
 		<result property="fileName" column="file_name"/>
     </resultMap>
 
+    <resultMap type="com.wz.modules.projectinfo.entity.ProjectInfoPlainEntity" id="projectInfoPlainMap">
+        <result property="id" column="id"/>
+        <result property="projectName" column="project_name"/>
+        <result property="gatewayAddress" column="gateway_address"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createId" column="create_id"/>
+        <result property="updateId" column="update_id"/>
+        <result property="effectiveDate" column="effective_date"/>
+        <result property="expireDate" column="expire_date"/>
+        <result property="remark" column="remark"/>
+        <result property="fileName" column="file_name"/>
+    </resultMap>
+
     <sql id="Base_Column_List" >
 		a.id as id,
 		a.project_name as project_name,
@@ -54,7 +68,7 @@
 	</select>
 
 	<select id="queryPlainProjectsByIds" resultType="com.wz.modules.projectinfo.entity.ProjectInfoPlainEntity"
-			resultMap="projectInfoMap">
+			resultMap="projectInfoPlainMap">
 		select
 		<include refid="Base_Column_List"/>
 		, c.name as gymName, c.id as gymId
