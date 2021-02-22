@@ -7,6 +7,7 @@ import java.util.Map;
 import com.wz.modules.common.page.Page;
 import com.wz.modules.sys.entity.RoleEntity;
 import com.wz.modules.sys.entity.UserEntity;
+import com.wz.modules.sys.entity.UserPlainEntity;
 import com.wz.modules.sys.entity.UserWindowDto;
 
 /**
@@ -19,6 +20,8 @@ import com.wz.modules.sys.entity.UserWindowDto;
 public interface UserService {
 	
 	UserEntity queryObject(String id);
+
+	UserPlainEntity queryPlainObject(String id);
 
 	List<UserEntity> queryList(Map<String, Object> map);
 

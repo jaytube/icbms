@@ -3,6 +3,7 @@ package com.wz.modules.sys.dao;
 import java.util.List;
 import java.util.Map;
 
+import com.wz.modules.sys.entity.UserPlainEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -89,4 +90,6 @@ public interface UserDao extends BaseDao<UserEntity> {
     List<RoleEntity> queryRoleUser();
 
     int updateBatchProjectIds(String[] userIds);
+
+    UserPlainEntity queryPlainUser(String userId);
 }

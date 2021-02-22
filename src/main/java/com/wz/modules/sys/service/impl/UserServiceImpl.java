@@ -47,6 +47,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserPlainEntity queryPlainObject(String id) {
+        UserPlainEntity userEntity = userDao.queryPlainUser(id);
+        List<String> projectIds = userProjectDao.queryProjectIdList(userEntity.getId());
+        if (CollectionUtils.isNotEmpty(projectIds))
+            userEntity.setProjectIds(String.join(",", projectIds));
+        return userEntity;
+    }
+
+    @Override
     public List<UserEntity> queryList(Map<String, Object> map) {
         return userDao.queryList(map);
     }

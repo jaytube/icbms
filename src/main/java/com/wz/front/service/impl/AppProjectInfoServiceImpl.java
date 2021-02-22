@@ -14,6 +14,7 @@ import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
 import com.wz.modules.projectinfo.entity.ProjectInfoPlainEntity;
 import com.wz.modules.projectinfo.service.ProjectInfoService;
 import com.wz.modules.sys.entity.UserEntity;
+import com.wz.modules.sys.entity.UserPlainEntity;
 import com.wz.modules.sys.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -86,7 +87,7 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
     @Override
     public List<ProjectInfoPlainEntity> getUserPlainProjects() {
         String currentUser = this.currentUser.getCurrentUser();
-        UserEntity user = userService.queryObject(currentUser);
+        UserPlainEntity user = userService.queryPlainObject(currentUser);
         String projectIds = user.getProjectIds();
         List<ProjectInfoPlainEntity> projectList = new ArrayList<>();
         if (StringUtils.isNotBlank(projectIds)) {
@@ -157,7 +158,7 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
 
     @Override
     public List<ProjectInfoPlainDto> listProjectsByGymId(int gymId) {
-        List<ProjectInfoPlainDto> list = convertToPlain(getUserPlainProjects());
+        List<ProjectInfoPlainDto> list = convertToPlainWithOutAlarm(getUserPlainProjects());
         if(CollectionUtils.isEmpty(list))
             return new ArrayList<>();
 
@@ -273,6 +274,41 @@ public class AppProjectInfoServiceImpl implements AppProjectInfoService {
             dto.setGymName(entity.getGymName());
             dto.setGymId(entity.getGymId());
             dto.setAlarmTotal(MapUtils.getIntValue(totalMap, projectId, 0));
+            setImageSize(entity, dto);
+            projectInfoDtos.add(dto);
+        }
+        return projectInfoDtos;
+    }
+
+    private List<ProjectInfoPlainDto> convertToPlainWithOutAlarm(List<ProjectInfoPlainEntity> userProjects) {
+        String currentUser = this.currentUser.getCurrentUser();
+        if (CollectionUtils.isEmpty(userProjects)) {
+            return new ArrayList<>();
+        }
+        List<ProjectInfoPlainDto> projectInfoDtos = new ArrayList<>();
+
+        int size = userProjects.size();
+        String[] ids = new String[size];
+        for (int i = 0; i < size; i++) {
+            ids[i] = userProjects.get(i).getId();
+        }
+        Map<String, ProjectBoxInfoCntDto> projectBoxInfoCntDtoMap = getProjectBoxInfoCntByUserId(currentUser);
+        for (ProjectInfoPlainEntity entity : userProjects) {
+            ProjectInfoPlainDto dto = new ProjectInfoPlainDto();
+            String projectId = entity.getId();
+            ProjectBoxInfoCntDto projectBoxInfoCnt = projectBoxInfoCntDtoMap.get(projectId);
+            if (projectBoxInfoCnt == null) {
+                dto.setBoxTotal(0);
+                dto.setSwitchOnlineTotal(0);
+                dto.setSwitchLeaveTotal(0);
+            } else {
+                dto.setBoxTotal(projectBoxInfoCnt.getBoxTotal());
+                dto.setSwitchOnlineTotal(projectBoxInfoCnt.getSwitchOnlineTotal());
+                dto.setSwitchLeaveTotal(projectBoxInfoCnt.getSwitchLeaveTotal());
+            }
+            dto.setProject(entity);
+            dto.setGymName(entity.getGymName());
+            dto.setGymId(entity.getGymId());
             setImageSize(entity, dto);
             projectInfoDtos.add(dto);
         }

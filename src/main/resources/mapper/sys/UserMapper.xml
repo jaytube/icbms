@@ -23,6 +23,16 @@
         <result property="remark" column="remark"/>
         <result property="projectIds" column="projectIds"/>
     </resultMap>
+
+	<resultMap type="com.wz.modules.sys.entity.UserPlainEntity" id="userPlainMap">
+		<result property="id" column="id"/>
+		<result property="userName" column="user_name"/>
+		<result property="loginName" column="login_name"/>
+		<result property="status" column="status"/>
+		<result property="phone" column="phone"/>
+		<result property="photo" column="photo"/>
+		<result property="email" column="email"/>
+	</resultMap>
     
     
     <resultMap type="com.wz.modules.sys.entity.RoleEntity" id="roleUserMap">
@@ -63,6 +73,13 @@
     </sql>
 
 	<select id="queryObject" resultType="com.wz.modules.sys.entity.UserEntity" resultMap="userMap">
+		select
+		<include refid="Base_Column_List" />,(SELECT name FROM sys_organ o WHERE o.id=s.baid) AS baName
+		from sys_user s
+		where id = #{value}
+	</select>
+
+	<select id="queryPlainUser" resultType="com.wz.modules.sys.entity.UserPlainEntity" resultMap="userPlainMap">
 		select
 		<include refid="Base_Column_List" />,(SELECT name FROM sys_organ o WHERE o.id=s.baid) AS baName
 		from sys_user s
