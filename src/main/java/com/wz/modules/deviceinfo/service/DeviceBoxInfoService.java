@@ -58,6 +58,8 @@ public interface DeviceBoxInfoService {
 
 	DeviceBoxInfoEntity queryByMac(String deviceMac, String projectId);
 
+	DeviceBoxInfoEntity queryByMacWithoutLocation(String deviceMac, String projectId);
+
 	DeviceBoxInfoEntity queryProjectMac(String projectId, String deviceMac);
 
 	List<DeviceBoxInfoEntity> findDeviceBoxsInfoLike(String projectId, String deviceMac);

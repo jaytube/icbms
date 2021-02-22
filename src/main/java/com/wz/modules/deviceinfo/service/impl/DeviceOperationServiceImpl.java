@@ -17,6 +17,7 @@ import com.wz.modules.lora.dao.GatewayDeviceMapDao;
 import com.wz.modules.lora.entity.GatewayDeviceMap;
 import com.wz.modules.sys.entity.UserEntity;
 import com.wz.modules.sys.service.UserService;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,8 +51,10 @@ public class DeviceOperationServiceImpl implements DeviceOperationService {
     @Override
     @Transactional
     public void deleteDevices(String[] ids) {
-        deviceBoxInfoService.deleteBatch(ids, "app");
-        appDeviceBoxService.deleteBatch(Arrays.asList(ids));
+        if(ids != null && ids.length > 0) {
+            deviceBoxInfoService.deleteBatch(ids, "app");
+            appDeviceBoxService.deleteBatch(Arrays.asList(ids));
+        }
     }
 
     @Override

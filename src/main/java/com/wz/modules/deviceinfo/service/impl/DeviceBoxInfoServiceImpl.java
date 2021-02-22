@@ -482,6 +482,10 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
         return deviceBoxInfoDao.queryByMac(deviceMac, projectId);
     }
 
+    public DeviceBoxInfoEntity queryByMacWithoutLocation(String deviceMac, String projectId) {
+        return deviceBoxInfoDao.queryByMacWithoutLocation(deviceMac, projectId);
+    }
+
     public DeviceBoxInfoEntity queryProjectMac(String projectId, String deviceMac) {
         return deviceBoxInfoDao.queryProjectMac(projectId, deviceMac);
     }

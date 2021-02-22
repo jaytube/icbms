@@ -292,7 +292,7 @@ public class DashboardController extends BaseController {
     @RequestMapping(value = "getRealDataByBoxMac", method = RequestMethod.GET)
     @ResponseBody
     public DeviceBoxInfoEntity getRealDataByBoxMac(String deviceBoxMac, String projectId) {
-        DeviceBoxInfoEntity device = deviceBoxInfoService.queryByMac(deviceBoxMac, projectId);
+        DeviceBoxInfoEntity device = deviceBoxInfoService.queryByMacWithoutLocation(deviceBoxMac, projectId);
         List<DeviceSwitchInfoEntity> switchList = kkService.getBoxChannelsRealData(deviceBoxMac, projectId);
         device.setSwitchList(switchList);
         return device;
