@@ -1,5 +1,6 @@
 package com.wz.modules.deviceinfo.service.impl;
 
+import com.wz.modules.common.exception.MyException;
 import com.wz.modules.common.utils.RedisUtil;
 import com.wz.modules.common.utils.UserUtils;
 import com.wz.modules.common.utils.Utils;
@@ -134,7 +135,6 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
     @Override
     @Transactional
     public int deleteBatch(String[] ids, String type) {
-        deviceBoxInfoDao.deleteBoxLocLinkBatch(ids);
         try {
             List<String> locations = this.deviceBoxInfoDao.findSingleBoxLocation(ids);
             if ("app".equals(type)) {
@@ -143,9 +143,11 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
                     this.locationInfoService.delete(l);
                 }
             }
-        } catch (Exception e) {
+        } catch (MyException e) {
             log.error("删除位置信息失败", e);
+            throw e;
         }
+        deviceBoxInfoDao.deleteBoxLocLinkBatch(ids);
         return deviceBoxInfoDao.deleteBatch(ids);
     }
 

@@ -46,40 +46,40 @@ public class RestUtil {
     @Retryable(value = RestClientException.class, maxAttempts = 2,
             backoff = @Backoff(delay = 500L, multiplier = 2))
     public CommonResponse<Map> doGet(String url) {
-        log.info("【doGet】【请求URL】：{}", url);
+        log.debug("【doGet】【请求URL】：{}", url);
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("grpc-metadata-authorization", _jwt_token);
         HttpEntity<String> requestEntity = new HttpEntity<String>(null, requestHeaders);
         ResponseEntity<Map> exchange = restTemplate.exchange(url, HttpMethod.GET, requestEntity, Map.class);
         Map response = exchange.getBody();
-        log.info("【doGet】【请求响应】：{}", response);
+        log.debug("【doGet】【请求响应】：{}", response);
         return response(url, null, exchange);
     }
 
     @Retryable(value = RestClientException.class, maxAttempts = 2,
             backoff = @Backoff(delay = 500L, multiplier = 2))
     public CommonResponse<Map> doPost(String url, Map<String, Object> params) {
-        log.info("【doPost】【请求URL】：{}", url);
-        log.info("【doPost】【请求入参】：{}", params);
+        log.debug("【doPost】【请求URL】：{}", url);
+        log.debug("【doPost】【请求入参】：{}", params);
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("grpc-metadata-authorization", _jwt_token);
         HttpEntity<Map> requestEntity = new HttpEntity<>(params, requestHeaders);
         ResponseEntity<Map> exchange = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
         Map response = exchange.getBody();
-        log.info("【doPost】【请求响应】：{}", response);
+        log.debug("【doPost】【请求响应】：{}", response);
         return response(url, params, exchange);
     }
 
     @Retryable(value = RestClientException.class, maxAttempts = 2,
             backoff = @Backoff(delay = 500L, multiplier = 2))
     public CommonResponse<Map> doGetNoToken(String url) {
-        log.info("【doGetNoToken】【请求URL】：{}", url);
+        log.debug("【doGetNoToken】【请求URL】：{}", url);
         HttpHeaders requestHeaders = new HttpHeaders();
         HttpEntity<String> requestEntity = new HttpEntity<String>(null, requestHeaders);
         ResponseEntity<Map> exchange = restTemplate.exchange(url, HttpMethod.GET, requestEntity, Map.class);
         HttpStatus statusCode = exchange.getStatusCode();
         Map response = exchange.getBody();
-        log.info("【doGetNoToken】【请求响应】：{}", response);
+        log.debug("【doGetNoToken】【请求响应】：{}", response);
         return response(url, null, exchange);
     }
 
@@ -90,8 +90,8 @@ public class RestUtil {
         for (Map.Entry<String, Object> entry : paramsMap.entrySet()) {
             params.add(entry.getKey(), entry.getValue().toString());
         }
-        log.info("【doPostFormDataNoToken】【请求URL】：{}", url);
-        log.info("【doPostFormDataNoToken】【请求入参】：{}", params);
+        log.debug("【doPostFormDataNoToken】【请求URL】：{}", url);
+        log.debug("【doPostFormDataNoToken】【请求入参】：{}", params);
         RestTemplate restTemplate = new RestTemplate();
         //设置请求头(注意会产生中文乱码)
         HttpHeaders headers = new HttpHeaders();
@@ -100,19 +100,19 @@ public class RestUtil {
         //发送请求，设置请求返回数据格式为String
         ResponseEntity<Map> responseEntity = restTemplate.postForEntity(url, request, Map.class);
         Map response = responseEntity.getBody();
-        log.info("【doPostFormDataNoToken】【请求响应】：{}", response);
+        log.debug("【doPostFormDataNoToken】【请求响应】：{}", response);
         return response(url, paramsMap, responseEntity);
     }
 
     @Retryable(value = RestClientException.class, maxAttempts = 2,
             backoff = @Backoff(delay = 500L, multiplier = 2))
     public CommonResponse<Map> doGetWithToken(String gatewayIp, String url) {
-        log.info("【doGetWithToken】【请求URL】：{}", url);
+        log.debug("【doGetWithToken】【请求URL】：{}", url);
         HttpHeaders requestHeaders = createHeader(gatewayIp);
         HttpEntity<String> requestEntity = new HttpEntity<String>(null, requestHeaders);
         ResponseEntity<Map> exchange = restTemplate.exchange(url, HttpMethod.GET, requestEntity, Map.class);
         Map response = exchange.getBody();
-        log.info("【doGetWithToken】【请求响应】：{}", response);
+        log.debug("【doGetWithToken】【请求响应】：{}", response);
         return response(url, null, exchange);
     }
 
@@ -130,43 +130,43 @@ public class RestUtil {
     @Retryable(value = RestClientException.class, maxAttempts = 2,
             backoff = @Backoff(delay = 500L, multiplier = 2))
     public CommonResponse<Map> doPostWithToken(String gatewayIp, String url, Map<String, Object> params) {
-        log.info("【doPostWithToken】【请求URL】：{}", url);
-        log.info("【doPostWithToken】【请求入参】：{}", params);
+        log.debug("【doPostWithToken】【请求URL】：{}", url);
+        log.debug("【doPostWithToken】【请求入参】：{}", params);
         HttpHeaders requestHeaders = createHeader(gatewayIp);
         HttpEntity<Map> requestEntity = new HttpEntity<>(params, requestHeaders);
         ResponseEntity<Map> exchange = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
         Map response = exchange.getBody();
-        log.info("【doPostWithToken】【请求响应】：{}", response);
+        log.debug("【doPostWithToken】【请求响应】：{}", response);
         return response(url, params, exchange);
     }
 
     @Retryable(value = RestClientException.class, maxAttempts = 2,
             backoff = @Backoff(delay = 500L, multiplier = 2))
     public CommonResponse<Map> doDeleteWithToken(String gatewayIp, String url) {
-        log.info("【doDeleteWithToken】【请求URL】：{}", url);
+        log.debug("【doDeleteWithToken】【请求URL】：{}", url);
         HttpHeaders requestHeaders = createHeader(gatewayIp);
         HttpEntity<Map> requestEntity = new HttpEntity<>(null, requestHeaders);
         ResponseEntity<Map> exchange = restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, Map.class);
         Map response = exchange.getBody();
-        log.info("【doDeleteWithToken】【请求响应】：{}", response);
+        log.debug("【doDeleteWithToken】【请求响应】：{}", response);
         return response(url, null, exchange);
     }
 
     @Recover
     public CommonResponse<Map> recover(RestClientException e) {
-        log.info("access recover method...");
+        log.debug("access recover method...");
         return CommonResponse.faild(e.getMessage(), null);
     }
 
     @Retryable(value = RestClientException.class, maxAttempts = 2,
             backoff = @Backoff(delay = 500L, multiplier = 2))
     public CommonResponse<Map> doDeleteWithToken(String gatewayIp, String url, List<Map> body) {
-        log.info("【doDeleteWithToken】【请求URL】：{}", url);
+        log.debug("【doDeleteWithToken】【请求URL】：{}", url);
         HttpHeaders requestHeaders = createHeader(gatewayIp);
         HttpEntity<List> requestEntity = new HttpEntity<>(body, requestHeaders);
         ResponseEntity<Map> exchange = restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, Map.class);
         Map response = exchange.getBody();
-        log.info("【doDeleteWithToken】【请求响应】：{}", response);
+        log.debug("【doDeleteWithToken】【请求响应】：{}", response);
         return response(url, null, exchange);
     }
 

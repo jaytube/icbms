@@ -567,8 +567,8 @@
 	</delete>
 
     <select id="findSingleBoxLocation" resultType="string">
-        SELECT LOCATION_ID FROM DEVICE_BOX_LOCATION
-        where 1=1 AND DEVICE_BOX_ID IN
+        select location_id from device_box_location
+        where 1=1 and device_box_id in
         <foreach item="deviceBoxId" collection="deviceBoxIds" open="("
                  separator="," close=")">
             #{deviceBoxId}
