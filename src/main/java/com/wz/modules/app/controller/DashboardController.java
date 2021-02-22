@@ -208,7 +208,7 @@ public class DashboardController extends BaseController {
     @ResponseBody
     public Map<String, String> getBoxInfoCnt(String projectId) {
         Map<String, String> resultMap = new HashMap<String, String>();
-        List<DeviceBoxInfoEntity> boxInfoList = deviceBoxInfoService.findDeviceBoxsInfoByProjectId(projectId);
+        List<DeviceBoxInfoDto> boxInfoList = deviceBoxInfoService.findPlainDeviceBoxInfoByProjectId(projectId);
         if (boxInfoList != null && boxInfoList.size() > 0) {
             Map<String, Integer> onlineMaps = this.kkService.statDeviceBoxOnline(projectId);
             resultMap.put("boxTotal", boxInfoList.size() + "");

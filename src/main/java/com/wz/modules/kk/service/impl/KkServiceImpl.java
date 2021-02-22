@@ -448,10 +448,11 @@ public class KkServiceImpl implements KkService {
         // }
     }
 
+    @Override
     public Map<String, Integer> statDeviceBoxOnline(String projectId) {
-        List<DeviceBoxInfoEntity> boxList = this.deviceBoxInfoService.findDeviceBoxsInfoByProjectId(projectId);
-        Map<String, DeviceBoxInfoEntity> boxMap = new HashMap<String, DeviceBoxInfoEntity>();
-        for (DeviceBoxInfoEntity b : boxList) {
+        List<DeviceBoxInfoDto> boxList = this.deviceBoxInfoService.findPlainDeviceBoxInfoByProjectId(projectId);
+        Map<String, DeviceBoxInfoDto> boxMap = new HashMap<>();
+        for (DeviceBoxInfoDto b : boxList) {
             String key = CommUtils.getDeviceBoxAddress(b.getDeviceBoxNum());
             if(b.getDeviceBoxNum().startsWith("LY"))
                 key += "_LY";
