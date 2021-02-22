@@ -92,6 +92,11 @@ public class ApiKKServiceImpl implements ApiKKService {
     }
 
     @Override
+    public List<DeviceSwitchInfoEntity> getBoxChannelsRealDataWithoutLocation(String deviceBoxMac, String projectId, DeviceBoxInfoEntity device) {
+        return null;
+    }
+
+    @Override
     public PageInfo<DeviceAlarm> getAlarmsByTime(String deviceBoxMac, String startTime, String endTime, String pageSize,
                                                  String page) {
         PageInfo<DeviceAlarm> pageInfo = new PageInfo<DeviceAlarm>();

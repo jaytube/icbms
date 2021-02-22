@@ -170,7 +170,7 @@
 		d.stand_no,
 		d.control_flag,
 		d.box_capacity,
-		d.placed_flag,
+		d.placed_flag
 		from device_box_info d
 		where d.device_box_num = #{deviceMac} and
 		d.project_id = #{projectId} limit

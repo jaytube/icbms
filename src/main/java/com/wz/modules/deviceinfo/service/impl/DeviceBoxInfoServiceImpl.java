@@ -9,11 +9,13 @@ import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
 import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
 import com.wz.modules.gen.utils.GenUtils;
 import com.wz.modules.lora.dto.DeviceBoxInfoDto;
+import com.wz.modules.projectinfo.dao.LocationInfoDao;
 import com.wz.modules.projectinfo.entity.DboxLocLinkEntity;
 import com.wz.modules.projectinfo.entity.LocationInfoEntity;
 import com.wz.modules.projectinfo.service.LocationInfoService;
 import com.wz.modules.sys.entity.UserEntity;
 import com.wz.socket.utils.CommUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,9 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
     public DeviceBoxInfoEntity queryObject(String id) {
         return deviceBoxInfoDao.queryObject(id);
     }
+
+    @Autowired
+    private LocationInfoDao locationInfoDao;
 
     @Override
     public List<DeviceBoxInfoEntity> queryList(Map<String, Object> map) {
@@ -137,12 +142,19 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
     public int deleteBatch(String[] ids, String type) {
         try {
             List<String> locations = this.deviceBoxInfoDao.findSingleBoxLocation(ids);
-            if ("app".equals(type)) {
+           /* if ("app".equals(type)) {
                 // 当位置没有再关联电箱时,删除位置信息
                 for (String l : locations) {
                     this.locationInfoService.delete(l);
                 }
-            }
+            }*/
+           if(CollectionUtils.isNotEmpty(locations)) {
+               String[] locationIds = new String[locations.size()];
+               for (int i=0; i<locations.size(); i++) {
+                    locationIds[i] = locations.get(i);
+               }
+               locationInfoDao.deleteBatch(locationIds);
+           }
         } catch (MyException e) {
             log.error("删除位置信息失败", e);
             throw e;

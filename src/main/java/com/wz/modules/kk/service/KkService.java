@@ -22,6 +22,8 @@ public interface KkService {
 
 	public List<DeviceSwitchInfoEntity> getBoxChannelsRealData(String deviceBoxMac, String projectId);
 
+	public List<DeviceSwitchInfoEntity> getBoxChannelsRealDataWithoutLocation(String deviceBoxMac, String projectId, DeviceBoxInfoEntity device);
+
 	public PageInfo<DeviceAlarm> getAlarmsByTime(String deviceBoxMac, String startTime, String endTime, String pageSize,
 			String page);
 

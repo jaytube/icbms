@@ -293,7 +293,7 @@ public class DashboardController extends BaseController {
     @ResponseBody
     public DeviceBoxInfoEntity getRealDataByBoxMac(String deviceBoxMac, String projectId) {
         DeviceBoxInfoEntity device = deviceBoxInfoService.queryByMacWithoutLocation(deviceBoxMac, projectId);
-        List<DeviceSwitchInfoEntity> switchList = kkService.getBoxChannelsRealData(deviceBoxMac, projectId);
+        List<DeviceSwitchInfoEntity> switchList = kkService.getBoxChannelsRealDataWithoutLocation(deviceBoxMac, projectId, device);
         device.setSwitchList(switchList);
         return device;
     }

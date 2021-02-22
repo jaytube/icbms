@@ -189,6 +189,43 @@ public class KkServiceImpl implements KkService {
     }
 
     @Override
+    public List<DeviceSwitchInfoEntity> getBoxChannelsRealDataWithoutLocation(String deviceBoxMac, String projectId, DeviceBoxInfoEntity boxInfo) {
+        List<DeviceSwitchInfoEntity> switchList = new ArrayList<DeviceSwitchInfoEntity>();
+        if (null != boxInfo) {
+            String field = CommUtils.getDeviceBoxAddress(boxInfo.getDeviceBoxNum()) + "_";
+            Map<String, String> result = redisUtil.fuzzyGet(0, "REAL_DATA", field);
+            for (String k : result.keySet()) {
+                String resultJson = result.get(k);
+                JSONObject jsonObj = JSONObject.fromObject(resultJson);
+                DeviceSwitchInfoEntity dsInfo = new DeviceSwitchInfoEntity();
+                dsInfo.setAddress(jsonObj.getString("switchAddr"));
+                dsInfo.setDeviceSwitchName("线路" + (Integer.parseInt(jsonObj.getString("switchAddr")) + 1));
+                dsInfo.setDeviceSwitchStatus("0".equals(jsonObj.getString("switchOnoff")) ? "true" : "false");
+                dsInfo.setSwitchPower(jsonObj.getString("power"));// 功率
+                dsInfo.setSwitchVoltage(jsonObj.getString("voltage"));// 电压
+                dsInfo.setSwitchElectric(jsonObj.getString("electricCurrent"));// 电流
+                dsInfo.setSwitchLeakage(jsonObj.getString("leakageCurrent"));// 漏电流
+                dsInfo.setSwitchTemperature(jsonObj.getString("temperature"));// 温度
+
+                dsInfo.setPhaseVoltageA(jsonObj.getString("phaseVoltageA"));
+                dsInfo.setPhaseVoltageB(jsonObj.getString("phaseVoltageB"));
+                dsInfo.setPhaseVoltageC(jsonObj.getString("phaseVoltageC"));
+
+                dsInfo.setPhaseCurrentA(jsonObj.getString("phaseCurrentA"));
+                dsInfo.setPhaseCurrentB(jsonObj.getString("phaseCurrentB"));
+                dsInfo.setPhaseCurrentC(jsonObj.getString("phaseCurrentC"));
+                dsInfo.setPhaseCurrentN(jsonObj.getString("phaseCurrentN"));
+
+                dsInfo.setPhasePowerA(jsonObj.getString("phasePowerA"));
+                dsInfo.setPhasePowerB(jsonObj.getString("phasePowerB"));
+                dsInfo.setPhasePowerC(jsonObj.getString("phasePowerC"));
+                switchList.add(dsInfo);
+            }
+        }
+        return switchList;
+    }
+
+    @Override
     public void doKkSchedule() {
         List<ProjectInfoEntity> projectList = this.projectInfoService.queryListAll();
         for (ProjectInfoEntity tmpProject : projectList) {
