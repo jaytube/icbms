@@ -244,7 +244,7 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
         Map result = response.getData();
         Integer code = (Integer) MapUtils.getObject(result, "resp_code");
         String msg = (String) MapUtils.getObject(result, "resp_msg");
-        if(1 == code)
+        if(1 == code && !msg.equals("终端名称已经存在"))
             return CommonResponse.faild(msg);
 
         return response;
@@ -283,7 +283,8 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
     @Override
     public CommonResponse<Map> deleteDevices(String gatewayIp, List<Integer> deviceIds) {
         if (CollectionUtils.isEmpty(deviceIds)) {
-            return CommonResponse.error("deviceIds 为空。");
+            log.info("网关" + gatewayIp + "没有此设备");
+            return CommonResponse.success();
         }
         List<Map> body = deviceIds.stream().map(id -> {
             Map<String, Object> map = new HashMap<>();
