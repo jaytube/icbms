@@ -292,6 +292,18 @@ public class DashboardController extends BaseController {
     @RequestMapping(value = "getRealDataByBoxMac", method = RequestMethod.GET)
     @ResponseBody
     public DeviceBoxInfoEntity getRealDataByBoxMac(String deviceBoxMac, String projectId) {
+        DeviceBoxInfoEntity device = deviceBoxInfoService.queryByMac(deviceBoxMac, projectId);
+        List<DeviceSwitchInfoEntity> switchList = kkService.getBoxChannelsRealDataWithoutLocation(deviceBoxMac, projectId, device);
+        device.setSwitchList(switchList);
+        return device;
+    }
+
+    @ApiOperation(value = "查询电箱实时数据")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "deviceBoxMac", value = "电箱MAC地址", required = true, dataType = "String", paramType = "query")})
+    @RequestMapping(value = "getRealDataByBoxMacWithoutLocation", method = RequestMethod.GET)
+    @ResponseBody
+    public DeviceBoxInfoEntity getRealDataByBoxMacWithoutLocation(String deviceBoxMac, String projectId) {
         DeviceBoxInfoEntity device = deviceBoxInfoService.queryByMacWithoutLocation(deviceBoxMac, projectId);
         List<DeviceSwitchInfoEntity> switchList = kkService.getBoxChannelsRealDataWithoutLocation(deviceBoxMac, projectId, device);
         device.setSwitchList(switchList);
