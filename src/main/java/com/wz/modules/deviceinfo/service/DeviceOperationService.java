@@ -10,5 +10,5 @@ public interface DeviceOperationService {
 
     void deleteDevices(String[] ids);
 
-    Result addDevice(List<Map<String, String>> result, String userId, String deviceBoxMac, String projectId, HttpServletRequest request, String deviceBoxSn, int gymId, int gatewayId);
+    Result addDevice(List<Map<String, String>> result, String userId, String deviceBoxMac, String projectId, HttpServletRequest request, String deviceBoxSn, Integer gymId, int gatewayId);
 }

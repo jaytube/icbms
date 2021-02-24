@@ -59,15 +59,15 @@ public class DeviceOperationServiceImpl implements DeviceOperationService {
 
     @Override
     @Transactional
-    public Result addDevice(List<Map<String, String>> result, String userId, String deviceBoxMac, String projectId, HttpServletRequest request, String deviceBoxSn, int gymId, int gatewayId) {
+    public Result addDevice(List<Map<String, String>> result, String userId, String deviceBoxMac, String projectId, HttpServletRequest request, String deviceBoxSn, Integer gymId, int gatewayId) {
         UserEntity user = this.userService.queryObject(userId);
         DeviceBoxInfoEntity deviceBoxInfoEntity = deviceBoxInfoDao.queryByBoxNum(deviceBoxMac);
         if (deviceBoxInfoEntity == null) {
             List<DeviceBoxInfoEntity> saveResult = deviceBoxInfoService.saveBoxLocBatch(result, projectId, user);
             deviceBoxInfoEntity = saveResult.get(0);
         }
-        DeviceType deviceType = DeviceUtils.checkDeviceType(request);
-        if (deviceType == DeviceType.MOBILE_APP) {
+        //DeviceType deviceType = DeviceUtils.checkDeviceType(request);
+        if (gymId != null && gymId == 2) {
             GatewayDeviceMap device = gatewayDeviceMapDao.findDevice(projectId, deviceBoxInfoEntity.getId());
             if (device != null) {
                 return Result.error("该设备已绑定网关，如需修改，请先移除该设备再添加");
