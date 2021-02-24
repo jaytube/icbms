@@ -43,6 +43,11 @@ var vm = new Vue({
 		showList: true,
 		title: null,
 		roleList:[],
+		//场馆列表
+		isSelectedGate:false,
+		stadiumList:[],
+		getWayList:[],
+		stadiumID:'',
 		roleIdList:[],
 		projectInfo: {
 			effectiveDate:'',
@@ -59,6 +64,8 @@ var vm = new Vue({
 			vm.roleList = [];
 			//获取角色信息
 			this.getRoleList();
+			this.getStadiumList();
+			this.getGateways();
 			vm.projectInfo = {};
 			vm.roleIdList = [];
 		},
@@ -81,7 +88,7 @@ var vm = new Vue({
 			if($("#effectiveDate").val()!=""){
 				vm.projectInfo.effectiveDate = $("#effectiveDate").val();
 			}
-			
+
 			if($("#expireDate").val()!=""){
 				vm.projectInfo.expireDate = $("#expireDate").val();
 			}
@@ -89,12 +96,12 @@ var vm = new Vue({
 				alert("项目名称不能为空");
 				return;
 			}
-			
+
 			if(vm.projectInfo.effectiveDate==undefined){
 				alert("生效日期不能为空");
 				return;
 			}
-			
+
 			if(vm.projectInfo.gatewayAddress==undefined){
 				alert("网关不能为空");
 				return;
@@ -105,12 +112,12 @@ var vm = new Vue({
 					return;
 				}
 			}
-			
+
 			if(vm.projectInfo.expireDate==undefined){
 				alert("失效日期不能为空");
 				return;
 			}
-			
+
 			$.ajax({
 				type: "POST",
 			    url: url,
@@ -131,7 +138,7 @@ var vm = new Vue({
 			if(ids == null){
 				return ;
 			}
-			
+
 			confirm('确定要删除选中的记录？', function(){
 				$.ajax({
 					type: "POST",
@@ -158,6 +165,18 @@ var vm = new Vue({
 				vm.roleList = r.list;
 			});
 		},
+		getStadiumList: function(){
+		//todo 获取场馆
+        			$.get("app/refdata/getGyms", function(r){
+        				vm.stadiumList = r.data;
+        			});
+        		},
+        getGateways: function(){
+             //todo 网关
+                        $.get("app/refdata/getGateways", function(r){
+                        	vm.getWayList = r.data;
+                        });
+                        		},
 		getInfo: function(id){
 			$.get("../projectinfo/info/"+id, function(r){
                 if(r.code == 0){
