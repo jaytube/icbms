@@ -54,7 +54,7 @@ public class ProjectInfoEntity extends BaseEntity implements Serializable {
     /**
      * 场馆ID
      */
-    private int gymId;
+    private Integer gymId;
 
     /**
      * 场馆名称
@@ -210,11 +210,11 @@ public class ProjectInfoEntity extends BaseEntity implements Serializable {
         this.fileName = fileName;
     }
 
-    public int getGymId() {
+    public Integer getGymId() {
         return gymId;
     }
 
-    public void setGymId(int gymId) {
+    public void setGymId(Integer gymId) {
         this.gymId = gymId;
     }
 

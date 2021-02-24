@@ -180,6 +180,8 @@ public class DeviceBoxInfoController extends BaseController {
 		return Result.ok().put("deviceBoxInfo", deviceBoxInfo);
 	}
 
+	//@RequestMapping("/export/{projectId}")
+
 	@RequestMapping("/resetXy")
 	@SysLog("重置电箱拓扑图位置")
 	public Result resetXy(String deviceBoxInfoId, String fx, String fy) {

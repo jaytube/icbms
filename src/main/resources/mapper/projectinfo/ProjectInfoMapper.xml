@@ -121,7 +121,8 @@
 			`remark`,
 			`effective_date`,
 			`expire_date`,
-			`gateway_address`
+			`gateway_address`,
+			`gym_id`
 		)
 		values
 		(
@@ -134,7 +135,8 @@
 			#{remark},
 			#{effectiveDate},
 			#{expireDate},
-			#{gatewayAddress}
+			#{gatewayAddress},
+			#{gymId}
 		)
 	</insert>
 	 
