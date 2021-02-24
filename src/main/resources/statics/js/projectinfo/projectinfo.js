@@ -167,13 +167,13 @@ var vm = new Vue({
 		},
 		getStadiumList: function(){
 		//todo 获取场馆
-        			$.get("app/refdata/getGyms", function(r){
+        			$.get("../app/refdata/getGyms", function(r){
         				vm.stadiumList = r.data;
         			});
         		},
         getGateways: function(){
              //todo 网关
-                        $.get("app/refdata/getGateways", function(r){
+                        $.get("../app/refdata/getGateways", function(r){
                         	vm.getWayList = r.data;
                         });
                         		},

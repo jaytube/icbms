@@ -105,7 +105,7 @@ public class DeviceBoxInfoController extends BaseController {
 	 * 保存
 	 */
 	@RequestMapping("/save")
-	@RequiresPermissions("deviceboxinfo:save")
+	//@RequiresPermissions("deviceboxinfo:save")
 	@SysLog("电箱保存")
 	public Result save(@RequestBody DeviceBoxInfoEntity deviceBoxInfo) {
 		deviceBoxInfoService.save(deviceBoxInfo);
