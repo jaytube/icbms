@@ -73,4 +73,6 @@ public interface DeviceBoxInfoService {
 	List<DeviceBoxInfoDto> findDeviceBoxsPlainInfoByUserId(String userId);
 
 	List<DeviceBoxInfoDto> findPlainDeviceBoxInfoByProjectIds(String[] projectId);
+
+	List<DeviceBoxInfoDto> queryPlainList(Map<String, Object> map);
 }

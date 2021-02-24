@@ -57,6 +57,16 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
     }
 
     @Override
+    public List<DeviceBoxInfoDto> queryPlainList(Map<String, Object> map) {
+        String locationId = (String) map.get("locationId");
+        if (!StringUtils.isBlank(locationId)) {
+            LocationInfoEntity location = locationInfoService.queryObject(locationId);
+            map.put("root", location.getRoot() + "%");
+        }
+        return deviceBoxInfoDao.queryPlainList(map);
+    }
+
+    @Override
     public List<DeviceBoxInfoEntity> queryListByBean(DeviceBoxInfoEntity entity) {
         return deviceBoxInfoDao.queryListByBean(entity);
     }

@@ -298,7 +298,7 @@ public class DashboardController extends BaseController {
         return device;
     }
 
-    @ApiOperation(value = "查询电箱实时数据")
+    @ApiOperation(value = "查询电箱实时数据--无位置信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "deviceBoxMac", value = "电箱MAC地址", required = true, dataType = "String", paramType = "query")})
     @RequestMapping(value = "getRealDataByBoxMacWithoutLocation", method = RequestMethod.GET)
@@ -348,14 +348,14 @@ public class DashboardController extends BaseController {
         params.put("page", "1");
         params.put("limit", "99999");
         Query query = new Query(params);
-        List<DeviceBoxInfoEntity> deviceBoxInfoList = deviceBoxInfoService.queryList(query);
+        List<DeviceBoxInfoDto> deviceBoxInfoList = deviceBoxInfoService.queryPlainList(query);
         try {
-            this.kkService.processDeviceBoxOnline(deviceBoxInfoList);
+            this.kkService.processDeviceBoxDtoOnline(deviceBoxInfoList);
         } catch (Exception e) {
             e.printStackTrace();
         }
         Map<String, String> maps = new HashMap<String, String>();
-        for (DeviceBoxInfoEntity boxEntity : deviceBoxInfoList) {
+        for (DeviceBoxInfoDto boxEntity : deviceBoxInfoList) {
             if ("0".equals(boxEntity.getOnline())) {
                 maps.put(boxEntity.getLocationId(), "0");
             }
@@ -476,7 +476,7 @@ public class DashboardController extends BaseController {
             }
         }
 
-        if (!StringUtils.isEmpty(message)) {
+        /*if (!StringUtils.isEmpty(message)) {
             return message;
         } else {
             List<String> roleIds = projectInfoService.queryRoleIdList(boxInfo.getProjectId());
@@ -492,7 +492,7 @@ public class DashboardController extends BaseController {
             if (!authFlag) {
                 message = "该用户没有权限";
             }
-        }
+        }*/
         return message;
     }
 

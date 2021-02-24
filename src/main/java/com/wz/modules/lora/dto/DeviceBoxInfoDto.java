@@ -27,6 +27,8 @@ public class DeviceBoxInfoDto implements Serializable {
     private String standNo;
     private String controlFlag;
     private String boxCapacity;
+    private String locationId;
+    private String locationName;
 
     public String getId() {
         return id;

@@ -87,4 +87,6 @@ public interface DeviceBoxInfoDao extends BaseDao<DeviceBoxInfoEntity> {
 	List<DeviceBoxInfoEntity> findDeviceBoxInfoByProjectId(@Param("projectId") String projectId);
 
 	List<DeviceBoxInfoDto> findPlainDeviceBoxInfoByProjectId(@Param("projectId") String projectId);
+
+	List<DeviceBoxInfoDto> queryPlainList(Map<String, Object> map);
 }

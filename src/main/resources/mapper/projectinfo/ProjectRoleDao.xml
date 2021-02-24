@@ -89,7 +89,7 @@
 		</foreach>
 	</delete>
 
-	<select id="queryRoleIdList" resultType="String">
+	<select id="queryRoleIdList" resultType="string">
 		select role_id from
 		project_role where project_id = #{value,jdbcType=VARCHAR}
 	</select>

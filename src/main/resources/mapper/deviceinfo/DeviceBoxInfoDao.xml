@@ -360,6 +360,44 @@
         </if>
     </select>
 
+	<select id="queryPlainList"
+			resultType="com.wz.modules.lora.dto.DeviceBoxInfoDto"
+			resultMap="devicePlainBoxInfoMap">
+		select
+		<include refid="Base_Column_List"/>
+		from
+		device_box_info d
+		inner join device_box_location b
+		on d.id =
+		b.device_box_id
+		inner join
+		location_info l
+		on b.location_id = l.id
+		WHERE 1=1
+
+		<if test="projectId != null and projectId.trim() != ''">
+			AND
+			d.project_id=#{projectId}
+		</if>
+
+
+		<if test="root != null and root.trim() != ''">
+			AND l.root LIKE #{root}
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by l.name
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
     <select id="queryListByBean"
             resultType="com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity"
             resultMap="deviceBoxInfoMap">
