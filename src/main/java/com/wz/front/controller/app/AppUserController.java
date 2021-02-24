@@ -20,7 +20,7 @@ public class AppUserController {
 
     @GetMapping("/info/{loginName}")
     @LoginRequired
-    @ApiOperation(value = "获取场馆列表")
+    @ApiOperation(value = "获取登陆用户信息")
     public CommonResponse<UserEntity> getUserInfo(@PathVariable("loginName") String loginName) {
         UserEntity userEntity = userService.queryByLoginName(loginName);
         return CommonResponse.success(userEntity);

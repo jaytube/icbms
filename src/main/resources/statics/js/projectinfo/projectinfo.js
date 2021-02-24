@@ -47,7 +47,6 @@ var vm = new Vue({
 		isSelectedGate:false,
 		stadiumList:[],
 		getWayList:[],
-		stadiumID:'',
 		roleIdList:[],
 		projectInfo: {
 			effectiveDate:'',
@@ -85,13 +84,13 @@ var vm = new Vue({
 		},
 		saveOrUpdate: function (event) {
 			var url = vm.projectInfo.id == null ? "../projectinfo/save" : "../projectinfo/update";
-			if($("#effectiveDate").val()!=""){
-				vm.projectInfo.effectiveDate = $("#effectiveDate").val();
-			}
+//			if($("#effectiveDate").val()!=""){
+//				vm.projectInfo.effectiveDate = $("#effectiveDate").val();
+//			}
 
-			if($("#expireDate").val()!=""){
-				vm.projectInfo.expireDate = $("#expireDate").val();
-			}
+//			if($("#expireDate").val()!=""){
+//				vm.projectInfo.expireDate = $("#expireDate").val();
+//			}
 			if(vm.projectInfo.projectName==undefined){
 				alert("项目名称不能为空");
 				return;
@@ -117,6 +116,8 @@ var vm = new Vue({
 				alert("失效日期不能为空");
 				return;
 			}
+
+
 
 			$.ajax({
 				type: "POST",
@@ -172,7 +173,7 @@ var vm = new Vue({
         			});
         		},
         getGateways: function(){
-             //todo 网关
+         //todo 网关
                         $.get("../app/refdata/getGateways", function(r){
                         	vm.getWayList = r.data;
                         });
