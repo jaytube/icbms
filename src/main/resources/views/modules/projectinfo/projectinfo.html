@@ -106,7 +106,7 @@
 				<div class="col-sm-2 control-label">场馆名称</div>
 
 				<div class="col-sm-10">
-					<select v-model="stadiumID">
+					<select v-model="stadiumID"  class="form-control">
 						<option v-for="item in stadiumList">{{item.name}}</option>
 					</select>
 				</div>
@@ -153,10 +153,10 @@
 				</div>
 				<div class="col-sm-10">
 					<input type="text" class="form-control"
-						   v-if="stadiumID==1"
+						   v-if="stadiumID=='世博展览馆'"
 						   v-model="projectInfo.gatewayAddress" placeholder="网关" />
 
-					<select v-if="stadiumID==2"  v-model="projectInfo.gatewayAddress">
+					<select    v-if="stadiumID=='新国际博览中心'"  v-model="projectInfo.gatewayAddress" class="form-control">
 						<option v-for="item in getWayList">{{item.gymName}}</option>
 					</select>
 				</div>
