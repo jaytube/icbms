@@ -32,6 +32,8 @@ public class CommUtils {
     public static String getDeviceBoxAddress(String deviceBoxNum) {
         boolean startWithLy = deviceBoxNum.startsWith("LY");
         int startIndex = startWithLy ? 11 : 10;
+        if(startIndex >= deviceBoxNum.length())
+            return deviceBoxNum;
         return Integer.parseInt(deviceBoxNum.substring(startIndex)) + "";
     }
 

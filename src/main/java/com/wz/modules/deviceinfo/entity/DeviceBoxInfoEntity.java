@@ -397,4 +397,5 @@ public class DeviceBoxInfoEntity extends BaseEntity implements Serializable {
     public void setDeviceBoxStatus(DeviceBoxStatus deviceBoxStatus) {
         this.deviceBoxStatus = deviceBoxStatus;
     }
+
 }

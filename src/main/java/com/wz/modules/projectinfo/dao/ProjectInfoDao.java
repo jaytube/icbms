@@ -24,4 +24,6 @@ public interface ProjectInfoDao extends BaseDao<ProjectInfoEntity> {
 
 	public List<ProjectInfoPlainEntity> queryPlainProjectsByIds(String[] ids);
 
+	ProjectInfoEntity queryById(String id);
+
 }

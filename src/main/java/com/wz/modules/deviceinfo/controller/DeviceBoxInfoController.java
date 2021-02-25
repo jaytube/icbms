@@ -1,17 +1,25 @@
 package com.wz.modules.deviceinfo.controller;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.wz.modules.common.annotation.SysLog;
+import com.wz.modules.common.controller.BaseController;
+import com.wz.modules.common.utils.PageUtils;
+import com.wz.modules.common.utils.Query;
+import com.wz.modules.common.utils.Result;
+import com.wz.modules.common.utils.UserUtils;
+import com.wz.modules.deviceinfo.dao.DeviceMacSnMapDao;
+import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
+import com.wz.modules.deviceinfo.entity.DeviceMacSnEntity;
+import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
 import com.wz.modules.deviceinfo.service.DeviceOperationService;
+import com.wz.modules.devicelog.service.DeviceAlarmInfoLogService;
+import com.wz.modules.kk.service.KkService;
+import com.wz.modules.lora.dao.GymMasterDao;
+import com.wz.modules.lora.entity.GymMaster;
+import com.wz.modules.projectinfo.dao.ProjectInfoDao;
+import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
+import com.wz.modules.sys.entity.UserEntity;
 import io.swagger.annotations.Api;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -24,17 +32,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.wz.modules.common.annotation.SysLog;
-import com.wz.modules.common.controller.BaseController;
-import com.wz.modules.common.utils.PageUtils;
-import com.wz.modules.common.utils.Query;
-import com.wz.modules.common.utils.Result;
-import com.wz.modules.common.utils.UserUtils;
-import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
-import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
-import com.wz.modules.devicelog.service.DeviceAlarmInfoLogService;
-import com.wz.modules.kk.service.KkService;
-import com.wz.modules.sys.entity.UserEntity;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 /**
  * 电箱设备基础表; InnoDB free: 401408 kB
@@ -59,6 +60,15 @@ public class DeviceBoxInfoController extends BaseController {
 
 	@Autowired
 	private DeviceOperationService deviceOperationService;
+
+	@Autowired
+	private GymMasterDao gymMasterDao;
+
+	@Autowired
+	private DeviceMacSnMapDao deviceMacSnMapDao;
+
+	@Autowired
+	private ProjectInfoDao projectInfoDao;
 
 	/**
 	 * 列表
@@ -108,7 +118,40 @@ public class DeviceBoxInfoController extends BaseController {
 	@RequiresPermissions("deviceboxinfo:save")
 	@SysLog("电箱保存")
 	public Result save(@RequestBody DeviceBoxInfoEntity deviceBoxInfo) {
-		deviceBoxInfoService.save(deviceBoxInfo);
+		ProjectInfoEntity projectInfo = projectInfoDao.queryById(deviceBoxInfo.getProjectId());
+		Integer gymId = projectInfo.getGymId();
+		if(gymId == 2) {
+			List<Map<String, String>> result = new ArrayList<>();
+			Map<String, String> map = new LinkedHashMap<>();
+			String forthLoc = deviceBoxInfo.getStandNo() + "(" + deviceBoxInfo.getDeviceBoxNum() + ")";
+			map.put("firstLoc", "根目录");
+			if(gymId != null) {
+				GymMaster gym = gymMasterDao.findById(gymId);
+				map.put("secLoc", gym.getName());
+			} else {
+				map.put("secLoc", "世博展览馆");
+			}
+			map.put("thirdLoc", deviceBoxInfo.getLocationName());
+			map.put("forthLoc", forthLoc);
+			map.put("deviceMac", deviceBoxInfo.getDeviceBoxNum());
+			map.put("remark", deviceBoxInfo.getRemark());
+			map.put("secBoxGateway", deviceBoxInfo.getSecBoxGateway());
+			map.put("standNo", deviceBoxInfo.getStandNo());
+			map.put("boxCapacity", deviceBoxInfo.getBoxCapacity());
+			map.put("controlFlag", deviceBoxInfo.getControlFlag());
+			map.put("deviceBoxId", null);
+			result.add(map);
+			String userId = UserUtils.getCurrentUserId();
+			DeviceMacSnEntity macSnEntity = deviceMacSnMapDao.findById(deviceBoxInfo.getDeviceBoxNum());
+			if(macSnEntity == null || StringUtils.isBlank(macSnEntity.getDeviceSn()))
+				return Result.error("找不到电箱MAC对应的电箱SN");
+
+			String deviceBoxSn = macSnEntity.getDeviceSn();
+			return deviceOperationService.addDevice(result, userId, deviceBoxInfo.getDeviceBoxNum(), deviceBoxInfo.getProjectId(),
+					null, deviceBoxSn, gymId, Integer.parseInt(deviceBoxInfo.getSecBoxGateway()));
+		} else {
+			deviceBoxInfoService.save(deviceBoxInfo);
+		}
 		return Result.ok();
 	}
 
