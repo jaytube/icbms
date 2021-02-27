@@ -5,6 +5,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -20,7 +23,7 @@ import redis.clients.jedis.JedisPoolConfig;
 public class RedisConfig {
 	private static Logger logger = Logger.getLogger(RedisConfig.class);
 
-	private String hostName;
+	private String host;
 
 	private int port;
 
@@ -29,27 +32,19 @@ public class RedisConfig {
 	private int timeout;
 
 	@Bean
-	public JedisPoolConfig getRedisConfig() {
-		JedisPoolConfig config = new JedisPoolConfig();
-		config.setMaxIdle(100);
-		config.setMaxWaitMillis(2000);
-		config.setMaxTotal(500);
-		return config;
+	public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+		RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+		redisTemplate.setConnectionFactory(redisConnectionFactory);
+		redisTemplate.setDefaultSerializer(new GenericJackson2JsonRedisSerializer());
+		return redisTemplate;
 	}
 
-	@Bean
-	public JedisPool getJedisPool(JedisPoolConfig redisConfig) {
-		JedisPool pool = new JedisPool(redisConfig, hostName, port, timeout, password);
-		logger.info("init JredisPool ...");
-		return pool;
+	public String getHost() {
+		return host;
 	}
 
-	public String getHostName() {
-		return hostName;
-	}
-
-	public void setHostName(String hostName) {
-		this.hostName = hostName;
+	public void setHost(String host) {
+		this.host = host;
 	}
 
 	public int getPort() {

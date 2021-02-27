@@ -1,6 +1,7 @@
 package com.wz.component.redis;
 
 
+import com.alibaba.fastjson.JSON;
 import com.wz.modules.common.utils.RedisUtil;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.UnknownSessionException;
@@ -71,7 +72,8 @@ public class CachingShiroSessionDao extends CachingSessionDAO {
         Session session = null;
         try {
             String key = prefix + sessionId;
-            session = (Session) redisUtil.getObject(key);
+            String sessionStr = redisUtil.getString(key);
+            session = JSON.parseObject(sessionStr, Session.class);
         } catch (Exception e) {
             logger.warn("读取Session失败", e);
         }
@@ -92,7 +94,7 @@ public class CachingShiroSessionDao extends CachingSessionDAO {
         try {
             // session由Redis缓存失效决定，这里只是简单标识
             session.setTimeout(seconds);
-            redisUtil.setObject(prefix + sessionId, session, seconds);
+            redisUtil.setString(prefix + sessionId, JSON.toJSONString(session), seconds);
             logger.info("sessionId {} name {} doCreate被创建", sessionId, session.getClass().getName());
         } catch (Exception e) {
             logger.warn("创建Session失败 doCreate" + session.getClass().getName());
@@ -116,7 +118,7 @@ public class CachingShiroSessionDao extends CachingSessionDAO {
         }
         try {
             try {
-                redisUtil.setObject(prefix+session.getId(),session,seconds);
+                redisUtil.setString(prefix+session.getId(), JSON.toJSONString(session), seconds);
                 cache(session, session.getId());
                 //logger.info("sessionId {} name {} 被更新", session.getId(), session.getClass().getName());
             } catch (Exception e) {

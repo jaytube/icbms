@@ -1,27 +1,14 @@
 package com.wz.modules.analysis.redis.service.impl;
 
 import com.wz.config.RedisConfig;
-import com.wz.modules.analysis.redis.dto.SysRedisDto;
-import com.wz.modules.analysis.redis.po.SysRedis;
 import com.wz.modules.analysis.redis.service.SysRedisService;
-import com.wz.modules.analysis.redis.vo.CacheRedisQueryVo;
-import com.wz.modules.analysis.redis.vo.CacheRedisVo;
-import com.wz.modules.common.utils.CommonResponse;
-import com.wz.modules.common.utils.DateUtils;
 import com.wz.modules.common.utils.RedisUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisShardInfo;
-import redis.clients.jedis.ScanParams;
-import redis.clients.jedis.ScanResult;
 
 import java.lang.invoke.MethodHandles;
-import java.util.*;
 
 @Service
 public class SysRedisServiceImpl implements SysRedisService {
@@ -34,7 +21,7 @@ public class SysRedisServiceImpl implements SysRedisService {
     @Autowired
     private RedisUtil redisUtil;
 
-    @Override
+    /*@Override
     public CommonResponse<List<RedisConfig>> list() {
 
         return CommonResponse.success(listAll());
@@ -450,12 +437,12 @@ public class SysRedisServiceImpl implements SysRedisService {
         }
     }
 
-    /**
+    *//**
      * 更新过期时间
      *
      * @param vo
      * @return
-     */
+     *//*
     @Override
     public CommonResponse cacheExpireUpdate(CacheRedisVo vo) {
         Jedis jedis = redisUtil.getJedis();
@@ -555,5 +542,5 @@ public class SysRedisServiceImpl implements SysRedisService {
         }
         sysRedis.setElCount(elCount);
         return sysRedis;
-    }
+    }*/
 }

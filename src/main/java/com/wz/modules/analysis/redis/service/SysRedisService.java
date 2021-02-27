@@ -12,7 +12,7 @@ import java.util.Map;
 
 public interface SysRedisService {
 
-    CommonResponse<List<RedisConfig>> list();
+    /*CommonResponse<List<RedisConfig>> list();
 
     CommonResponse<List<Map<String, String>>> select();
 
@@ -32,5 +32,5 @@ public interface SysRedisService {
 
     CommonResponse cacheExpireUpdate(CacheRedisVo vo);
 
-    CommonResponse selectDb(String host);
+    CommonResponse selectDb(String host);*/
 }

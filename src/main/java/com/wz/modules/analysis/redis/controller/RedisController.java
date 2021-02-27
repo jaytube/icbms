@@ -23,7 +23,7 @@ import java.util.List;
 
 public class RedisController {
 
-    @Autowired
+    /*@Autowired
     private SysRedisService sysRedisService;
 
     @Autowired
@@ -78,5 +78,5 @@ public class RedisController {
     public CommonResponse cacheDelete(@RequestBody CacheRedisVo vo) {
 
         return sysRedisService.cacheDelete(vo);
-    }
+    }*/
 }

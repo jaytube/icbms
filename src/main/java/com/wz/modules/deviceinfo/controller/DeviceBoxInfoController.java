@@ -181,6 +181,7 @@ public class DeviceBoxInfoController extends BaseController {
 		Map<String, Object> params = new HashMap<>();
 		params.put("projectId", this.getCurrentProjectId());
 		Query query = new Query(params);
+
 		List<DeviceBoxInfoEntity> deviceBoxInfoList = deviceBoxInfoService.queryList(query);
 
 		return new ModelAndView(exportXlsView, "data", deviceBoxInfoList);
