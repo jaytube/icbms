@@ -210,13 +210,16 @@ public class DashboardController extends BaseController {
         Map<String, String> resultMap = new HashMap<String, String>();
         List<DeviceBoxInfoDto> boxInfoList = deviceBoxInfoService.findPlainDeviceBoxInfoByProjectId(projectId);
         if (boxInfoList != null && boxInfoList.size() > 0) {
-            Map<String, Integer> onlineMaps = this.kkService.statDeviceBoxOnline(projectId);
-            resultMap.put("boxTotal", boxInfoList.size() + "");
             try {
+                Map<String, Integer> onlineMaps = this.kkService.statDeviceBoxOnline(projectId, boxInfoList);
+                resultMap.put("boxTotal", boxInfoList.size() + "");
                 resultMap.put("switchOnlineTotal", onlineMaps.get("onlineNums") + "");
                 resultMap.put("switchLeaveTotal", (boxInfoList.size() - onlineMaps.get("onlineNums")) + "");
             } catch (Exception e) {
                 e.printStackTrace();
+                resultMap.put("boxTotal", "服务异常");
+                resultMap.put("switchOnlineTotal", "服务异常");
+                resultMap.put("switchLeaveTotal", "服务异常");
             }
         } else {
             resultMap.put("boxTotal", "0");

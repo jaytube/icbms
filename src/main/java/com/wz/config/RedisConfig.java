@@ -31,13 +31,15 @@ public class RedisConfig {
 	@Bean
 	public JedisPoolConfig getRedisConfig() {
 		JedisPoolConfig config = new JedisPoolConfig();
+		config.setMaxIdle(100);
+		config.setMaxWaitMillis(2000);
+		config.setMaxTotal(500);
 		return config;
 	}
 
 	@Bean
-	public JedisPool getJedisPool() {
-		JedisPoolConfig config = getRedisConfig();
-		JedisPool pool = new JedisPool(config, hostName, port, timeout, password);
+	public JedisPool getJedisPool(JedisPoolConfig redisConfig) {
+		JedisPool pool = new JedisPool(redisConfig, hostName, port, timeout, password);
 		logger.info("init JredisPool ...");
 		return pool;
 	}

@@ -95,4 +95,6 @@ public interface KkService {
 	void processDeviceBoxDtoOnline(List<DeviceBoxInfoDto> deviceBoxList);
 
 	Map<String, Integer> statPlainDeviceBoxOnline(List<DeviceBoxInfoDto> boxList, Map<String, String> redisStatus);
+
+	Map<String, Integer> statDeviceBoxOnline(String projectId, List<DeviceBoxInfoDto> boxList);
 }

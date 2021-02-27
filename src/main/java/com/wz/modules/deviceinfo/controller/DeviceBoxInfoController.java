@@ -6,6 +6,7 @@ import com.wz.modules.common.utils.PageUtils;
 import com.wz.modules.common.utils.Query;
 import com.wz.modules.common.utils.Result;
 import com.wz.modules.common.utils.UserUtils;
+import com.wz.modules.deviceinfo.component.ExportXlsView;
 import com.wz.modules.deviceinfo.dao.DeviceMacSnMapDao;
 import com.wz.modules.deviceinfo.entity.DeviceBoxInfoEntity;
 import com.wz.modules.deviceinfo.entity.DeviceMacSnEntity;
@@ -31,8 +32,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -69,6 +72,9 @@ public class DeviceBoxInfoController extends BaseController {
 
 	@Autowired
 	private ProjectInfoDao projectInfoDao;
+
+	@Autowired
+	private ExportXlsView exportXlsView;
 
 	/**
 	 * 列表
@@ -167,8 +173,23 @@ public class DeviceBoxInfoController extends BaseController {
 	}
 
 	/**
-	 * 删除
+	 * 修改
 	 */
+	@RequestMapping("/export")
+	@SysLog("电箱批量导出")
+	public ModelAndView exportDevices(HttpServletResponse response) throws IOException {
+		Map<String, Object> params = new HashMap<>();
+		params.put("projectId", this.getCurrentProjectId());
+		Query query = new Query(params);
+		List<DeviceBoxInfoEntity> deviceBoxInfoList = deviceBoxInfoService.queryList(query);
+
+		return new ModelAndView(exportXlsView, "data", deviceBoxInfoList);
+	}
+
+
+		/**
+         * 删除
+         */
 	@RequestMapping("/delete")
 	@RequiresPermissions("deviceboxinfo:delete")
 	@SysLog("电箱删除")

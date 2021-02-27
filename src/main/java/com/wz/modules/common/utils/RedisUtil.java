@@ -104,6 +104,20 @@ public class RedisUtil {
 		}, index, key);
 	}
 
+	public Map<String, String> hgetAll(String key) {
+		Map<String, String> result = new HashMap<>();
+		Jedis jedis = null;
+		try {
+			jedis = getJedis();
+			result = jedis.hgetAll(key);
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			releaseRedis(jedis);
+		}
+		return result;
+	}
+
 	public void hset(int index, String key, String field, String value) {
 		execute(new RedisCallback<String>() {
 			public String call(Jedis jedis, Object parms) {

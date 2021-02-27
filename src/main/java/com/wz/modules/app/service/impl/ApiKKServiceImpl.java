@@ -262,4 +262,9 @@ public class ApiKKServiceImpl implements ApiKKService {
         return null;
     }
 
+    @Override
+    public Map<String, Integer> statDeviceBoxOnline(String projectId, List<DeviceBoxInfoDto> boxList) {
+        return null;
+    }
+
 }

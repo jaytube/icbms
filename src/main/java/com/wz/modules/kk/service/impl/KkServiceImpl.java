@@ -513,6 +513,31 @@ public class KkServiceImpl implements KkService {
     }
 
     @Override
+    public Map<String, Integer> statDeviceBoxOnline(String projectId, List<DeviceBoxInfoDto> boxList) {
+        Map<String, DeviceBoxInfoDto> boxMap = new HashMap<>();
+        for (DeviceBoxInfoDto b : boxList) {
+            String key = CommUtils.getDeviceBoxAddress(b.getDeviceBoxNum());
+            if(b.getDeviceBoxNum().startsWith("LY"))
+                key += "_LY";
+            boxMap.put(key, b);
+        }
+
+        Map<String, Integer> result = new HashMap<String, Integer>();
+        int onlineNums = 0;
+        Map<String, String> tmp = redisUtil.hgetAll(TERMINAL_STATUS);
+        Map<String, String> tmpResult = new HashMap<String, String>();
+        tmpResult.putAll(tmp);
+        for (Map.Entry<String, String> tmpEntry : tmpResult.entrySet()) {
+            JSONObject jsonObj = JSONObject.fromObject(tmpEntry.getValue());
+            if ("0".equals(jsonObj.getString("status")) && boxMap.containsKey(tmpEntry.getKey())) {
+                onlineNums++;
+            }
+        }
+        result.put("onlineNums", onlineNums);
+        return result;
+    }
+
+    @Override
     public ProjectBoxStatusCntDto getBoxesRecentStatus(String projectId) {
         List<DeviceBoxInfoEntity> boxList = this.deviceBoxInfoService.findDeviceBoxsInfoByProjectId(projectId);
         List<DeviceAlarmInfoLogEntity> latestAlarmList = deviceAlarmInfoLogDao.getLatestAlarmOfDeviceByProjectId(projectId);

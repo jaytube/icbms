@@ -117,6 +117,7 @@ public class CachingShiroSessionDao extends CachingSessionDAO {
         try {
             try {
                 redisUtil.setObject(prefix+session.getId(),session,seconds);
+                cache(session, session.getId());
                 //logger.info("sessionId {} name {} 被更新", session.getId(), session.getClass().getName());
             } catch (Exception e) {
                 logger.info("sessionId {} name {} 更新异常", session.getId(), session.getClass().getName());
