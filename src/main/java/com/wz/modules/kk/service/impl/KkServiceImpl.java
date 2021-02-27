@@ -449,7 +449,7 @@ public class KkServiceImpl implements KkService {
 
     @Override
     public void processDeviceBoxDtoOnline(List<DeviceBoxInfoDto> deviceBoxList) {
-        Map<String, String> tmpMap = redisUtil.hgetAll(0, TERMINAL_STATUS);
+        Map<String, String> tmpMap = redisUtil.hgetAll(TERMINAL_STATUS);
         for (DeviceBoxInfoDto box : deviceBoxList) {
             String key = CommUtils.getDeviceBoxAddress(box.getDeviceBoxNum());
             if(box.getDeviceBoxNum().startsWith("LY")) {
@@ -458,14 +458,14 @@ public class KkServiceImpl implements KkService {
             if (tmpMap.containsKey(key)) {
                 JSONObject jsonObj = JSONObject.fromObject(tmpMap.get(key));
                 box.setOnline(jsonObj.getString("status"));
-                String gatewayAddress = jsonObj.getString("gatewayId");
+                /*String gatewayAddress = jsonObj.getString("gatewayId");
                 String tmpStr = redisUtil.hget(0, "GATEWARY_STATUS", gatewayAddress);
                 if (!StringUtils.isEmpty(tmpStr)) {
                     JSONObject tmpJsonObj = JSONObject.fromObject(tmpStr);
                     DeviceBoxConfigEntity config = new DeviceBoxConfigEntity();
                     config.setGatewayAddress(gatewayAddress);
                     config.setGatewayStatus(tmpJsonObj.getString("status"));
-                }
+                }*/
             } else {
                 box.setOnline("1");
             }
