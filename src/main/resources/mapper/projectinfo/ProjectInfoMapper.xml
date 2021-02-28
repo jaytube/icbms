@@ -46,6 +46,19 @@
 		b.file_name as file_name
     </sql>
 
+	<sql id="Base_Column_List_2" >
+		a.id as id,
+		a.project_name as project_name,
+		a.gateway_address as gateway_address,
+		a.create_time as create_time,
+		a.update_time as update_time,
+		a.create_id as create_id,
+		a.update_id as update_id,
+		a.remark as remark,
+		a.effective_date as effective_date,
+		a.expire_date as expire_date
+	</sql>
+
 	<select id="queryObject" resultType="com.wz.modules.projectinfo.entity.ProjectInfoEntity" resultMap="projectInfoMap">
 		select
 		<include refid="Base_Column_List" />
@@ -55,7 +68,7 @@
 
 	<select id="queryById" resultType="com.wz.modules.projectinfo.entity.ProjectInfoEntity" resultMap="projectInfoMap">
 		select
-		<include refid="Base_Column_List" />, gym_id
+		<include refid="Base_Column_List_2" />, gym_id
 		from project_info a
 		where a.id = #{value}
 	</select>

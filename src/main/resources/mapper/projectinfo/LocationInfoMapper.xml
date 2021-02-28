@@ -212,8 +212,8 @@
 	</delete>
 
 	<delete id="delProjectLocationRel">
-		delete from device_box_location a where
-		a.device_box_id in (
+		delete from device_box_location where
+		device_box_id in (
 			select b.id from device_box_info b where
 				b.project_id = #{projectId}
 		)
@@ -221,8 +221,8 @@
 
 
 	<delete id="delProjectLocation">
-		delete from location_info a
-		where a.project_id =
+		delete from location_info
+		where project_id =
 		#{projectId}
 	</delete>
 

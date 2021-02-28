@@ -18,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service("locationInfoService")
 public class LocationInfoServiceImpl implements LocationInfoService {
@@ -174,50 +171,55 @@ public class LocationInfoServiceImpl implements LocationInfoService {
     @Override
     @Transactional
     public void saveLocationsForNewProject(String projectId, int gymId, String projectName) {
-        List<LocationInfoEntity> entities = new ArrayList<>();
-        String rootId = Utils.uuid();
-        LocationInfoEntity root = new LocationInfoEntity();
-        root.setId(rootId);
-        root.setProjectId(projectId);
-        root.setName(LocationNodeType.ROOT.getDesc());
-        root.setParentId("0");
-        root.setType(LocationNodeType.ROOT.name());
-        root.setCreateId(UserUtils.getCurrentUserId());
-        root.setCreateTime(new Date());
-        root.setUpdateId(UserUtils.getCurrentUserId());
-        root.setUpdateTime(new Date());
-        root.setRoot(rootId);
-        entities.add(root);
+        Map<String, String> map = new HashMap<>();
+        map.put("parentId", "0");
+        map.put("projectId", projectId);
+        map.put("locName", LocationNodeType.ROOT.getDesc());
+        String locaId = locationInfoDao.findLocIdByLocName(map);
+        if(StringUtils.isBlank(locaId)) {
+            String rootId = Utils.uuid();
+            LocationInfoEntity root = new LocationInfoEntity();
+            root.setId(rootId);
+            root.setProjectId(projectId);
+            root.setName(LocationNodeType.ROOT.getDesc());
+            root.setParentId("0");
+            root.setType(LocationNodeType.ROOT.name());
+            root.setCreateId(UserUtils.getCurrentUserId());
+            root.setCreateTime(new Date());
+            root.setUpdateId(UserUtils.getCurrentUserId());
+            root.setUpdateTime(new Date());
+            root.setRoot(rootId);
+            locationInfoDao.save(root);
 
-        LocationInfoEntity venue = new LocationInfoEntity();
-        String venueId = Utils.uuid();
-        venue.setId(venueId);
-        venue.setProjectId(projectId);
-        GymMaster gym = gymMasterDao.findById(gymId);
-        venue.setName(gym.getName());
-        venue.setParentId(rootId);
-        venue.setType(LocationNodeType.VENUE.name());
-        venue.setCreateId(UserUtils.getCurrentUserId());
-        venue.setCreateTime(new Date());
-        venue.setUpdateId(UserUtils.getCurrentUserId());
-        venue.setUpdateTime(new Date());
-        venue.setRoot(rootId+","+venueId);
-        entities.add(venue);
+            LocationInfoEntity venue = new LocationInfoEntity();
+            String venueId = Utils.uuid();
+            venue.setId(venueId);
+            venue.setProjectId(projectId);
+            GymMaster gym = gymMasterDao.findById(gymId);
+            venue.setName(gym.getName());
+            venue.setParentId(rootId);
+            venue.setType(LocationNodeType.VENUE.name());
+            venue.setCreateId(UserUtils.getCurrentUserId());
+            venue.setCreateTime(new Date());
+            venue.setUpdateId(UserUtils.getCurrentUserId());
+            venue.setUpdateTime(new Date());
+            venue.setRoot(rootId + "," + venueId);
+            locationInfoDao.save(venue);
 
-        LocationInfoEntity exhibition = new LocationInfoEntity();
-        String exId = Utils.uuid();
-        exhibition.setId(exId);
-        exhibition.setProjectId(projectId);
-        exhibition.setName(projectName);
-        exhibition.setParentId(rootId);
-        exhibition.setType(LocationNodeType.EXHIBITION.name());
-        exhibition.setCreateId(UserUtils.getCurrentUserId());
-        exhibition.setCreateTime(new Date());
-        exhibition.setUpdateId(UserUtils.getCurrentUserId());
-        exhibition.setUpdateTime(new Date());
-        exhibition.setRoot(rootId+","+venueId+","+exId);
-        entities.add(exhibition);
+            LocationInfoEntity exhibition = new LocationInfoEntity();
+            String exId = Utils.uuid();
+            exhibition.setId(exId);
+            exhibition.setProjectId(projectId);
+            exhibition.setName(projectName);
+            exhibition.setParentId(venueId);
+            exhibition.setType(LocationNodeType.EXHIBITION.name());
+            exhibition.setCreateId(UserUtils.getCurrentUserId());
+            exhibition.setCreateTime(new Date());
+            exhibition.setUpdateId(UserUtils.getCurrentUserId());
+            exhibition.setUpdateTime(new Date());
+            exhibition.setRoot(rootId+","+venueId+","+exId);
+            locationInfoDao.save(exhibition);
+        }
 
-        locationInfoDao.saveBatch(entities);
     }
 }
