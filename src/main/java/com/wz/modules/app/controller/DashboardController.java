@@ -36,6 +36,7 @@ import com.wz.modules.lora.entity.GatewayDeviceMap;
 import com.wz.modules.lora.entity.GatewayInfo;
 import com.wz.modules.lora.entity.GymMaster;
 import com.wz.modules.lora.enums.LoRaCommand;
+import com.wz.modules.projectinfo.dao.ProjectInfoDao;
 import com.wz.modules.projectinfo.entity.LocationInfoEntity;
 import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
 import com.wz.modules.projectinfo.service.LocationInfoService;
@@ -134,6 +135,9 @@ public class DashboardController extends BaseController {
 
     @Autowired
     private DeviceMacSnMapDao deviceMacSnMapDao;
+
+    @Autowired
+    private ProjectInfoDao projectInfoDao;
 
     /**
      * 警告分页
@@ -792,7 +796,8 @@ public class DashboardController extends BaseController {
         } else {
             map.put("secLoc", "世博展览馆");
         }
-        map.put("thirdLoc", thirdLocation);
+        ProjectInfoEntity projectInfo = projectInfoDao.queryById(projectId);
+        map.put("thirdLoc", projectInfo.getProjectName());
         map.put("forthLoc", forthLoc);
         map.put("fifthLoc", null);
         map.put("deviceMac", deviceBoxMac);

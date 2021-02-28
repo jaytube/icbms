@@ -129,7 +129,7 @@ public class DeviceBoxInfoController extends BaseController {
 		if(gymId == 2) {
 			List<Map<String, String>> result = new ArrayList<>();
 			Map<String, String> map = new LinkedHashMap<>();
-			String forthLoc = deviceBoxInfo.getStandNo() + "(" + deviceBoxInfo.getDeviceBoxNum() + ")";
+			//String forthLoc = deviceBoxInfo.getStandNo() + "(" + deviceBoxInfo.getDeviceBoxNum() + ")";
 			map.put("firstLoc", "根目录");
 			if(gymId != null) {
 				GymMaster gym = gymMasterDao.findById(gymId);
@@ -138,8 +138,8 @@ public class DeviceBoxInfoController extends BaseController {
 				GymMaster gym = gymMasterDao.findById(1);
 				map.put("secLoc", gym.getName());
 			}
-			map.put("thirdLoc", deviceBoxInfo.getLocationName());
-			map.put("forthLoc", forthLoc);
+			map.put("thirdLoc", projectInfo.getProjectName());
+			map.put("forthLoc", deviceBoxInfo.getLocationName());
 			map.put("deviceMac", deviceBoxInfo.getDeviceBoxNum());
 			map.put("remark", deviceBoxInfo.getRemark());
 			map.put("secBoxGateway", deviceBoxInfo.getSecBoxGateway());
