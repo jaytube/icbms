@@ -7,7 +7,7 @@ package com.wz.modules.migration.enums;
  */
 public enum LocationNodeType {
 
-    ROOT("根节点"),
+    ROOT("根目录"),
     VENUE("场馆"),
     /**
      * project
