@@ -44,4 +44,6 @@ public interface LocationInfoService {
 
 	int delProjectLocation(String projectId);
 
+	void saveLocationsForNewProject(String projectId, int gymId, String projectName);
+
 }

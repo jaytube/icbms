@@ -56,7 +56,7 @@
 	<select id="queryById" resultType="com.wz.modules.projectinfo.entity.ProjectInfoEntity" resultMap="projectInfoMap">
 		select
 		<include refid="Base_Column_List" />, gym_id
-		from project_info
+		from project_info a
 		where a.id = #{value}
 	</select>
 

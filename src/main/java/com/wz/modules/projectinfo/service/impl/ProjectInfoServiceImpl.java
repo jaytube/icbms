@@ -71,6 +71,7 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
     }
 
     @Override
+    @Transactional
     public int save(ProjectInfoEntity projectInfo) {
         projectInfo.setId(Utils.uuid());
         projectInfo.setCreateTime(new Date());
@@ -82,6 +83,7 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
             }
         }
 
+        locationInfoService.saveLocationsForNewProject(projectInfo.getId(), projectInfo.getGymId(), projectInfo.getProjectName());
         this.doProcessProjectRole(projectInfo);
         return num;
     }

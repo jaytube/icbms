@@ -4,15 +4,21 @@ import com.wz.modules.common.utils.RedisUtil;
 import com.wz.modules.common.utils.UserUtils;
 import com.wz.modules.common.utils.Utils;
 import com.wz.modules.deviceinfo.dao.DeviceBoxInfoDao;
+import com.wz.modules.lora.dao.GymMasterDao;
+import com.wz.modules.lora.entity.GymMaster;
+import com.wz.modules.migration.enums.LocationNodeType;
 import com.wz.modules.migration.util.LocationInfoUtil;
 import com.wz.modules.projectinfo.dao.LocationInfoDao;
 import com.wz.modules.projectinfo.entity.LocationInfoEntity;
 import com.wz.modules.projectinfo.service.LocationInfoService;
 import com.wz.modules.sys.entity.UserEntity;
+import com.wz.socket.utils.CommUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +33,9 @@ public class LocationInfoServiceImpl implements LocationInfoService {
 
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private GymMasterDao gymMasterDao;
 
     @Override
     public LocationInfoEntity queryObject(String id) {
@@ -160,5 +169,55 @@ public class LocationInfoServiceImpl implements LocationInfoService {
 
     public int delProjectLocation(String projectId) {
         return locationInfoDao.delProjectLocation(projectId);
+    }
+
+    @Override
+    @Transactional
+    public void saveLocationsForNewProject(String projectId, int gymId, String projectName) {
+        List<LocationInfoEntity> entities = new ArrayList<>();
+        String rootId = Utils.uuid();
+        LocationInfoEntity root = new LocationInfoEntity();
+        root.setId(rootId);
+        root.setProjectId(projectId);
+        root.setName(LocationNodeType.ROOT.getDesc());
+        root.setParentId("0");
+        root.setType(LocationNodeType.ROOT.name());
+        root.setCreateId(UserUtils.getCurrentUserId());
+        root.setCreateTime(new Date());
+        root.setUpdateId(UserUtils.getCurrentUserId());
+        root.setUpdateTime(new Date());
+        root.setRoot(rootId);
+        entities.add(root);
+
+        LocationInfoEntity venue = new LocationInfoEntity();
+        String venueId = Utils.uuid();
+        venue.setId(venueId);
+        venue.setProjectId(projectId);
+        GymMaster gym = gymMasterDao.findById(gymId);
+        venue.setName(gym.getName());
+        venue.setParentId(rootId);
+        venue.setType(LocationNodeType.VENUE.name());
+        venue.setCreateId(UserUtils.getCurrentUserId());
+        venue.setCreateTime(new Date());
+        venue.setUpdateId(UserUtils.getCurrentUserId());
+        venue.setUpdateTime(new Date());
+        venue.setRoot(rootId+","+venueId);
+        entities.add(venue);
+
+        LocationInfoEntity exhibition = new LocationInfoEntity();
+        String exId = Utils.uuid();
+        exhibition.setId(exId);
+        exhibition.setProjectId(projectId);
+        exhibition.setName(projectName);
+        exhibition.setParentId(rootId);
+        exhibition.setType(LocationNodeType.EXHIBITION.name());
+        exhibition.setCreateId(UserUtils.getCurrentUserId());
+        exhibition.setCreateTime(new Date());
+        exhibition.setUpdateId(UserUtils.getCurrentUserId());
+        exhibition.setUpdateTime(new Date());
+        exhibition.setRoot(rootId+","+venueId+","+exId);
+        entities.add(exhibition);
+
+        locationInfoDao.saveBatch(entities);
     }
 }

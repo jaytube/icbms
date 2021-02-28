@@ -135,7 +135,8 @@ public class DeviceBoxInfoController extends BaseController {
 				GymMaster gym = gymMasterDao.findById(gymId);
 				map.put("secLoc", gym.getName());
 			} else {
-				map.put("secLoc", "世博展览馆");
+				GymMaster gym = gymMasterDao.findById(1);
+				map.put("secLoc", gym.getName());
 			}
 			map.put("thirdLoc", deviceBoxInfo.getLocationName());
 			map.put("forthLoc", forthLoc);
