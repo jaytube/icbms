@@ -45,7 +45,7 @@ public class LocationInfoController extends BaseController {
      * 信息
      */
     @RequestMapping("/info/{id}")
-    @RequiresPermissions("projectinfo:location:info")
+    //@RequiresPermissions("projectinfo:location:info")
     @SysLog("查看位置信息")
     public Result info(@PathVariable("id") String id) {
         LocationInfoEntity location = locationInfoService.queryObject(id);

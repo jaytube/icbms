@@ -108,7 +108,6 @@ public class ProjectInfoController extends BaseController {
 	}
 
 	@RequestMapping("/getCurrentProject")
-	@RequiresPermissions("projectinfo:list")
 	public Result getCurrProject() {
 		List<LocationInfoEntity> locInfos = locationInfoService.findLocInfoByPId(this.getCurrentProject().getId());
 		Result result = Result.ok().put("currentProject", this.getCurrentProject()).put("locInfos", locInfos);

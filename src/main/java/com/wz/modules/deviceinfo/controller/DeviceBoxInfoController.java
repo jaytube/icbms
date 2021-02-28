@@ -176,7 +176,7 @@ public class DeviceBoxInfoController extends BaseController {
 	/**
 	 * 修改
 	 */
-	@RequestMapping("/export")
+	@RequestMapping(value = "/export/{projectId}", method = RequestMethod.GET)
 	@SysLog("电箱批量导出")
 	public ModelAndView exportDevices(HttpServletResponse response) throws IOException {
 		Map<String, Object> params = new HashMap<>();
