@@ -92,6 +92,6 @@ public class DeviceOperationServiceImpl implements DeviceOperationService {
             }
         }
 
-        return Result.error("必须是手机端APP设备");
+        return Result.ok("添加成功");
     }
 }

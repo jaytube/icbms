@@ -754,7 +754,7 @@ public class DashboardController extends BaseController {
             return Result.error("电箱MAC地址为空");
         }
 
-        if(StringUtils.isBlank(deviceBoxSn)) {
+        if(StringUtils.isBlank(deviceBoxSn) && gymId != null && gymId == 2) {
             DeviceMacSnEntity macSnEntity = deviceMacSnMapDao.findById(deviceBoxMac);
             if(macSnEntity == null || StringUtils.isBlank(macSnEntity.getDeviceSn()))
                 return Result.error("找不到电箱MAC对应的电箱SN");

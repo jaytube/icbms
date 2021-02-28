@@ -84,13 +84,13 @@ var vm = new Vue({
 		},
 		saveOrUpdate: function (event) {
 			var url = vm.projectInfo.id == null ? "../projectinfo/save" : "../projectinfo/update";
-//			if($("#effectiveDate").val()!=""){
-//				vm.projectInfo.effectiveDate = $("#effectiveDate").val();
-//			}
+			if($("#effectiveDate").val()!=""){
+				vm.projectInfo.effectiveDate = $("#effectiveDate").val();
+			}
 
-//			if($("#expireDate").val()!=""){
-//				vm.projectInfo.expireDate = $("#expireDate").val();
-//			}
+			if($("#expireDate").val()!=""){
+				vm.projectInfo.expireDate = $("#expireDate").val();
+			}
 			if(vm.projectInfo.projectName==undefined){
 				alert("项目名称不能为空");
 				return;

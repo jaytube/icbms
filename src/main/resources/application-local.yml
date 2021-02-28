@@ -49,9 +49,8 @@ spring:
     hostName: 121.5.35.58
     port: 6379
     password: icbms2020
-    timeout: 6000  # 连接超时时长（毫秒）
     pool:
-      max-active: 500   # 连接池最大连接数（使用负值表示没有限制）
+      max-active: 250   # 连接池最大连接数（使用负值表示没有限制）
       max-wait: 1000    # 连接池最大阻塞等待时间（使用负值表示没有限制）
       max-idle: 100      # 连接池中的最大空闲连接
       min-idle: 5       # 连接池中的最小空闲连接
