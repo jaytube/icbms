@@ -13,10 +13,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -46,7 +43,11 @@ public class AppRefDataServiceImpl implements AppRefDataService {
 
     @Override
     public List<GatewayInfo> getGateways() {
-        return gatewayInfoDao.findAll();
+        List<GatewayInfo> all = gatewayInfoDao.findAll();
+        if(CollectionUtils.isNotEmpty(all))
+            all = all.stream().sorted(Comparator.comparing(GatewayInfo::getGymName)).collect(Collectors.toList());
+
+        return all;
     }
 
     @Override

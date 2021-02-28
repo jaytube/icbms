@@ -4,10 +4,11 @@ $(function() {
 			// box_data.initMap();
 			box_data.initChartData();
 			box_data.getBarDataInfo();
-			/*setInterval(function(){
+			box_data.initDate();
+			setInterval(function(){
 				box_data.initDate();
 			}, 1000);
-			setInterval(function(){
+			/*setInterval(function(){
 				box_data.getAlarmCounts();
 			}, 60000);*/
 		},

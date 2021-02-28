@@ -3,7 +3,8 @@ $(function() {
 		init : function(currentProject) {
 			box_data.initChartData(currentProject);
 			box_data.getBarDataInfo(currentProject);
-			// setInterval(function(){ box_data.initDate(); }, 1000);
+			box_data.initDate();
+			setInterval(function(){ box_data.initDate(); }, 1000);
 			// setInterval(function(){ box_data.getAlarmCounts(currentProject); },
 			//   30000);
 		},
