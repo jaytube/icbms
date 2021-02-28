@@ -51,7 +51,8 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
         String locationId = (String) map.get("locationId");
         if (!StringUtils.isBlank(locationId)) {
             LocationInfoEntity location = locationInfoService.queryObject(locationId);
-            map.put("root", location.getRoot() + "%");
+            if(location != null)
+                map.put("root", location.getRoot() + "%");
         }
         return deviceBoxInfoDao.queryList(map);
     }
