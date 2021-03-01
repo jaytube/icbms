@@ -156,6 +156,8 @@ public class KkServiceImpl implements KkService {
         DeviceBoxInfoEntity boxInfo = this.deviceBoxInfoService.queryByMac(deviceBoxMac, projectId);
         if (null != boxInfo) {
             String field = CommUtils.getDeviceBoxAddress(boxInfo.getDeviceBoxNum()) + "_";
+            if(boxInfo.getDeviceBoxNum().startsWith("LY"))
+                field += "100";
             Map<String, String> result = redisUtil.fuzzyGet(0, "REAL_DATA", field);
             for (String k : result.keySet()) {
                 String resultJson = result.get(k);
@@ -193,6 +195,8 @@ public class KkServiceImpl implements KkService {
         List<DeviceSwitchInfoEntity> switchList = new ArrayList<DeviceSwitchInfoEntity>();
         if (null != boxInfo) {
             String field = CommUtils.getDeviceBoxAddress(boxInfo.getDeviceBoxNum()) + "_";
+            if(boxInfo.getDeviceBoxNum().startsWith("LY"))
+                field += "100";
             Map<String, String> result = redisUtil.fuzzyGet(0, "REAL_DATA", field);
             for (String k : result.keySet()) {
                 String resultJson = result.get(k);
