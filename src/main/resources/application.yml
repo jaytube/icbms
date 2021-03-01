@@ -10,7 +10,7 @@ server:
 spring:
     # 环境 dev|test|pro
     profiles:
-        active: local #部署生产换成pro,开发dev
+        active: pro #部署生产换成pro,开发dev
 
     http:
         multipart:
