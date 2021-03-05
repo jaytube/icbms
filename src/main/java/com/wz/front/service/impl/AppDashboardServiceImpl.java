@@ -153,7 +153,7 @@ public class AppDashboardServiceImpl implements AppDashboardService {
 
         Integer offset = (curPage - 1) * Integer.parseInt(pageSize);
         List<DeviceAlarmInfoLogEntity> result = this.deviceAlarmInfoLogDao.queryAppList(startTime, endTime, null, null,
-                offset, Integer.parseInt(pageSize), projectId, null, deviceBoxId, alarmLevel);
+                offset, Integer.parseInt(pageSize), projectId, null, deviceBoxId, alarmLevel, "Y");
         if (null != result && 0 < result.size()) {
             Map<String, String> levelMap = this.codeService.queryChildsMapByMark("alarm_level");
             for (DeviceAlarmInfoLogEntity alarm : result) {

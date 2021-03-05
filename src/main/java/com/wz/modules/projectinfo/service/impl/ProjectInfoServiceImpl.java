@@ -1,9 +1,13 @@
 package com.wz.modules.projectinfo.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
+import com.wz.front.service.AppDeviceBoxService;
+import com.wz.modules.common.exception.MyException;
 import com.wz.modules.common.utils.RedisUtil;
 import com.wz.modules.common.utils.Utils;
 import com.wz.modules.deviceinfo.service.DeviceBoxInfoService;
+import com.wz.modules.deviceinfo.service.DeviceOperationService;
+import com.wz.modules.lora.dto.DeviceBoxInfoDto;
 import com.wz.modules.projectinfo.dao.ProjectInfoDao;
 import com.wz.modules.projectinfo.dao.ProjectRoleDao;
 import com.wz.modules.projectinfo.entity.ProjectInfoEntity;
@@ -12,15 +16,23 @@ import com.wz.modules.projectinfo.service.LocationInfoService;
 import com.wz.modules.projectinfo.service.ProjectInfoService;
 import com.wz.modules.sys.dao.UserDao;
 import com.wz.modules.sys.entity.UserEntity;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.invoke.MethodHandles;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service("projectInfoService")
 public class ProjectInfoServiceImpl implements ProjectInfoService {
+
+    private static Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     @Autowired
     private ProjectInfoDao projectInfoDao;
 
@@ -38,6 +50,9 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
 
     @Autowired
     private DeviceBoxInfoService deviceBoxInfoService;
+
+    @Autowired
+    private AppDeviceBoxService appDeviceBoxService;
 
     @Override
     public ProjectInfoEntity queryObject(String id) {
@@ -150,6 +165,19 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
 
             // 移除电箱
             this.deviceBoxInfoService.deleteProjectDeviceBox(projectId);
+            ProjectInfoEntity project = projectInfoDao.queryById(projectId);
+            if(project.getGymId() != null && project.getGymId() == 2) {
+                try {
+                    List<DeviceBoxInfoDto> devices = deviceBoxInfoService.findPlainDeviceBoxInfoByProjectId(projectId);
+                    if(CollectionUtils.isNotEmpty(devices)){
+                        List<String> deviceIds = devices.stream().map(DeviceBoxInfoDto::getId).collect(Collectors.toList());
+                        appDeviceBoxService.deleteBatch(deviceIds);
+                    }
+                } catch (MyException e) {
+                    logger.error("删除项目失败!");
+                    throw e;
+                }
+            }
         }
         return projectInfoDao.deleteBatch(ids);
     }

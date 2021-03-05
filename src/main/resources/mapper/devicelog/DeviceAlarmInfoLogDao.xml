@@ -178,6 +178,10 @@
             AND d.alarm_level = #{alarmLevel}
         </if>
 
+        <if test="filter != null and filter = 'Y'">
+            and d.type not in ('节点通信中断', '节点通信中断恢复')
+        </if>
+
         order by d.record_time desc
         <if test="offset != null and limit != null">
             limit #{offset}, #{limit}

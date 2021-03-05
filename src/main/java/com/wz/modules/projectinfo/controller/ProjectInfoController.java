@@ -3,6 +3,7 @@ package com.wz.modules.projectinfo.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.wz.modules.deviceinfo.service.DeviceOperationService;
 import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class ProjectInfoController extends BaseController {
 
 	@Autowired
 	private LocationInfoService locationInfoService;
+
+	@Autowired
+	private DeviceOperationService deviceOperationService;
 
 	/**
 	 * 列表

@@ -28,7 +28,7 @@ public interface DeviceAlarmInfoLogDao extends BaseDao<DeviceAlarmInfoLogEntity>
                                                        @Param("endTime") String endTime, @Param("type") String type, @Param("deviceBoxMac") String deviceBoxMac,
                                                        @Param("offset") Integer offset, @Param("limit") Integer limit, @Param("projectId") String projectId,
                                                        @Param("locationId") String locationId, @Param("deviceBoxId") String deviceBoxId,
-                                                       @Param("alarmLevel") String alarmLevel);
+                                                       @Param("alarmLevel") String alarmLevel, @Param("filter") String filter);
 
     public List<DeviceAlarmInfoLogEntity> queryAppListByProjectIds(@Param("beginTime") String beginTime,
                                                                    @Param("endTime") String endTime, @Param("type") String type, @Param("deviceBoxMac") String deviceBoxMac,
