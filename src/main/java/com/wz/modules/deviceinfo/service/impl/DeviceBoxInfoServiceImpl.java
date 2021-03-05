@@ -171,6 +171,7 @@ public class DeviceBoxInfoServiceImpl implements DeviceBoxInfoService {
             throw e;
         }
         deviceBoxInfoDao.deleteBoxLocLinkBatch(ids);
+        //TODO projectId and boxId
         return deviceBoxInfoDao.deleteBatch(ids);
     }
 

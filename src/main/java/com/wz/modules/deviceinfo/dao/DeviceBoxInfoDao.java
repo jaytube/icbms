@@ -64,6 +64,8 @@ public interface DeviceBoxInfoDao extends BaseDao<DeviceBoxInfoEntity> {
 
 	DeviceBoxInfoEntity queryByBoxNum(@Param("deviceBoxNum")String deviceBoxNum);
 
+	DeviceBoxInfoEntity queryByBoxNumAndProjectId(@Param("deviceBoxNum")String deviceBoxNum, @Param("projectId")String projectId);
+
 	DeviceBoxInfoEntity queryByBoxId(@Param("deviceBoxId")String deviceBoxId);
 
 	DeviceBoxInfoEntity queryProjectDeviceBox(@Param("projectId") String projectId,
@@ -89,4 +91,5 @@ public interface DeviceBoxInfoDao extends BaseDao<DeviceBoxInfoEntity> {
 	List<DeviceBoxInfoDto> findPlainDeviceBoxInfoByProjectId(@Param("projectId") String projectId);
 
 	List<DeviceBoxInfoDto> queryPlainList(Map<String, Object> map);
+
 }

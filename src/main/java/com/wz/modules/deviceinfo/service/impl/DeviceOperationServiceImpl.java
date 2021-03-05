@@ -52,8 +52,12 @@ public class DeviceOperationServiceImpl implements DeviceOperationService {
     @Transactional
     public void deleteDevices(String[] ids) {
         if(ids != null && ids.length > 0) {
-            deviceBoxInfoService.deleteBatch(ids, "app");
-            appDeviceBoxService.deleteBatch(Arrays.asList(ids));
+            try {
+                deviceBoxInfoService.deleteBatch(ids, "app");
+                appDeviceBoxService.deleteBatch(Arrays.asList(ids));
+            } catch (MyException e) {
+                throw e;
+            }
         }
     }
 
@@ -61,7 +65,7 @@ public class DeviceOperationServiceImpl implements DeviceOperationService {
     @Transactional
     public Result addDevice(List<Map<String, String>> result, String userId, String deviceBoxMac, String projectId, HttpServletRequest request, String deviceBoxSn, Integer gymId, int gatewayId) {
         UserEntity user = this.userService.queryObject(userId);
-        DeviceBoxInfoEntity deviceBoxInfoEntity = deviceBoxInfoDao.queryByBoxNum(deviceBoxMac);
+        DeviceBoxInfoEntity deviceBoxInfoEntity = deviceBoxInfoDao.queryByBoxNumAndProjectId(deviceBoxMac, projectId);
         if (deviceBoxInfoEntity == null) {
             List<DeviceBoxInfoEntity> saveResult = deviceBoxInfoService.saveBoxLocBatch(result, projectId, user);
             deviceBoxInfoEntity = saveResult.get(0);
