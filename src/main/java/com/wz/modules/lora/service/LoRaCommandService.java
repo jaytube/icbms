@@ -8,6 +8,7 @@ import com.wz.modules.lora.dto.TerminalTypeDto;
 import com.wz.modules.lora.entity.GatewayInfo;
 import com.wz.modules.lora.enums.LoRaCommand;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -46,5 +47,5 @@ public interface LoRaCommandService {
 
     CommonResponse deleteDevice(String gatewayIp, String deviceSn);
 
-    CommonResponse<Map> deleteDevices(String gatewayIp, List<Integer> deviceIds);
+    CommonResponse<Map> deleteDevices(String gatewayIp, Collection<Integer> deviceIds);
 }

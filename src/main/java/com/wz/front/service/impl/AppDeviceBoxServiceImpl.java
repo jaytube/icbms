@@ -134,7 +134,7 @@ public class AppDeviceBoxServiceImpl implements AppDeviceBoxService {
         }
         Map<String, DeviceInfoDto> map = new HashMap<>();
         data.forEach(deviceInfoDto -> map.put(deviceInfoDto.getDeviceSn(), deviceInfoDto));
-        List<Integer> ids = new ArrayList<>();
+        Set<Integer> ids = new HashSet<>();
         devicesBySns.forEach(deviceMap -> {
             String deviceSn = deviceMap.getDeviceSn();
             if (map.containsKey(deviceSn)) {

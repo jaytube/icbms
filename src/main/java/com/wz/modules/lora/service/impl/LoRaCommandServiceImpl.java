@@ -281,7 +281,7 @@ public class LoRaCommandServiceImpl implements LoRaCommandService {
     }
 
     @Override
-    public CommonResponse<Map> deleteDevices(String gatewayIp, List<Integer> deviceIds) {
+    public CommonResponse<Map> deleteDevices(String gatewayIp, Collection<Integer> deviceIds) {
         if (CollectionUtils.isEmpty(deviceIds)) {
             log.info("网关" + gatewayIp + "没有此设备");
             return CommonResponse.success();
